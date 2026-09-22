@@ -39,6 +39,7 @@ export default function DeliverablesSection() {
   const prevIndexRef = useRef<number>(0);
   const activeIndexRef = useRef<number>(0);
   const scrollTriggerRef = useRef<ScrollTrigger | null>(null);
+  const viewportWidthRef = useRef<number>(0);
 
   // Preload all deliverable images on mount
   useEffect(() => {
@@ -61,35 +62,64 @@ export default function DeliverablesSection() {
     if (!track || !active) return;
 
     if (window.innerWidth < 1024) {
-      const viewportWidth = window.innerWidth;
+      const viewport = track.parentElement;
+      const viewportWidth = viewport?.clientWidth ?? window.innerWidth;
       const activeCenter = active.offsetLeft + active.offsetWidth / 2;
-      const targetX = viewportWidth / 2 - activeCenter;
+      const desiredX = viewportWidth / 2 - activeCenter;
+      const minX = Math.min(0, viewportWidth - track.scrollWidth);
+      const targetX = Math.max(minX, Math.min(0, desiredX));
 
       gsap.to(track, {
         x: targetX,
-        duration: 0.4,
+        duration: 0.34,
         ease: "power3.out",
         overwrite: "auto",
+        force3D: true,
       });
     } else {
-      gsap.to(track, { x: 0, duration: 0.3, overwrite: "auto" });
+      gsap.to(track, { x: 0, duration: 0.25, overwrite: "auto" });
     }
   }, [activeIndex]);
 
   useEffect(() => {
     updateMobileNavigation();
+    viewportWidthRef.current = window.innerWidth;
+
+    let resizeFrame = 0;
+    let orientationTimer = 0;
 
     const handleResize = () => {
-      updateMobileNavigation();
-      ScrollTrigger.refresh();
+      const nextWidth = window.innerWidth;
+
+      // Safari/Chrome mobile browser chrome changes viewport height while
+      // scrolling. Ignore those height-only resize events.
+      if (Math.abs(nextWidth - viewportWidthRef.current) < 2) return;
+
+      viewportWidthRef.current = nextWidth;
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(() => {
+        updateMobileNavigation();
+        ScrollTrigger.refresh();
+      });
     };
 
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("orientationchange", handleResize);
+    const handleOrientationChange = () => {
+      window.clearTimeout(orientationTimer);
+      orientationTimer = window.setTimeout(() => {
+        viewportWidthRef.current = window.innerWidth;
+        updateMobileNavigation();
+        ScrollTrigger.refresh();
+      }, 240);
+    };
+
+    window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("orientationchange", handleOrientationChange);
 
     return () => {
+      cancelAnimationFrame(resizeFrame);
+      window.clearTimeout(orientationTimer);
       window.removeEventListener("resize", handleResize);
-      window.removeEventListener("orientationchange", handleResize);
+      window.removeEventListener("orientationchange", handleOrientationChange);
     };
   }, [activeIndex, updateMobileNavigation]);
 
@@ -119,6 +149,7 @@ export default function DeliverablesSection() {
   // Unified Media & Description Transition when activeIndex changes
   useEffect(() => {
     const prevIdx = prevIndexRef.current;
+    const compactMotion = typeof window !== "undefined" && window.innerWidth < 1024;
 
     const animateMediaArray = (refs: (HTMLDivElement | null)[]) => {
       refs.forEach((el, index) => {
@@ -132,11 +163,11 @@ export default function DeliverablesSection() {
           });
           gsap.fromTo(
             el,
-            { opacity: prevIdx === activeIndex ? 1 : 0, y: 15 },
+            { opacity: prevIdx === activeIndex ? 1 : 0, y: compactMotion ? 9 : 15 },
             {
               opacity: 1,
               y: 0,
-              duration: 0.5,
+              duration: compactMotion ? 0.34 : 0.5,
               ease: "power2.out",
               overwrite: "auto",
             }
@@ -146,7 +177,7 @@ export default function DeliverablesSection() {
           gsap.to(el, {
             opacity: 0,
             y: 0,
-            duration: 0.4,
+            duration: compactMotion ? 0.28 : 0.4,
             ease: "power2.out",
             overwrite: "auto",
             onComplete: () => {
@@ -165,8 +196,14 @@ export default function DeliverablesSection() {
       if (!descEl) return;
       gsap.fromTo(
         descEl,
-        { opacity: 0, y: 6 },
-        { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", overwrite: "auto" }
+        { opacity: 0, y: compactMotion ? 4 : 6 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: compactMotion ? 0.3 : 0.4,
+          ease: "power2.out",
+          overwrite: "auto",
+        }
       );
     };
 
@@ -187,6 +224,8 @@ export default function DeliverablesSection() {
       if (!masterRef.current || !stickyRef.current || !wowOverlayRef.current || !wowTrackRef.current) return;
 
       const total = deliverables.length;
+      const compactMotion = window.matchMedia("(max-width: 1023px), (pointer: coarse)").matches;
+      const pinDistance = compactMotion ? total * 58 + 260 : total * 85 + 450;
 
       // Initial Overlay State: completely below the viewport (yPercent: 100)
       gsap.set(wowOverlayRef.current, { yPercent: 100, autoAlpha: 1 });
@@ -200,10 +239,10 @@ export default function DeliverablesSection() {
         scrollTrigger: {
           trigger: masterRef.current,
           start: "top top",
-          end: `+=${total * 85 + 450}%`,
+          end: `+=${pinDistance}%`,
           pin: stickyRef.current,
           pinSpacing: true,
-          scrub: 1,
+          scrub: compactMotion ? 0.55 : 1,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
@@ -302,15 +341,12 @@ export default function DeliverablesSection() {
       tabIndex={0}
       aria-label="Deliverables and Showcase"
       onKeyDown={handleKeyDown}
-      style={{
-        minHeight: `${(deliverables.length + 4) * 95}vh`,
-      }}
-      className="relative w-full bg-white text-black pointer-events-auto z-20 m-0 p-0 outline-none focus:outline-none overflow-x-hidden"
+      className="relative w-full min-h-[100svh] bg-white text-black pointer-events-auto z-20 m-0 p-0 outline-none focus:outline-none overflow-x-hidden"
     >
       {/* STICKY MASTER VIEWPORT CONTAINER (100dvh — PINNED SCROLL) */}
       <div
         ref={stickyRef}
-        className="sticky top-0 w-full h-[100dvh] min-h-[100dvh] bg-white overflow-hidden"
+        className="relative w-full h-[100svh] min-h-[100svh] lg:h-[100dvh] lg:min-h-[100dvh] bg-white overflow-hidden"
       >
         {/* STAGE 1: DELIVERABLES BASE SECTION (PURE WHITE CANVAS #FFFFFF) — Z-INDEX 1 */}
         <div
@@ -446,7 +482,7 @@ export default function DeliverablesSection() {
             <div className="relative w-full overflow-hidden py-1 mb-2">
               <div
                 ref={mobileTrackRef}
-                className="flex items-center gap-2 w-max transition-transform will-change-transform"
+                className="flex items-center gap-2 w-max will-change-transform"
               >
                 {deliverables.map((item, index) => {
                   const isActive = index === activeIndex;
@@ -555,7 +591,7 @@ export default function DeliverablesSection() {
         {/* STAGE 2: WOW OVERLAY (PHYSICALLY RISES DIRECTLY OVER DELIVERABLES WITH STEPPED TOP EDGE) — Z-INDEX 20 */}
         <div
           ref={wowOverlayRef}
-          className="absolute inset-0 z-20 w-full h-[100dvh] min-h-[100dvh] bg-[#1677FF] overflow-hidden translate-y-full select-none"
+          className="absolute inset-0 z-20 w-full h-[100svh] min-h-[100svh] lg:h-[100dvh] lg:min-h-[100dvh] bg-[#1677FF] overflow-hidden translate-y-full select-none"
         >
           {/* STEPPED ARCHITECTURAL BLUE TOP EDGE SHAPE */}
           <div className="absolute bottom-full left-0 w-full h-[30svh] sm:h-[40svh] pointer-events-none z-10 overflow-hidden -mb-[1px]">

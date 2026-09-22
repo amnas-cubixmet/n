@@ -30,39 +30,57 @@ export default function IntroSection() {
       setIsReducedMotion(e.matches);
     };
 
-    motionQuery.addEventListener("change", handleMotionChange);
-    return () => motionQuery.removeEventListener("change", handleMotionChange);
+    if (typeof motionQuery.addEventListener === "function") {
+      motionQuery.addEventListener("change", handleMotionChange);
+      return () => motionQuery.removeEventListener("change", handleMotionChange);
+    }
+
+    motionQuery.addListener(handleMotionChange);
+    return () => motionQuery.removeListener(handleMotionChange);
   }, []);
 
   useGSAP(
     () => {
       if (isReducedMotion || !containerRef.current) return;
 
-      const charElements = containerRef.current.querySelectorAll(".intro-char");
+      const charElements =
+        containerRef.current.querySelectorAll<HTMLElement>(".intro-char");
+      if (!charElements.length) return;
 
-      if (charElements.length > 0) {
+      const mm = gsap.matchMedia();
+
+      const reveal = (mobile: boolean) => {
         gsap.fromTo(
           charElements,
           {
             opacity: 0,
-            y: 8,
+            y: mobile ? 5 : 8,
           },
           {
             opacity: 1,
             y: 0,
-            duration: 0.65,
-            stagger: 0.07,
+            duration: mobile ? 0.42 : 0.65,
+            stagger: mobile ? 0.045 : 0.07,
             ease: "power2.out",
             scrollTrigger: {
               trigger: containerRef.current,
-              start: "top 85%",
+              start: mobile ? "top 90%" : "top 85%",
               once: true,
             },
           }
         );
-      }
+      };
+
+      mm.add("(max-width: 768px)", () => reveal(true));
+      mm.add("(min-width: 769px)", () => reveal(false));
+
+      return () => mm.revert();
     },
-    { scope: containerRef, dependencies: [isReducedMotion] }
+    {
+      scope: containerRef,
+      dependencies: [isReducedMotion],
+      revertOnUpdate: true,
+    }
   );
 
   return (

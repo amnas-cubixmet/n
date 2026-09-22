@@ -19,37 +19,52 @@ export default function OurVision() {
       const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
       if (motionQuery.matches) return;
 
-      if (!containerRef.current) return;
+      const label = labelRef.current;
+      const copy = copyRef.current;
+      if (!containerRef.current || !label || !copy) return;
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 80%",
-          toggleActions: "play none none reverse",
-        },
-      });
+      const mm = gsap.matchMedia();
 
-      if (labelRef.current) {
-        tl.from(labelRef.current, {
-          opacity: 0,
-          y: 10,
-          duration: 0.5,
-          ease: "power2.out",
-        });
-      }
-
-      if (copyRef.current) {
-        tl.from(
-          copyRef.current,
-          {
-            opacity: 0,
-            y: 24,
-            duration: 0.8,
-            ease: "power2.out",
+      const buildReveal = (mobile: boolean) => {
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: mobile ? "top 88%" : "top 80%",
+            once: true,
           },
-          "-=0.3"
-        );
-      }
+        });
+
+        if (label) {
+          timeline.from(
+            label,
+            {
+              opacity: 0,
+              y: mobile ? 6 : 10,
+              duration: mobile ? 0.35 : 0.5,
+              ease: "power3.out",
+            },
+            "0"
+          );
+        }
+
+        if (copy) {
+          timeline.from(
+            copy,
+            {
+              opacity: 0,
+              y: mobile ? 16 : 24,
+              duration: mobile ? 0.52 : 0.8,
+              ease: "power3.out",
+            },
+            "-=0.22"
+          );
+        }
+      };
+
+      mm.add("(max-width: 768px)", () => buildReveal(true));
+      mm.add("(min-width: 769px)", () => buildReveal(false));
+
+      return () => mm.revert();
     },
     { scope: containerRef }
   );

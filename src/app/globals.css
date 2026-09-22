@@ -378,3 +378,66 @@ body::-webkit-scrollbar {
     transition-duration: 0.01ms !important;
   }
 }
+
+
+/* SITE-WIDE MOBILE / TOUCH STABILITY */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overscroll-behavior-x: none;
+}
+
+body {
+  min-height: 100%;
+  overscroll-behavior-x: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a,
+button,
+input,
+textarea,
+select {
+  -webkit-tap-highlight-color: transparent;
+}
+
+img,
+video {
+  max-width: 100%;
+}
+
+@media (pointer: coarse) {
+  a,
+  button {
+    touch-action: manipulation;
+  }
+}
+
+@media (max-width: 768px) {
+  .title-inner,
+  .service-panel,
+  .project-card-inner,
+  .mobile-usp-card {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .intro-brackets-animation,
+  .intro-icon-animation,
+  .intro-logo-animation {
+    will-change: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 
 export interface ServiceItemData {
   id: string;
@@ -9,11 +10,23 @@ export interface ServiceItemData {
 }
 
 export const defaultServices: ServiceItemData[] = [
-  { id: "strategy", name: "STRATEGY", href: "#intro" },
-  { id: "brand-identity", name: "BRAND IDENTITY", href: "#whoweare" },
-  { id: "digital-marketing", name: "DIGITAL MARKETING", href: "#services" },
-  { id: "technology", name: "TECHNOLOGY", href: "#services" },
-  { id: "creative-production", name: "CREATIVE PRODUCTION", href: "#expertise" },
+  { id: "strategy", name: "STRATEGY", href: "/services/strategy" },
+  { id: "brand-identity", name: "BRAND IDENTITY", href: "/services/brand-identity" },
+  {
+    id: "digital-marketing",
+    name: "DIGITAL MARKETING",
+    href: "/services/digital-marketing",
+  },
+  {
+    id: "technology",
+    name: "TECHNOLOGY",
+    href: "/services/web-design-digital-experiences",
+  },
+  {
+    id: "creative-production",
+    name: "CREATIVE PRODUCTION",
+    href: "/services/creative-production",
+  },
 ];
 
 interface ServiceListProps {
@@ -36,7 +49,7 @@ export default function ServiceList({
         <ul className="flex flex-col items-start gap-[3px] m-0 p-0 list-none">
           {services.map((service, idx) => (
             <li key={service.id} className="m-0 p-0">
-              <a
+              <TransitionLink
                 ref={(element) => {
                   if (serviceItemsRef) {
                     serviceItemsRef.current[idx] = element;
@@ -46,7 +59,7 @@ export default function ServiceList({
                 className="service-item cursor-pointer opacity-0 transition-opacity duration-150"
               >
                 {service.name}
-              </a>
+              </TransitionLink>
             </li>
           ))}
         </ul>

@@ -26,28 +26,39 @@ export function ProjectCard({
 
   useGSAP(
     () => {
-      if (typeof window === "undefined") return;
+      if (
+        typeof window === "undefined" ||
+        !cardRef.current ||
+        !imageRef.current
+      ) {
+        return;
+      }
 
       const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
       if (motionQuery.matches) return;
 
-      if (!cardRef.current || !imageRef.current) return;
+      const mm = gsap.matchMedia();
 
-      // Micro internal parallax on image inside card container
-      gsap.fromTo(
-        imageRef.current,
-        { yPercent: -3 },
-        {
-          yPercent: 3,
-          ease: "none",
-          scrollTrigger: {
-            trigger: cardRef.current,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: true,
-          },
-        }
-      );
+      // Internal scrub parallax is intentionally desktop-only. Touch scrolling
+      // keeps the same visual crop without paying for a per-frame ScrollTrigger.
+      mm.add("(min-width: 1024px) and (hover: hover) and (pointer: fine)", () => {
+        gsap.fromTo(
+          imageRef.current,
+          { yPercent: -3 },
+          {
+            yPercent: 3,
+            ease: "none",
+            scrollTrigger: {
+              trigger: cardRef.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: true,
+            },
+          }
+        );
+      });
+
+      return () => mm.revert();
     },
     { scope: cardRef }
   );
@@ -77,7 +88,7 @@ export function ProjectCard({
               src={project.image}
               alt={project.title}
               sizes="(max-width: 767px) 88vw, (max-width: 1023px) 50vw, 30vw"
-              className="object-cover scale-[1.06] transition-transform duration-700 ease-out lg:group-hover:scale-[1.09] will-change-transform"
+              className="object-cover scale-[1.06] transition-transform duration-700 ease-out lg:group-hover:scale-[1.09]"
             />
           </div>
 

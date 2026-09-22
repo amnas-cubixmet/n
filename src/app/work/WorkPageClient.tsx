@@ -112,10 +112,18 @@ export default function WorkPageClient() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
-    handleResize();
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    const mobileQuery = window.matchMedia("(max-width: 768px)");
+    const syncMobile = () => setIsMobile(mobileQuery.matches);
+
+    syncMobile();
+
+    if (typeof mobileQuery.addEventListener === "function") {
+      mobileQuery.addEventListener("change", syncMobile);
+      return () => mobileQuery.removeEventListener("change", syncMobile);
+    }
+
+    mobileQuery.addListener(syncMobile);
+    return () => mobileQuery.removeListener(syncMobile);
   }, []);
 
   useEffect(() => {
@@ -137,16 +145,16 @@ export default function WorkPageClient() {
         if (isMobile) {
           gsap.fromTo(
             cardInner,
-            { opacity: 0, y: 40 },
+            { opacity: 0, y: 24 },
             {
               opacity: 1,
               y: 0,
-              duration: 0.8,
+              duration: 0.55,
               ease: "power3.out",
               scrollTrigger: {
                 trigger: card,
-                start: "top 85%",
-                toggleActions: "play none none reverse",
+                start: "top 88%",
+                once: true,
               },
             }
           );
@@ -154,10 +162,10 @@ export default function WorkPageClient() {
           if (imgElement) {
             gsap.fromTo(
               imgElement,
-              { scale: 1.035 },
+              { scale: 1.02 },
               {
                 scale: 1,
-                duration: 0.8,
+                duration: 0.55,
                 ease: "power3.out",
                 scrollTrigger: {
                   trigger: card,
@@ -275,7 +283,7 @@ export default function WorkPageClient() {
       <Header />
 
       {/* 1. PAGE HERO */}
-      <section className="pt-12 sm:pt-16 lg:pt-20 pb-8 sm:pb-12 px-6 sm:px-10 lg:px-16 max-w-[1500px] w-full mx-auto">
+      <section className="pt-[max(3rem,env(safe-area-inset-top))] sm:pt-16 lg:pt-20 pb-8 sm:pb-12 px-[max(1.5rem,env(safe-area-inset-left))] sm:px-10 lg:px-16 max-w-[1500px] w-full mx-auto">
         <div className="max-w-2xl">
           {/* Small label: WORK with subtle blue dash */}
           <div className="flex items-center gap-2 mb-4">
@@ -327,10 +335,10 @@ export default function WorkPageClient() {
 
               {/* 4. MAIN PROJECT CARD composition (#101214 / #121416) */}
               <div
-                className="project-card-inner relative bg-[#101214] border border-white/[0.06] rounded-[2px] overflow-hidden shadow-2xl transition-all duration-400 group-hover:-translate-y-1.5"
+                className="project-card-inner relative bg-[#101214] border border-white/[0.06] rounded-[2px] overflow-hidden shadow-2xl transition-transform duration-400 lg:group-hover:-translate-y-1.5"
                 style={{
                   transform: isMobile ? "none" : `rotate(${project.rotation})`,
-                  willChange: "transform, opacity",
+                  willChange: isMobile ? "auto" : "transform, opacity",
                   WebkitBackfaceVisibility: "hidden",
                   backfaceVisibility: "hidden",
                 }}
@@ -352,7 +360,7 @@ export default function WorkPageClient() {
                       </div>
 
                       {/* 5. PROJECT TITLE */}
-                      <h2 className="project-title font-sans font-bold text-white text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight mb-2 group-hover:text-[#1677FF] transition-colors duration-300">
+                      <h2 className="project-title font-sans font-bold text-white text-3xl sm:text-4xl lg:text-5xl uppercase tracking-tight mb-2 lg:group-hover:text-[#1677FF] transition-colors duration-300">
                         {project.title}
                       </h2>
 
@@ -368,10 +376,10 @@ export default function WorkPageClient() {
                     </div>
 
                     {/* SIMPLE HOVER ARROW BENEATH */}
-                    <div className="pt-6 sm:pt-8 flex items-center gap-2 text-white group-hover:text-[#1677FF] transition-colors duration-300">
+                    <div className="pt-6 sm:pt-8 flex items-center gap-2 text-white lg:group-hover:text-[#1677FF] transition-colors duration-300">
                       <span className="font-mono text-xs tracking-widest uppercase">EXPLORE</span>
                       <svg
-                        className="w-5 h-5 transform group-hover:translate-x-1.5 transition-transform duration-300"
+                        className="w-5 h-5 transform lg:group-hover:translate-x-1.5 transition-transform duration-300"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -394,7 +402,7 @@ export default function WorkPageClient() {
                       fill
                       priority={index < 2}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 60vw, 900px"
-                      className="project-image object-cover w-full h-full transform scale-[1.03] group-hover:scale-[1.05] transition-transform duration-700 ease-out brightness-95 group-hover:brightness-100"
+                      className="project-image object-cover w-full h-full transform scale-[1.03] lg:group-hover:scale-[1.05] transition-transform duration-700 ease-out brightness-95 lg:group-hover:brightness-100"
                       style={{ objectPosition: project.imagePosition || "center center" }}
                     />
                     {/* Subtle dark gradient overlay to blend image edge with card text on desktop */}
@@ -411,7 +419,7 @@ export default function WorkPageClient() {
       <footer className="border-t border-white/[0.08] py-12 px-6 sm:px-10 lg:px-16 bg-[#040608]">
         <div className="max-w-[1500px] mx-auto flex flex-col sm:flex-row items-center justify-between text-[#6B7588] font-mono text-xs tracking-widest gap-4">
           <div className="flex items-center gap-3">
-            <span className="w-2 h-2 rounded-full bg-[#1677FF] animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[#1677FF] animate-pulse motion-reduce:animate-none" />
             <span>MORE PROJECTS AHEAD</span>
           </div>
 

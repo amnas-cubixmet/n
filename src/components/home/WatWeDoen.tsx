@@ -19,6 +19,7 @@ export default function WatWeDoen() {
 
   const bgShapeRef = useRef<HTMLDivElement>(null);
   const desktopTitlesRef = useRef<(HTMLAnchorElement | null)[]>([]);
+  const viewportWidthRef = useRef<number>(0);
 
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [isReducedMotion, setIsReducedMotion] = useState<boolean>(() =>
@@ -28,7 +29,7 @@ export default function WatWeDoen() {
   );
 
   useEffect(() => {
-    // Preload service images
+    // Preload service images once so panel changes do not wait on network decode.
     services.forEach((service) => {
       if (service.image) {
         const img = new Image();
@@ -37,22 +38,53 @@ export default function WatWeDoen() {
     });
 
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const handler = (e: MediaQueryListEvent) => setIsReducedMotion(e.matches);
-    motionQuery.addEventListener("change", handler);
+    const handleMotionChange = (event: MediaQueryListEvent) =>
+      setIsReducedMotion(event.matches);
 
-    const handleOrientation = () => {
-      setTimeout(() => {
-        ScrollTrigger.refresh();
-      }, 200);
+    if (typeof motionQuery.addEventListener === "function") {
+      motionQuery.addEventListener("change", handleMotionChange);
+    } else {
+      motionQuery.addListener(handleMotionChange);
+    }
+
+    viewportWidthRef.current = window.innerWidth;
+    let refreshFrame = 0;
+    let orientationTimer = 0;
+
+    // Mobile Safari changes viewport HEIGHT while its browser chrome opens/closes.
+    // Refresh ScrollTrigger only when the layout WIDTH actually changes.
+    const handleResize = () => {
+      const nextWidth = window.innerWidth;
+      if (Math.abs(nextWidth - viewportWidthRef.current) < 2) return;
+
+      viewportWidthRef.current = nextWidth;
+      cancelAnimationFrame(refreshFrame);
+      refreshFrame = requestAnimationFrame(() => ScrollTrigger.refresh());
     };
 
-    window.addEventListener("resize", handleOrientation);
-    window.addEventListener("orientationchange", handleOrientation);
+    const handleOrientationChange = () => {
+      window.clearTimeout(orientationTimer);
+      orientationTimer = window.setTimeout(() => {
+        viewportWidthRef.current = window.innerWidth;
+        ScrollTrigger.refresh();
+      }, 240);
+    };
+
+    window.addEventListener("resize", handleResize, { passive: true });
+    window.addEventListener("orientationchange", handleOrientationChange);
 
     return () => {
-      motionQuery.removeEventListener("change", handler);
-      window.removeEventListener("resize", handleOrientation);
-      window.removeEventListener("orientationchange", handleOrientation);
+      cancelAnimationFrame(refreshFrame);
+      window.clearTimeout(orientationTimer);
+
+      if (typeof motionQuery.removeEventListener === "function") {
+        motionQuery.removeEventListener("change", handleMotionChange);
+      } else {
+        motionQuery.removeListener(handleMotionChange);
+      }
+
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleOrientationChange);
     };
   }, []);
 
@@ -66,144 +98,194 @@ export default function WatWeDoen() {
       const endPolygon =
         "polygon(0% 100%, 0% 0%, 20% 0%, 20% -15%, 40% -15%, 40% -30%, 60% -30%, 60% -45%, 80% -45%, 80% -60%, 100% -60%, 100% 100%)";
 
-      const isMobile = window.innerWidth <= 768;
+      const mm = gsap.matchMedia();
 
-      // Initial state setups
-      panelsRef.current.forEach((panel, i) => {
-        if (!panel) return;
-        gsap.set(panel, {
-          left: "0%",
-          top: "0%",
-          width: "100%",
-          height: "100%",
-          xPercent: 0,
-          yPercent: 0,
-          opacity: 1,
-          zIndex: i + 1,
-          willChange: "clipPath, transform",
-          clipPath:
-            i === 0
-              ? "polygon(0% 100%, 0% 0%, 100% 0%, 100% 100%)"
-              : startPolygon,
+      const buildTimeline = (mobile: boolean) => {
+        panelsRef.current.forEach((panel, index) => {
+          if (!panel) return;
+
+          if (mobile) {
+            gsap.set(panel, {
+              inset: 0,
+              xPercent: 0,
+              yPercent: index === 0 ? 0 : 100,
+              opacity: 1,
+              zIndex: index + 1,
+              clipPath: "none",
+              willChange: "transform",
+              force3D: true,
+            });
+          } else {
+            gsap.set(panel, {
+              left: "0%",
+              top: "0%",
+              width: "100%",
+              height: "100%",
+              xPercent: 0,
+              yPercent: 0,
+              opacity: 1,
+              zIndex: index + 1,
+              clipPath:
+                index === 0
+                  ? "polygon(0% 100%, 0% 0%, 100% 0%, 100% 100%)"
+                  : startPolygon,
+              willChange: "clip-path, transform",
+            });
+          }
+
+          const image = imagesRef.current[index];
+          if (image) {
+            gsap.set(image, {
+              scale: index === 0 ? 1 : mobile ? 1.025 : 1.05,
+              force3D: true,
+            });
+          }
+
+          const titleLines = panel.querySelectorAll(".title-inner");
+          const counters = panel.querySelectorAll(".service-counter");
+
+          if (index > 0) {
+            gsap.set(titleLines, { yPercent: 110, opacity: 0 });
+            gsap.set(counters, { y: mobile ? 10 : 18, opacity: 0 });
+          }
         });
 
-        const img = imagesRef.current[i];
-        if (img) {
-          gsap.set(img, { scale: i === 0 ? 1.0 : 1.05, force3D: true });
+        if (bgShapeRef.current) {
+          gsap.set(bgShapeRef.current, {
+            yPercent: mobile ? -3 : -15,
+          });
         }
-      });
 
-      // Background Shape Parallax Initial Setup
-      if (bgShapeRef.current) {
-        gsap.set(bgShapeRef.current, { yPercent: isMobile ? -6 : -15 });
-      }
+        const distanceMultiplier = mobile ? 122 : 140;
+        const scrubAmount = mobile ? 0.55 : 1;
 
-      // Responsive scroll distance ratio per transition: Desktop ~1.4x, Mobile ~1.55x viewport height
-      const distanceMultiplier = isMobile ? 155 : 140;
-
-      // Master ScrollTrigger timeline linking panel clips + continuous image scale zoom (1.05 -> 1.0)
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: wrapperRef.current,
-          start: "top top",
-          end: `+=${(services.length - 1) * distanceMultiplier}%`,
-          scrub: 1.0,
-          pin: stickyRef.current,
-          pinSpacing: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            const p = self.progress;
-            const idx = Math.min(
-              services.length - 1,
-              Math.floor(p * services.length)
-            );
-            setActiveIndex((prev) => (prev !== idx ? idx : prev));
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: wrapperRef.current,
+            start: "top top",
+            end: `+=${(services.length - 1) * distanceMultiplier}%`,
+            scrub: scrubAmount,
+            pin: stickyRef.current,
+            pinSpacing: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            onUpdate: (self) => {
+              const index = Math.min(
+                services.length - 1,
+                Math.floor(self.progress * services.length)
+              );
+              setActiveIndex((previous) => (previous === index ? previous : index));
+            },
           },
-        },
-      });
+        });
 
-      // Background shape parallax
-      if (bgShapeRef.current) {
-        tl.to(
-          bgShapeRef.current,
-          {
-            yPercent: isMobile ? 6 : 15,
-            ease: "none",
-            duration: 4,
-          },
-          0
-        );
-      }
-
-      // 4 Transitions for Panels 01 -> 02 -> 03 -> 04 -> 05 with hold zones
-      for (let i = 1; i < 5; i++) {
-        const p = panelsRef.current[i];
-        const img = imagesRef.current[i];
-        if (!p) continue;
-
-        const startTime = (i - 1) * 1.25;
-
-        // 1. Panel upward clipPath reveal
-        tl.to(
-          p,
-          { clipPath: endPolygon, ease: "none", duration: 1 },
-          startTime
-        );
-
-        // 2. Image scale zoom (1.05 -> 1.00) continuously attached to scrub
-        if (img) {
-          tl.to(
-            img,
-            { scale: 1.0, ease: "none", duration: 1 },
-            startTime
+        if (bgShapeRef.current) {
+          timeline.to(
+            bgShapeRef.current,
+            {
+              yPercent: mobile ? 3 : 15,
+              ease: "none",
+              duration: services.length - 1,
+            },
+            0
           );
         }
-      }
 
-      // Triggered Text Reveal Animations (Animates ONCE per panel when active position is reached at 75-80% settled)
-      services.forEach((_, index) => {
-        const panelEl = panelsRef.current[index];
-        if (!panelEl) return;
+        for (let index = 1; index < services.length; index += 1) {
+          const panel = panelsRef.current[index];
+          const image = imagesRef.current[index];
+          if (!panel) continue;
 
-        const titleLines = panelEl.querySelectorAll(".title-inner");
-        const counter = panelEl.querySelector(".service-counter");
+          const startTime = (index - 1) * 1.1;
 
-        // Single trigger for text reveal when panel reaches 75-80% settled focus
-        ScrollTrigger.create({
-          trigger: wrapperRef.current,
-          start: () =>
-            index === 0
-              ? "top 20%"
-              : `top+=${(index - 0.25) * (window.innerHeight || 800) * (distanceMultiplier / 100)} top`,
-          once: false,
-          onEnter: () => {
-            const textTl = gsap.timeline({ defaults: { ease: "power3.out" } });
+          if (mobile) {
+            timeline.to(
+              panel,
+              {
+                yPercent: 0,
+                duration: 0.82,
+                ease: "none",
+                force3D: true,
+              },
+              startTime
+            );
+          } else {
+            timeline.to(
+              panel,
+              {
+                clipPath: endPolygon,
+                duration: 1,
+                ease: "none",
+              },
+              startTime
+            );
+          }
 
-            // 1. Large Title Lines masked reveal (duration: 0.6s, stagger: 0.04s)
-            if (titleLines.length > 0) {
-              textTl.fromTo(
-                titleLines,
-                { yPercent: 110, opacity: 0 },
-                { yPercent: 0, opacity: 1, duration: 0.6, stagger: 0.04 },
-                0
-              );
-            }
+          if (image) {
+            timeline.to(
+              image,
+              {
+                scale: 1,
+                duration: mobile ? 0.82 : 1,
+                ease: "none",
+                force3D: true,
+              },
+              startTime
+            );
+          }
 
-            // 2. Counter reveal (y: 18px -> 0, opacity 0 -> 1, duration 0.35s)
-            if (counter) {
-              textTl.fromTo(
-                counter,
-                { y: 18, opacity: 0 },
-                { y: 0, opacity: 1, duration: 0.35 },
-                0.12
-              );
-            }
-          },
-        });
-      });
+          const titleLines = panel.querySelectorAll(".title-inner");
+          const counters = panel.querySelectorAll(".service-counter");
+
+          timeline.to(
+            titleLines,
+            {
+              yPercent: 0,
+              opacity: 1,
+              duration: mobile ? 0.28 : 0.36,
+              stagger: 0.035,
+              ease: "power2.out",
+            },
+            startTime + (mobile ? 0.5 : 0.62)
+          );
+
+          timeline.to(
+            counters,
+            {
+              y: 0,
+              opacity: 1,
+              duration: 0.22,
+              ease: "power2.out",
+            },
+            startTime + (mobile ? 0.56 : 0.68)
+          );
+        }
+
+        const firstPanel = panelsRef.current[0];
+        if (firstPanel) {
+          const firstTitleLines = firstPanel.querySelectorAll(".title-inner");
+          const firstCounters = firstPanel.querySelectorAll(".service-counter");
+          gsap.set(firstTitleLines, { yPercent: 0, opacity: 1 });
+          gsap.set(firstCounters, { y: 0, opacity: 1 });
+        }
+
+        return () => {
+          panelsRef.current.forEach((panel) => {
+            if (panel) gsap.set(panel, { clearProps: "willChange" });
+          });
+        };
+      };
+
+      mm.add("(max-width: 767px)", () => buildTimeline(true));
+      mm.add("(min-width: 768px)", () => buildTimeline(false));
+
+      return () => mm.revert();
     },
-    { scope: wrapperRef, dependencies: [isReducedMotion] }
+    {
+      scope: wrapperRef,
+      dependencies: [isReducedMotion],
+      revertOnUpdate: true,
+    }
   );
 
   if (isReducedMotion) {
@@ -275,7 +357,7 @@ export default function WatWeDoen() {
     >
       <div
         ref={stickyRef}
-        className="wat-we-doen-sticky w-full h-[100dvh] min-h-[100vh] min-h-[100svh] sticky top-0 overflow-hidden"
+        className="wat-we-doen-sticky w-full h-[100svh] min-h-[100svh] md:h-[100dvh] md:min-h-[100dvh] overflow-hidden"
       >
         <div
           ref={stageRef}

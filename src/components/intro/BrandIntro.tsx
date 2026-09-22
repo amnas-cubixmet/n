@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useLayoutEffect, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -13,287 +19,406 @@ interface BrandIntroProps {
   onComplete?: () => void;
 }
 
+interface SavedBodyStyles {
+  overflow: string;
+  touchAction: string;
+  overscrollBehavior: string;
+}
+
 export default function BrandIntro({ onComplete }: BrandIntroProps) {
   const [isVisible, setIsVisible] = useState(true);
+
   const containerRef = useRef<HTMLDivElement>(null);
-  const bracketsRef = useRef<HTMLDivElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
   const iconRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLDivElement>(null);
-  const expandingBlueRef = useRef<HTMLDivElement>(null);
-  const apertureRef = useRef<HTMLDivElement>(null);
-  const skipBtnRef = useRef<HTMLButtonElement>(null);
+  const expandingMarkRef = useRef<HTMLDivElement>(null);
+  const blueCoverRef = useRef<HTMLDivElement>(null);
+
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
+  const finishedRef = useRef(false);
+  const savedBodyStylesRef = useRef<SavedBodyStyles | null>(null);
+
+  const restoreBody = useCallback(() => {
+    const saved = savedBodyStylesRef.current;
+    if (!saved) return;
+
+    document.body.style.overflow = saved.overflow;
+    document.body.style.touchAction = saved.touchAction;
+    document.body.style.overscrollBehavior = saved.overscrollBehavior;
+    savedBodyStylesRef.current = null;
+  }, []);
 
   const finishIntro = useCallback(() => {
-    document.body.style.overflow = "";
-    if (timelineRef.current) {
-      timelineRef.current.kill();
-      timelineRef.current = null;
+    if (finishedRef.current) return;
+    finishedRef.current = true;
+
+    timelineRef.current?.kill();
+    timelineRef.current = null;
+
+    restoreBody();
+
+    try {
+      sessionStorage.setItem("northframe_intro_seen", "true");
+    } catch {
+      // sessionStorage can be unavailable in restrictive/private browser modes.
     }
+
     if (containerRef.current) {
-      containerRef.current.style.willChange = "auto";
+      gsap.set(containerRef.current, { clearProps: "willChange" });
     }
-    if (typeof window !== "undefined") {
-      ScrollTrigger.refresh();
-    }
+
     setIsVisible(false);
     onComplete?.();
-  }, [onComplete]);
+
+    requestAnimationFrame(() => {
+      ScrollTrigger.refresh();
+    });
+  }, [onComplete, restoreBody]);
 
   useEffect(() => {
-    // Prevent body scrolling during intro
-    document.body.style.overflow = "hidden";
+    if (!isVisible || finishedRef.current) return;
 
-    // Safety fallback timeout (4.5s limit)
-    const timeoutId = setTimeout(() => {
+    const timeoutId = window.setTimeout(() => {
       finishIntro();
-    }, 4500);
+    }, 5000);
 
-    return () => {
-      clearTimeout(timeoutId);
-      document.body.style.overflow = "";
-    };
-  }, [finishIntro]);
+    return () => window.clearTimeout(timeoutId);
+  }, [finishIntro, isVisible]);
 
   useLayoutEffect(() => {
     if (!isVisible) return;
 
-    let ctx: gsap.Context | null = null;
-    let animFrame2: number;
+    try {
+      if (sessionStorage.getItem("northframe_intro_seen") === "true") {
+        finishIntro();
+        return;
+      }
+    } catch {
+      // Continue with the intro when sessionStorage cannot be read.
+    }
 
-    const startAnimation = () => {
-      const container = containerRef.current;
-      const brackets = bracketsRef.current;
-      const icon = iconRef.current;
-      const logo = logoRef.current;
-      const expandingBlue = expandingBlueRef.current;
-      const aperture = apertureRef.current;
-      const skipBtn = skipBtnRef.current;
-
-      if (!container || !brackets || !icon || !logo || !expandingBlue || !aperture) return;
-
-      // GSAP Context scoped to containerRef
-      ctx = gsap.context(() => {
-        // Calculate expansion scale based on viewport
-        const vw = typeof window !== "undefined" ? window.innerWidth : 375;
-        const vh = typeof window !== "undefined" ? window.innerHeight : 667;
-        const maxDim = Math.max(vw, vh);
-        const expandScale = (maxDim / 40) * 3.8;
-
-        // EXPLICIT iOS-Safe Initial States using fromTo
-        gsap.set(container, { opacity: 1, display: "flex" });
-        gsap.set(brackets, { opacity: 0, scale: 0.85, force3D: true });
-        gsap.set(icon, { opacity: 0, scale: 0.8, force3D: true });
-        gsap.set(logo, { opacity: 0, scale: 0.92, y: 20, force3D: true });
-        gsap.set(expandingBlue, { opacity: 0, scale: 1, force3D: true });
-        gsap.set(aperture, { opacity: 0, scale: 1, force3D: true });
-        if (skipBtn) gsap.set(skipBtn, { opacity: 0 });
-
-        // Timeline instance
-        const tl = gsap.timeline({
-          onComplete: () => {
-            finishIntro();
-          },
-        });
-
-        timelineRef.current = tl;
-
-        // STEP 1: Corner brackets reveal
-        tl.fromTo(
-          brackets,
-          { opacity: 0, scale: 0.85 },
-          { opacity: 1, scale: 1, duration: 0.6, ease: "power2.out" }
-        );
-
-        if (skipBtn) {
-          tl.fromTo(
-            skipBtn,
-            { opacity: 0 },
-            { opacity: 1, duration: 0.4 },
-            "<0.1"
-          );
-        }
-
-        // STEP 2: Icon reveal
-        tl.fromTo(
-          icon,
-          { opacity: 0, scale: 0.8 },
-          { opacity: 1, scale: 1, duration: 0.65, ease: "back.out(1.2)" },
-          "> -0.1"
-        );
-
-        // STEP 3: Full Logo reveal & bracket expansion
-        tl.to(
-          icon,
-          { opacity: 0, scale: 0.9, duration: 0.35, ease: "power2.inOut" },
-          ">+0.1"
-        )
-          .fromTo(
-            logo,
-            { opacity: 0, scale: 0.92, y: 20 },
-            { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power3.out" },
-            "<"
-          )
-          .to(
-            brackets,
-            {
-              width: "min(82vw, 340px)",
-              height: "72px",
-              duration: 0.6,
-              ease: "power2.out",
-            },
-            "<"
-          )
-          .to({}, { duration: 0.3 });
-
-        // STEP 4: Icon expansion sequence
-        tl.to(logo, { opacity: 0, scale: 0.9, duration: 0.3, ease: "power2.in" })
-          .to(brackets, { opacity: 0, duration: 0.3, ease: "power1.out" }, "<")
-          .fromTo(
-            icon,
-            { opacity: 0, scale: 0.9 },
-            { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" },
-            "<0.1"
-          )
-          .to(icon, {
-            scale: expandScale,
-            duration: 0.65,
-            ease: "expo.in",
-          });
-
-        // STEP 5: Aperture transition to main content
-        tl.to(expandingBlue, { opacity: 1, duration: 0.15 }, "-=0.1")
-          .to(icon, { opacity: 0, duration: 0.15 }, "<")
-          .to(aperture, { opacity: 1, duration: 0.08 }, "<")
-          .to(aperture, {
-            scale: expandScale * 1.5,
-            opacity: 0,
-            duration: 0.6,
-            ease: "power3.inOut",
-          });
-
-        // STEP 6: Fade out intro container
-        tl.to(container, {
-          opacity: 0,
-          duration: 0.35,
-          ease: "power2.out",
-        });
-      }, containerRef);
+    savedBodyStylesRef.current = {
+      overflow: document.body.style.overflow,
+      touchAction: document.body.style.touchAction,
+      overscrollBehavior: document.body.style.overscrollBehavior,
     };
 
-    // Double requestAnimationFrame ensures iOS Safari renders first paint before timeline executes
-    const animFrame1 = requestAnimationFrame(() => {
-      animFrame2 = requestAnimationFrame(() => {
-        startAnimation();
-      });
+    document.body.style.overflow = "hidden";
+    document.body.style.touchAction = "none";
+    document.body.style.overscrollBehavior = "none";
+
+    const container = containerRef.current;
+    const frame = frameRef.current;
+    const icon = iconRef.current;
+    const logo = logoRef.current;
+    const expandingMark = expandingMarkRef.current;
+    const blueCover = blueCoverRef.current;
+
+    if (!container || !frame || !icon || !logo || !expandingMark || !blueCover) {
+      finishIntro();
+      return;
+    }
+
+    let ctx: gsap.Context | null = null;
+    let mm: ReturnType<typeof gsap.matchMedia> | null = null;
+    let secondFrame = 0;
+
+    const startAnimation = () => {
+      mm = gsap.matchMedia();
+
+      ctx = gsap.context(() => {
+        mm?.add(
+          {
+            mobile: "(max-width: 768px)",
+            desktop: "(min-width: 769px)",
+            reduceMotion: "(prefers-reduced-motion: reduce)",
+          },
+          (mediaContext) => {
+            const conditions = mediaContext.conditions as {
+              mobile: boolean;
+              desktop: boolean;
+              reduceMotion: boolean;
+            };
+
+            const mobile = conditions.mobile;
+            const reduceMotion = conditions.reduceMotion;
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            const diagonal = Math.hypot(viewportWidth, viewportHeight);
+            const markBaseSize = mobile ? 56 : 72;
+            const markCoverScale = Math.max(18, (diagonal / markBaseSize) * 2.45);
+
+            gsap.set(container, {
+              display: "flex",
+              opacity: 1,
+              visibility: "visible",
+              willChange: "opacity",
+            });
+
+            gsap.set(frame, {
+              opacity: 0,
+              scale: mobile ? 0.9 : 0.88,
+              force3D: true,
+              transformOrigin: "center center",
+            });
+
+            gsap.set(icon, {
+              opacity: 0,
+              scale: mobile ? 0.84 : 0.82,
+              force3D: true,
+            });
+
+            gsap.set(logo, {
+              opacity: 0,
+              y: mobile ? 12 : 18,
+              scale: 0.96,
+              force3D: true,
+            });
+
+            gsap.set(expandingMark, {
+              opacity: 0,
+              scale: 0.92,
+              force3D: true,
+              transformOrigin: "center center",
+            });
+
+            gsap.set(blueCover, {
+              opacity: 0,
+            });
+
+            if (reduceMotion) {
+              const reducedTl = gsap.timeline({
+                onComplete: finishIntro,
+              });
+
+              timelineRef.current = reducedTl;
+
+              reducedTl
+                .to(logo, {
+                  opacity: 1,
+                  y: 0,
+                  duration: 0.18,
+                  ease: "power1.out",
+                })
+                .to({}, { duration: 0.16 })
+                .to(container, {
+                  opacity: 0,
+                  duration: 0.18,
+                  ease: "power1.out",
+                });
+
+              return;
+            }
+
+            const revealDuration = mobile ? 0.42 : 0.52;
+            const logoDuration = mobile ? 0.46 : 0.58;
+            const exitDuration = mobile ? 0.22 : 0.28;
+            const expansionDuration = mobile ? 0.52 : 0.64;
+
+            const tl = gsap.timeline({
+              defaults: {
+                overwrite: "auto",
+              },
+              onComplete: finishIntro,
+            });
+
+            timelineRef.current = tl;
+
+            // 1. Clean frame reveal — transform/opacity only for mobile performance.
+            tl.to(frame, {
+              opacity: 1,
+              scale: 1,
+              duration: revealDuration,
+              ease: "power3.out",
+            });
+
+            // 2. Brand icon reveal.
+            tl.to(
+              icon,
+              {
+                opacity: 1,
+                scale: 1,
+                duration: revealDuration,
+                ease: "power3.out",
+              },
+              "-=0.2"
+            );
+
+            // 3. Icon gives way to the full NORTHFRAME logo.
+            tl.to(icon, {
+              opacity: 0,
+              scale: 0.94,
+              duration: exitDuration,
+              ease: "power2.inOut",
+            })
+              .to(
+                logo,
+                {
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                  duration: logoDuration,
+                  ease: "power3.out",
+                },
+                "<0.04"
+              )
+              .to({}, { duration: mobile ? 0.18 : 0.24 });
+
+            // 4. Logo/frame clear without animating width or height.
+            tl.to(logo, {
+              opacity: 0,
+              y: mobile ? -6 : -8,
+              scale: 0.97,
+              duration: exitDuration,
+              ease: "power2.in",
+            }).to(
+              frame,
+              {
+                opacity: 0,
+                scale: 1.03,
+                duration: exitDuration,
+                ease: "power2.in",
+              },
+              "<"
+            );
+
+            // 5. Brand mark expands through the screen, then hands off to blue.
+            tl.to(expandingMark, {
+              opacity: 1,
+              scale: 1,
+              duration: mobile ? 0.18 : 0.22,
+              ease: "power2.out",
+            })
+              .to(expandingMark, {
+                scale: markCoverScale,
+                duration: expansionDuration,
+                ease: "expo.in",
+                force3D: true,
+              })
+              .to(
+                blueCover,
+                {
+                  opacity: 1,
+                  duration: 0.1,
+                  ease: "none",
+                },
+                `-=${Math.min(0.18, expansionDuration * 0.28)}`
+              )
+              .to(
+                expandingMark,
+                {
+                  opacity: 0,
+                  duration: 0.1,
+                  ease: "none",
+                },
+                "<"
+              );
+
+            // 6. Smooth handoff to the actual hero.
+            tl.to(container, {
+              opacity: 0,
+              duration: mobile ? 0.28 : 0.34,
+              ease: "power2.out",
+            });
+          }
+        );
+      }, container);
+    };
+
+    // Two frames avoid the first-frame jump seen on iOS Safari.
+    const firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(startAnimation);
     });
 
     return () => {
-      cancelAnimationFrame(animFrame1);
-      cancelAnimationFrame(animFrame2);
-      if (ctx) ctx.revert();
+      cancelAnimationFrame(firstFrame);
+      cancelAnimationFrame(secondFrame);
+      timelineRef.current?.kill();
+      timelineRef.current = null;
+      mm?.revert();
+      ctx?.revert();
+      restoreBody();
     };
-  }, [isVisible, finishIntro]);
+  }, [finishIntro, isVisible, restoreBody]);
 
   if (!isVisible) return null;
 
   return (
     <div
       ref={containerRef}
-      role="dialog"
-      aria-label="Loading NORTHFRAME"
-      className="fixed inset-0 z-50 w-full h-[100svh] h-[100dvh] min-h-[100vh] flex items-center justify-center bg-[#070B14] select-none touch-none overflow-hidden"
+      aria-hidden="true"
+      className="fixed inset-0 z-[200] flex w-full h-[100vh] h-[100svh] h-[100dvh] items-center justify-center overflow-hidden select-none touch-none bg-[#070B14]"
+      style={{
+        WebkitBackfaceVisibility: "hidden",
+        backfaceVisibility: "hidden",
+      }}
     >
-      {/* Background Overlay */}
       <div className="absolute inset-0 bg-[#070B14]" />
 
-      {/* Skip Intro Control */}
-      <button
-        ref={skipBtnRef}
-        onClick={finishIntro}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            finishIntro();
-          }
-        }}
-        className="absolute top-6 right-6 z-50 px-4 py-2 text-xs font-mono tracking-widest text-white/70 hover:text-white bg-white/5 hover:bg-white/10 border border-white/15 rounded-full transition-all duration-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
-        aria-label="Skip Intro Animation"
-      >
-        SKIP INTRO
-      </button>
-
-      {/* Center Stage Box with Brackets */}
-      <div className="relative flex items-center justify-center w-full max-w-[90vw] h-48">
-        {/* Responsive Corner Brackets */}
+      <div className="relative z-10 flex h-48 w-full max-w-[92vw] items-center justify-center">
         <div
-          ref={bracketsRef}
-          className="intro-brackets-animation absolute w-24 h-24 pointer-events-none transition-all duration-300 flex items-center justify-center"
+          ref={frameRef}
+          className="intro-brackets-animation absolute h-[66px] sm:h-[72px] w-[min(78vw,300px)] sm:w-[min(78vw,340px)] pointer-events-none"
         >
-          {/* Top-Left Bracket */}
-          <span className="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-[#2563EB]" />
-          {/* Top-Right Bracket */}
-          <span className="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-[#2563EB]" />
-          {/* Bottom-Left Bracket */}
-          <span className="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-[#2563EB]" />
-          {/* Bottom-Right Bracket */}
-          <span className="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#2563EB]" />
+          <span className="absolute left-0 top-0 h-4 w-4 border-l-2 border-t-2 border-[#1677FF]" />
+          <span className="absolute right-0 top-0 h-4 w-4 border-r-2 border-t-2 border-[#1677FF]" />
+          <span className="absolute bottom-0 left-0 h-4 w-4 border-b-2 border-l-2 border-[#1677FF]" />
+          <span className="absolute bottom-0 right-0 h-4 w-4 border-b-2 border-r-2 border-[#1677FF]" />
         </div>
 
-        {/* Arrow Icon Wrapper */}
         <div
           ref={iconRef}
-          className="intro-icon-animation absolute flex items-center justify-center pointer-events-none z-10"
+          className="intro-icon-animation absolute z-10 flex items-center justify-center pointer-events-none"
         >
           <Image
             src="/images/brand/northframe-icon.webp"
-            alt="NORTHFRAME Icon"
+            alt=""
             width={72}
             height={72}
             priority
-            className="w-12 h-12 sm:w-16 sm:h-16 object-contain"
+            sizes="72px"
+            className="h-12 w-12 sm:h-16 sm:w-16 object-contain"
           />
         </div>
 
-        {/* Full Logo Wrapper */}
         <div
           ref={logoRef}
-          className="intro-logo-animation absolute flex items-center justify-center pointer-events-none z-10 px-4"
+          className="intro-logo-animation absolute z-10 flex items-center justify-center px-4 pointer-events-none"
         >
           <Image
             src="/images/brand/northframe-logo.webp"
-            alt="NORTHFRAME Logo"
-            width={320}
-            height={60}
+            alt=""
+            width={340}
+            height={64}
             priority
-            className="w-[70vw] max-w-[280px] sm:max-w-[340px] h-auto object-contain"
+            sizes="(max-width: 768px) 72vw, 340px"
+            className="h-auto w-[72vw] max-w-[280px] sm:max-w-[340px] object-contain"
           />
         </div>
       </div>
 
-      {/* Stage 4 Solid Blue Screen Transition */}
       <div
-        ref={expandingBlueRef}
-        className="absolute inset-0 bg-[#2563EB] pointer-events-none opacity-0 z-20"
-      />
-
-      {/* Stage 5 Aperture Mask Layer */}
-      <div
-        ref={apertureRef}
-        className="absolute inset-0 pointer-events-none opacity-0 z-30 flex items-center justify-center"
+        ref={expandingMarkRef}
+        className="absolute left-1/2 top-1/2 z-20 h-14 w-14 sm:h-[72px] sm:w-[72px] -translate-x-1/2 -translate-y-1/2 pointer-events-none bg-[#1677FF]"
         style={{
-          backgroundColor: "#2563EB",
-          WebkitMaskImage: `url('/images/brand/northframe-icon.webp')`,
-          maskImage: `url('/images/brand/northframe-icon.webp')`,
+          WebkitMaskImage: "url('/images/brand/northframe-icon.webp')",
+          maskImage: "url('/images/brand/northframe-icon.webp')",
           WebkitMaskSize: "contain",
           maskSize: "contain",
           WebkitMaskPosition: "center",
           maskPosition: "center",
           WebkitMaskRepeat: "no-repeat",
           maskRepeat: "no-repeat",
+          WebkitBackfaceVisibility: "hidden",
+          backfaceVisibility: "hidden",
         }}
+      />
+
+      <div
+        ref={blueCoverRef}
+        className="absolute inset-0 z-30 bg-[#1677FF] opacity-0 pointer-events-none"
       />
     </div>
   );
 }
-

@@ -25,10 +25,10 @@ export default function CursorTrail() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    let dpr = window.devicePixelRatio || 1;
+    let dpr = Math.min(window.devicePixelRatio || 1, 1.5);
 
     const resizeCanvas = () => {
-      dpr = window.devicePixelRatio || 1;
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       canvas.style.width = `${window.innerWidth}px`;

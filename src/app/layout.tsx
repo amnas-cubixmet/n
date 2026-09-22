@@ -4,6 +4,7 @@ import "./globals.css";
 import CursorTrail from "@/components/cursor/CursorTrail";
 import ScrollProgress from "@/components/scroll/ScrollProgress";
 import { PageTransitionProvider } from "@/components/navigation/PageTransitionProvider";
+import MotionRuntime from "@/components/motion/MotionRuntime";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -60,6 +61,7 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-[#05070B] text-white">
         <PageTransitionProvider>
+          <MotionRuntime />
           <CursorTrail />
           <ScrollProgress />
           {children}

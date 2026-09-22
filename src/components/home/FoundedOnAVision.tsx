@@ -21,50 +21,66 @@ export default function FoundedOnAVision() {
       const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
       if (motionQuery.matches) return;
 
-      if (!containerRef.current) return;
+      const label = labelRef.current;
+      const text = textRef.current;
+      const image = imageRef.current;
+      if (!label || text || image) return;
 
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: containerRef.current,
-          start: "top 85%",
-          toggleActions: "play none none reverse",
-        },
-      });
+      const mm = gsap.matchMedia();
 
-      if (labelRef.current) {
-        tl.from(labelRef.current, {
-          opacity: 0,
-          y: 10,
-          duration: 0.5,
-          ease: "power2.out",
+      const buildReveal = (mobile: boolean) => {
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: mobile ? "top 90%" : "top 85%",
+            once: true,
+          },
         });
-      }
 
-      if (textRef.current) {
-        tl.from(
-          textRef.current,
-          {
-            opacity: 0,
-            y: 20,
-            duration: 0.7,
-            ease: "power2.out",
-          },
-          "-=0.3"
-        );
-      }
+        if (label) {
+          timeline.from(
+            label,
+            {
+              opacity: 0,
+              y: mobile ? 6 : 10,
+              duration: mobile ? 0.35 : 0.5,
+              ease: "power3.out",
+            },
+            "0"
+          );
+        }
 
-      if (imageRef.current) {
-        tl.from(
-          imageRef.current,
-          {
-            opacity: 0,
-            y: 25,
-            duration: 0.7,
-            ease: "power2.out",
-          },
-          "-=0.5"
-        );
-      }
+        if (text) {
+          timeline.from(
+            text,
+            {
+              opacity: 0,
+              y: mobile ? 14 : 20,
+              duration: mobile ? 0.5 : 0.7,
+              ease: "power3.out",
+            },
+            "-=0.2"
+          );
+        }
+
+        if (image) {
+          timeline.from(
+            image,
+            {
+              opacity: 0,
+              y: mobile ? 16 : 25,
+              duration: mobile ? 0.5 : 0.7,
+              ease: "power3.out",
+            },
+            "-=0.35"
+          );
+        }
+      };
+
+      mm.add("(max-width: 768px)", () => buildReveal(true));
+      mm.add("(min-width: 769px)", () => buildReveal(false));
+
+      return () => mm.revert();
     },
     { scope: containerRef }
   );

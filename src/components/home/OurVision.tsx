@@ -21,7 +21,7 @@ export default function OurVision() {
 
       const label = labelRef.current;
       const copy = copyRef.current;
-      if (!label || copy) return;
+      if (!containerRef.current || !label || !copy) return;
 
       const mm = gsap.matchMedia();
 

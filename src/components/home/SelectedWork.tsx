@@ -17,50 +17,73 @@ export default function SelectedWork() {
 
   useGSAP(
     () => {
-      if (typeof window === "undefined") return;
+      if (typeof window === "undefined" || !containerRef.current) return;
 
       const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
       if (motionQuery.matches) return;
 
-      if (!containerRef.current) return;
+      const mm = gsap.matchMedia();
+      const projectElements =
+        gsap.utils.toArray<HTMLElement>(".work-project-item");
 
-      // Project cards entrance animation
-      const projectElements = gsap.utils.toArray<HTMLElement>(".work-project-item");
-      projectElements.forEach((el) => {
-        gsap.fromTo(
-          el,
-          { opacity: 0, y: 45 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: el,
-              start: "top 85%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
+      mm.add("(max-width: 1023px)", () => {
+        projectElements.forEach((element) => {
+          gsap.fromTo(
+            element,
+            { opacity: 0, y: 24 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.55,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: element,
+                start: "top 88%",
+                once: true,
+              },
+            }
+          );
+        });
       });
 
-      // Layer 2: Subtle background geometric shape parallax
-      if (shapeRef.current) {
-        gsap.fromTo(
-          shapeRef.current,
-          { yPercent: -5 },
-          {
-            yPercent: 5,
-            ease: "none",
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 1.2,
-            },
-          }
-        );
-      }
+      mm.add("(min-width: 1024px)", () => {
+        projectElements.forEach((element) => {
+          gsap.fromTo(
+            element,
+            { opacity: 0, y: 45 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 0.8,
+              ease: "power2.out",
+              scrollTrigger: {
+                trigger: element,
+                start: "top 85%",
+                once: true,
+              },
+            }
+          );
+        });
+
+        if (shapeRef.current) {
+          gsap.fromTo(
+            shapeRef.current,
+            { yPercent: -5 },
+            {
+              yPercent: 5,
+              ease: "none",
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 1.2,
+              },
+            }
+          );
+        }
+      });
+
+      return () => mm.revert();
     },
     { scope: containerRef }
   );

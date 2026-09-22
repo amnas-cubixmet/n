@@ -54,8 +54,13 @@ export default function Footer({ hideBackground = false }: FooterProps = {}) {
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const handleChange = (e: MediaQueryListEvent) => setIsReducedMotion(e.matches);
-    motionQuery.addEventListener("change", handleChange);
-    return () => motionQuery.removeEventListener("change", handleChange);
+    if (typeof motionQuery.addEventListener === "function") {
+      motionQuery.addEventListener("change", handleChange);
+      return () => motionQuery.removeEventListener("change", handleChange);
+    }
+
+    motionQuery.addListener(handleChange);
+    return () => motionQuery.removeListener(handleChange);
   }, []);
 
   // Pause video when offscreen and play when visible to optimize performance
@@ -152,7 +157,7 @@ export default function Footer({ hideBackground = false }: FooterProps = {}) {
               muted
               loop
               playsInline
-              preload="auto"
+              preload="metadata"
               poster="/images/studio_materials_bg.jpg"
               onError={() => setVideoError(true)}
               className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0"

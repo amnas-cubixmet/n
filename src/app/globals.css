@@ -1,0 +1,280 @@
+@import "tailwindcss";
+
+:root {
+  --background: #05070b;
+  --foreground: #ffffff;
+  --brand-blue: #1677FF;
+  --accent-on-dark: #1677FF;
+  --accent-on-light: #0D52B8;
+  --accent-hover-dark: #00E599;
+  --accent-hover-light: #0A3678;
+  --accent-pixel: #1677FF;
+  --accent-interactive: #1677FF;
+  --mouse-x: 50vw;
+  --mouse-y: 50vh;
+  --mouse-x-norm: 0;
+  --mouse-y-norm: 0;
+  --mouse-x-b: 50vw;
+  --mouse-y-b: 50vh;
+}
+
+/* Touch optimization for mobile buttons */
+.touch-action-manipulation {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Context-aware section token overrides */
+.dark-section {
+  --element-accent: var(--accent-on-dark);
+  --element-hover: var(--accent-hover-dark);
+}
+
+.light-section {
+  --element-accent: var(--accent-on-light);
+  --element-hover: var(--accent-hover-light);
+}
+
+/* Smooth color transition helper */
+.color-transition {
+  transition: color 300ms ease, background-color 300ms ease, border-color 300ms ease, opacity 300ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pointer-parallax-sm {
+    transform: translate3d(calc(var(--mouse-x-norm) * 8px), calc(var(--mouse-y-norm) * 8px), 0);
+    will-change: transform;
+  }
+  .pointer-parallax-rev {
+    transform: translate3d(calc(var(--mouse-x-norm) * -8px), calc(var(--mouse-y-norm) * -8px), 0);
+    will-change: transform;
+  }
+  .pointer-tilt-img {
+    transform: perspective(1000px) rotateX(calc(var(--mouse-y-norm) * -0.5deg)) rotateY(calc(var(--mouse-x-norm) * 0.5deg));
+    will-change: transform;
+  }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-poppins), sans-serif;
+  --font-montserrat: var(--font-montserrat), sans-serif;
+  --font-poppins: var(--font-poppins), sans-serif;
+  --font-pixel: var(--font-pixelify), monospace;
+}
+
+.font-montserrat {
+  font-family: var(--font-montserrat), sans-serif;
+}
+
+.font-poppins {
+  font-family: var(--font-poppins), sans-serif;
+}
+
+.font-pixel {
+  font-family: var(--font-pixelify), monospace;
+}
+
+/* Hide scrollbar for Chrome, Safari, Edge, Firefox while maintaining scroll functionality */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE & Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+
+*, ::before, ::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-poppins), system-ui, -apple-system, sans-serif;
+}
+
+/* Hide visible page scrollbar globally across desktop and mobile while preserving full scrolling */
+html {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* HERO LOWER CONTENT — NORTHFRAME + GAP + SERVICE LIST */
+.heroBottom {
+  position: absolute;
+  left: 2.5vw;
+  bottom: 3vh;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: clamp(60px, 8vw, 150px);
+  z-index: 3;
+}
+
+@media (max-width: 768px) {
+  .heroBottom {
+    left: clamp(16px, 4vw, 24px);
+    bottom: clamp(16px, 3vh, 24px);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+}
+
+/* EDITORIAL SERVICE LABELS */
+.service-item {
+  display: block;
+  width: fit-content;
+  padding: 0;
+  margin: 0;
+  background: #ffffff;
+  color: #111111;
+  border: 0;
+  border-radius: 0;
+  font-size: clamp(12px, 0.9vw, 17px);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.service-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+}
+
+/* SCROLL TO EXPLORE INDICATOR */
+.scroll-indicator {
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+}
+
+.scroll-indicator-line {
+  width: 14px;
+  height: 2px;
+  background: #1677FF;
+}
+
+.wat-we-doen-label {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  background: #000000;
+  color: #ffffff;
+  line-height: 1;
+  border: none;
+  border-radius: 0;
+  opacity: 1;
+}
+
+/* 3D HERO "A" ANIMATION HIERARCHY — SAFARI & MOBILE ACCELERATED */
+.hero-a-stage {
+  perspective: 1200px;
+  -webkit-perspective: 1200px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+@keyframes mobileAFloat {
+  0% {
+    transform: translate3d(0, 0, 0) rotateX(-2deg) rotateY(-2deg);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) rotateX(2deg) rotateY(3deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 0) rotateX(-2deg) rotateY(-2deg);
+  }
+}
+
+.hero-a-float {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: mobileAFloat 6s ease-in-out infinite;
+  will-change: transform;
+
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.hero-a-interaction,
+.hero-a-object {
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+
+  will-change: transform;
+}
+
+/* INTRO BRANDING ANIMATION — IOS SAFARI ACCELERATED */
+.intro-brackets-animation,
+.intro-icon-animation,
+.intro-logo-animation {
+  will-change: transform, opacity;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+
+/* SERVICE TITLE MASKED BOTTOM-UP REVEAL */
+.title-mask {
+  overflow: hidden;
+  display: block;
+}
+
+.title-inner {
+  display: block;
+  will-change: transform, opacity;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+
+/* WHAT WE DO SECTION — STRICT STAGE CLIPPING */
+.wat-we-doen-sticky,
+.wat-we-doen-stage {
+  position: relative;
+  overflow: hidden;
+  overflow: clip;
+  width: 100%;
+  height: 100vh;
+  height: 100svh;
+  height: 100dvh;
+}
+

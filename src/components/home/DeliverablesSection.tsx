@@ -346,7 +346,7 @@ export default function DeliverablesSection() {
       {/* STICKY MASTER VIEWPORT CONTAINER (100dvh — PINNED SCROLL) */}
       <div
         ref={stickyRef}
-        className="sticky top-0 w-full h-[100svh] min-h-[100svh] lg:h-[100dvh] lg:min-h-[100dvh] bg-white overflow-hidden"
+        className="relative w-full h-[100svh] min-h-[100svh] lg:h-[100dvh] lg:min-h-[100dvh] bg-white overflow-hidden"
       >
         {/* STAGE 1: DELIVERABLES BASE SECTION (PURE WHITE CANVAS #FFFFFF) — Z-INDEX 1 */}
         <div

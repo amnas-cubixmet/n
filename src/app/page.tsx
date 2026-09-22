@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import BrandIntro from "@/components/intro/BrandIntro";
 import Header from "@/components/navigation/Header";
 import Shared3DBackground from "@/components/hero/Shared3DBackground";

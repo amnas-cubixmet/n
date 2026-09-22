@@ -262,7 +262,8 @@ function FloorBackdrop({ isMobile }: { isMobile: boolean }) {
 export default function Shared3DBackground() {
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
-  const [isHidden, setIsHidden] = useState(false);
+  const [documentHidden, setDocumentHidden] = useState(false);
+  const [rangeVisible, setRangeVisible] = useState(true);
   const [canHover, setCanHover] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
 
@@ -278,7 +279,7 @@ export default function Shared3DBackground() {
 
     const syncHover = () => setCanHover(hoverQuery.matches);
     const syncMotion = () => setReducedMotion(motionQuery.matches);
-    const syncVisibility = () => setIsHidden(document.hidden);
+    const syncVisibility = () => setDocumentHidden(document.hidden);
 
     syncViewport();
     syncHover();
@@ -295,6 +296,19 @@ export default function Shared3DBackground() {
     window.addEventListener("orientationchange", handleResize);
     document.addEventListener("visibilitychange", syncVisibility);
 
+    const sharedRange = document.querySelector(".shared-background-range");
+    const rangeObserver =
+      sharedRange && "IntersectionObserver" in window
+        ? new IntersectionObserver(
+            ([entry]) => setRangeVisible(entry.isIntersecting),
+            { rootMargin: "160px 0px", threshold: 0 }
+          )
+        : null;
+
+    if (sharedRange && rangeObserver) {
+      rangeObserver.observe(sharedRange);
+    }
+
     if (typeof hoverQuery.addEventListener === "function") {
       hoverQuery.addEventListener("change", syncHover);
       motionQuery.addEventListener("change", syncMotion);
@@ -308,6 +322,7 @@ export default function Shared3DBackground() {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("orientationchange", handleResize);
       document.removeEventListener("visibilitychange", syncVisibility);
+      rangeObserver?.disconnect();
 
       if (typeof hoverQuery.removeEventListener === "function") {
         hoverQuery.removeEventListener("change", syncHover);
@@ -318,6 +333,8 @@ export default function Shared3DBackground() {
       }
     };
   }, []);
+
+  const isHidden = documentHidden || !rangeVisible;
 
   return (
     <div className="shared-3d-background hero-a-stage fixed inset-0 z-0 h-screen h-[100svh] h-[100dvh] w-full overflow-hidden bg-[#05080B] pointer-events-none">

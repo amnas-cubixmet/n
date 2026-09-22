@@ -121,7 +121,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     }
 
     let ctx: gsap.Context | null = null;
-    let mm: gsap.MatchMedia | null = null;
+    let mm: ReturnType<typeof gsap.matchMedia> | null = null;
     let secondFrame = 0;
 
     const startAnimation = () => {

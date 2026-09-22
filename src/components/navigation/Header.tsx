@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 
@@ -17,289 +17,267 @@ export default function Header() {
   const [isAnimating, setIsAnimating] = useState(false);
 
   const menuBtnRef = useRef<HTMLButtonElement>(null);
-  const navOverlayRef = useRef<HTMLDivElement>(null);
-  const navContainerRef = useRef<HTMLDivElement>(null);
-  const navLinksRef = useRef<(HTMLAnchorElement | HTMLSpanElement | null)[]>([]);
+  const navPanelRef = useRef<HTMLDivElement>(null);
+  const navLinksRef = useRef<(HTMLAnchorElement | null)[]>([]);
+  const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
-  const tlRef = useRef<gsap.core.Timeline | null>(null);
-  const scrollPositionRef = useRef<number>(0);
+  useEffect(() => {
+    const panel = navPanelRef.current;
+    if (!panel) return;
 
-  // Calculate exact button center coordinates relative to viewport for pixel-perfect clip-path origin
-  const getButtonCenterPoint = useCallback(() => {
-    if (menuBtnRef.current) {
-      const rect = menuBtnRef.current.getBoundingClientRect();
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      return { cx: Math.round(cx), cy: Math.round(cy) };
-    }
-    // Fallback if button ref unavailable
-    return { cx: window.innerWidth - 44, cy: 44 };
+    gsap.set(panel, {
+      autoAlpha: 0,
+      scale: 0.16,
+      transformOrigin: "top right",
+      pointerEvents: "none",
+    });
+
+    return () => {
+      timelineRef.current?.kill();
+    };
   }, []);
 
-  // Build reversible GSAP timeline for Menu expansion originating from button
-  const toggleMenuAnimation = useCallback((open: boolean) => {
-    if (isAnimating) return;
-    setIsAnimating(true);
+  const animateMenu = useCallback(
+    (open: boolean) => {
+      if (isAnimating) return;
 
-    const overlay = navOverlayRef.current;
-    const links = navLinksRef.current.filter(Boolean);
+      const panel = navPanelRef.current;
+      if (!panel) return;
 
-    if (!overlay) {
-      setIsAnimating(false);
-      return;
-    }
-
-    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const isReduced = motionQuery.matches;
-    const isMobile = window.innerWidth <= 768;
-
-    const { cx, cy } = getButtonCenterPoint();
-    // Calculate radius to cover farthest corner of screen
-    const maxDimX = Math.max(cx, window.innerWidth - cx);
-    const maxDimY = Math.max(cy, window.innerHeight - cy);
-    const maxRadius = Math.ceil(Math.hypot(maxDimX, maxDimY));
-
-    const initialClip = `circle(0px at ${cx}px ${cy}px)`;
-    const fullClip = `circle(${maxRadius}px at ${cx}px ${cy}px)`;
-
-    if (open) {
-      // 1. Lock body scroll safely without jumping to page top on iOS Safari
-      scrollPositionRef.current = window.scrollY;
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollPositionRef.current}px`;
-      document.body.style.width = "100%";
-      document.body.style.overflow = "hidden";
-
-      setMenuOpen(true);
-
-      if (isReduced) {
-        gsap.set(overlay, { display: "flex", opacity: 0, clipPath: "none" });
-        gsap.to(overlay, {
-          opacity: 1,
-          duration: 0.25,
-          ease: "power2.out",
-          onComplete: () => setIsAnimating(false),
-        });
-        return;
-      }
-
-      gsap.set(overlay, {
-        display: "flex",
-        opacity: 1,
-        clipPath: initialClip,
-        willChange: "clip-path",
-      });
-
-      gsap.set(links, {
-        opacity: 0,
-        y: isMobile ? 14 : 18,
-      });
-
-      const tl = gsap.timeline({
-        onComplete: () => {
-          gsap.set(overlay, { willChange: "auto" });
-          setIsAnimating(false);
-        },
-      });
-
-      tlRef.current = tl;
-
-      // Surface expands smoothly from exact menu button position
-      tl.to(overlay, {
-        clipPath: fullClip,
-        duration: isMobile ? 0.55 : 0.7,
-        ease: "power3.inOut",
-      });
-
-      // Navigation links reveal sequentially with stagger (opacity: 0 -> 1, y: 18px -> 0, stagger: 0.055s, duration: 0.45s)
-      tl.to(
-        links,
-        {
-          opacity: 1,
-          y: 0,
-          duration: isMobile ? 0.38 : 0.45,
-          stagger: 0.055,
-          ease: "power3.out",
-        },
-        "-=0.3"
+      const links = navLinksRef.current.filter(
+        (link): link is HTMLAnchorElement => Boolean(link)
       );
-    } else {
-      // Close Menu sequence using collapse back to button position
-      if (isReduced) {
-        gsap.to(overlay, {
-          opacity: 0,
-          duration: 0.2,
-          ease: "power2.out",
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+      const mobile = window.innerWidth <= 768;
+
+      timelineRef.current?.kill();
+      setIsAnimating(true);
+
+      if (open) {
+        setMenuOpen(true);
+
+        gsap.set(panel, {
+          visibility: "visible",
+          pointerEvents: "auto",
+          transformOrigin: "top right",
+        });
+
+        if (reducedMotion) {
+          gsap.set(panel, { scale: 1 });
+          gsap.to(panel, {
+            autoAlpha: 1,
+            duration: 0.16,
+            ease: "power2.out",
+            onComplete: () => {
+              gsap.set(links, { autoAlpha: 1, y: 0 });
+              setIsAnimating(false);
+            },
+          });
+          return;
+        }
+
+        gsap.set(panel, {
+          autoAlpha: 1,
+          scale: mobile ? 0.13 : 0.16,
+          force3D: true,
+          willChange: "transform, opacity",
+        });
+
+        gsap.set(links, {
+          autoAlpha: 0,
+          y: mobile ? 12 : 16,
+        });
+
+        const tl = gsap.timeline({
           onComplete: () => {
-            gsap.set(overlay, { display: "none" });
-            setMenuOpen(false);
+            gsap.set(panel, { willChange: "auto" });
             setIsAnimating(false);
-            // Unlock body scroll safely restoring exact scroll Y
-            document.body.style.position = "";
-            document.body.style.top = "";
-            document.body.style.width = "";
-            document.body.style.overflow = "";
-            window.scrollTo(0, scrollPositionRef.current);
           },
         });
-        return;
-      }
 
-      const tl = gsap.timeline({
-        onComplete: () => {
-          gsap.set(overlay, { display: "none", willChange: "auto" });
-          setMenuOpen(false);
-          setIsAnimating(false);
+        timelineRef.current = tl;
 
-          // Restore scroll position safely
-          document.body.style.position = "";
-          document.body.style.top = "";
-          document.body.style.width = "";
-          document.body.style.overflow = "";
-          window.scrollTo(0, scrollPositionRef.current);
-        },
-      });
-
-      tl.to(links, {
-        opacity: 0,
-        y: isMobile ? 10 : 14,
-        duration: 0.25,
-        stagger: 0.03,
-        ease: "power2.in",
-      });
-
-      tl.to(
-        overlay,
-        {
-          clipPath: initialClip,
-          duration: isMobile ? 0.45 : 0.55,
+        tl.to(panel, {
+          scale: 1,
+          duration: mobile ? 0.48 : 0.56,
           ease: "power3.inOut",
-        },
-        "-=0.15"
-      );
-    }
-  }, [isAnimating, getButtonCenterPoint]);
+          force3D: true,
+        }).to(
+          links,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: mobile ? 0.3 : 0.36,
+            stagger: 0.045,
+            ease: "power3.out",
+          },
+          "-=0.22"
+        );
+      } else {
+        if (reducedMotion) {
+          gsap.to(panel, {
+            autoAlpha: 0,
+            duration: 0.14,
+            ease: "power2.in",
+            onComplete: () => {
+              gsap.set(panel, {
+                scale: 0.16,
+                visibility: "hidden",
+                pointerEvents: "none",
+              });
+              setMenuOpen(false);
+              setIsAnimating(false);
+              menuBtnRef.current?.focus();
+            },
+          });
+          return;
+        }
 
-  // Keyboard accessibility for Menu overlay (Escape key)
+        const tl = gsap.timeline({
+          onComplete: () => {
+            gsap.set(panel, {
+              autoAlpha: 0,
+              scale: mobile ? 0.13 : 0.16,
+              visibility: "hidden",
+              pointerEvents: "none",
+              willChange: "auto",
+            });
+            setMenuOpen(false);
+            setIsAnimating(false);
+            menuBtnRef.current?.focus();
+          },
+        });
+
+        timelineRef.current = tl;
+
+        tl.to(links, {
+          autoAlpha: 0,
+          y: mobile ? 8 : 10,
+          duration: 0.18,
+          stagger: 0.025,
+          ease: "power2.in",
+        }).to(
+          panel,
+          {
+            scale: mobile ? 0.13 : 0.16,
+            autoAlpha: 0,
+            duration: mobile ? 0.36 : 0.42,
+            ease: "power3.inOut",
+            force3D: true,
+          },
+          "-=0.08"
+        );
+      }
+    },
+    [isAnimating]
+  );
+
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && menuOpen && !isAnimating) {
-        toggleMenuAnimation(false);
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && menuOpen && !isAnimating) {
+        animateMenu(false);
       }
     };
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [menuOpen, isAnimating, toggleMenuAnimation]);
-
-  // Focus trap for Menu overlay when open
-  useEffect(() => {
-    if (menuOpen && navOverlayRef.current) {
-      const focusableElements = navOverlayRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusableElements.length > 0) {
-        focusableElements[0].focus();
-      }
-    }
-  }, [menuOpen]);
+  }, [animateMenu, isAnimating, menuOpen]);
 
   const handleToggleMenu = () => {
-    if (isAnimating) return;
-    toggleMenuAnimation(!menuOpen);
+    if (!isAnimating) {
+      animateMenu(!menuOpen);
+    }
   };
 
   const handleLinkClick = () => {
     if (menuOpen && !isAnimating) {
-      toggleMenuAnimation(false);
+      animateMenu(false);
     }
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 w-full bg-transparent border-none shadow-none pointer-events-none transition-all duration-200">
-      {/* HEADER BAR: Floating MENU Button positioned at top-right */}
-      <div className="w-full max-w-[1920px] mx-auto p-4 sm:p-6 pt-[max(1rem,env(safe-area-inset-top))] pr-[max(1rem,env(safe-area-inset-right))] flex items-center justify-end pointer-events-auto">
+    <header className="fixed inset-x-0 top-0 z-50 w-full pointer-events-none">
+      <div className="relative w-full max-w-[1920px] mx-auto p-4 sm:p-6 pt-[max(1rem,env(safe-area-inset-top))] pr-[max(1rem,env(safe-area-inset-right))] flex justify-end pointer-events-auto">
         <button
           id="header-menu-button"
           ref={menuBtnRef}
+          type="button"
           onClick={handleToggleMenu}
           disabled={isAnimating}
           aria-expanded={menuOpen}
-          aria-controls="nav-dialog"
+          aria-controls="northframe-menu-panel"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="header-menu-button relative z-[100] inline-flex items-center justify-center gap-2.5 bg-[#1677FF] hover:bg-[#1677FF]/90 active:bg-blue-700 text-white min-w-[44px] min-h-[44px] px-3.5 py-2.5 m-0 leading-none rounded-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400 cursor-pointer shadow-lg select-none touch-action-manipulation"
+          className="header-menu-button relative z-[110] inline-flex min-w-[44px] min-h-[44px] items-center justify-center gap-2.5 bg-[#1677FF] px-3.5 py-2.5 text-white rounded-none select-none touch-action-manipulation cursor-pointer disabled:cursor-default focus:outline-none focus:ring-2 focus:ring-white/70"
         >
-          <span className="hidden md:inline text-[11px] sm:text-xs font-semibold uppercase tracking-wider leading-none font-sans">
+          <span className="hidden md:inline font-mono text-[10px] font-semibold uppercase tracking-[0.12em] leading-none">
             {menuOpen ? "CLOSE" : "MENU"}
           </span>
 
-          {/* TWO-LINE ICON (Animated to X when open) */}
-          <span className="relative w-4 h-3.5 flex flex-col justify-between items-center pointer-events-none">
+          <span className="relative block w-4 h-3 pointer-events-none">
             <span
-              className={`block w-4 h-[1.5px] bg-white transition-transform duration-300 origin-center ${
-                menuOpen ? "translate-y-[6px] rotate-45" : ""
-              }`}
+              className={
+                "absolute left-0 top-[2px] block w-4 h-[1.5px] bg-white origin-center transition-transform duration-300 " +
+                (menuOpen ? "translate-y-[3.5px] rotate-45" : "")
+              }
             />
             <span
-              className={`block w-4 h-[1.5px] bg-white transition-transform duration-300 origin-center ${
-                menuOpen ? "-translate-y-[6px] -rotate-45" : ""
-              }`}
+              className={
+                "absolute left-0 bottom-[2px] block w-4 h-[1.5px] bg-white origin-center transition-transform duration-300 " +
+                (menuOpen ? "-translate-y-[3.5px] -rotate-45" : "")
+              }
             />
           </span>
         </button>
-      </div>
 
-      {/* FULL VIEWPORT PRIMARY BLUE NAVIGATION MENU PANEL */}
-      <div
-        id="nav-dialog"
-        ref={navOverlayRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Navigation Menu"
-        className="fixed inset-0 w-full h-[100dvh] z-[90] bg-[#1677FF] text-white hidden flex-col justify-between p-6 sm:p-12 pt-[max(5rem,env(safe-area-inset-top)+3rem)] pb-[max(2.5rem,env(safe-area-inset-bottom))] overflow-hidden pointer-events-auto shadow-2xl"
-      >
         <div
-          ref={navContainerRef}
-          className="max-w-7xl w-full mx-auto my-auto flex flex-col justify-center gap-6 sm:gap-8"
+          id="northframe-menu-panel"
+          ref={navPanelRef}
+          aria-hidden={!menuOpen}
+          className="fixed z-[100] overflow-hidden bg-[#1677FF] text-white pointer-events-none invisible shadow-none"
+          style={{
+            top: "max(1rem, env(safe-area-inset-top))",
+            right: "max(1rem, env(safe-area-inset-right))",
+            width: "min(270px, calc(100vw - 32px))",
+            minHeight: "270px",
+            WebkitBackfaceVisibility: "hidden",
+            backfaceVisibility: "hidden",
+          }}
         >
-          {/* Metadata Top Header */}
-          <div className="flex items-center gap-3 border-b border-white/20 pb-4 mb-2">
-            <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-            <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/80">
-              NORTHFRAME DIRECTORY
-            </span>
+          <div className="flex min-h-[270px] flex-col px-5 pt-4 pb-5">
+            <div className="flex items-center justify-between pr-12 font-mono text-[9px] uppercase tracking-[0.08em] leading-none text-white/90">
+              <span>NORTHFRAME</span>
+              <span>MENU</span>
+            </div>
+
+            <nav
+              aria-label="Primary navigation"
+              className="mt-8 flex flex-1 flex-col items-start justify-center gap-[5px]"
+            >
+              {NAV_ITEMS.map((item, index) => (
+                <TransitionLink
+                  key={item.label}
+                  ref={(element) => {
+                    navLinksRef.current[index] = element;
+                  }}
+                  href={item.href}
+                  onClick={handleLinkClick}
+                  className={
+                    "block w-fit font-montserrat text-[25px] sm:text-[27px] font-medium uppercase tracking-[-0.055em] leading-[0.98] text-white transition-opacity duration-150 hover:opacity-70 " +
+                    (item.isAccent ? "mt-1" : "")
+                  }
+                >
+                  {item.label}
+                  <sup className="ml-1 align-top font-mono text-[8px] tracking-normal text-white/80">
+                    {String(index + 1).padStart(2, "0")}
+                  </sup>
+                </TransitionLink>
+              ))}
+            </nav>
           </div>
-
-          {/* Sequential Menu Links */}
-          <nav className="flex flex-col gap-4 sm:gap-7 text-4xl sm:text-6xl lg:text-7xl font-sans font-bold tracking-tight text-white">
-            {NAV_ITEMS.map((item, idx) => (
-              <TransitionLink
-                key={item.label}
-                ref={(el) => {
-                  navLinksRef.current[idx] = el as HTMLAnchorElement;
-                }}
-                href={item.href}
-                onClick={handleLinkClick}
-                className={`w-fit transition-colors duration-200 hover:text-white/80 ${
-                  item.isAccent ? "text-white underline underline-offset-8 decoration-white/40" : ""
-                }`}
-              >
-                {item.label}
-              </TransitionLink>
-            ))}
-          </nav>
-        </div>
-
-        {/* Footer Meta Details */}
-        <div className="max-w-7xl w-full mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between border-t border-white/20 pt-4 text-white/80 font-mono text-xs tracking-widest gap-2">
-          <span>CREATIVE DIGITAL AGENCY</span>
-          <span>© {new Date().getFullYear()} NORTHFRAME</span>
         </div>
       </div>
     </header>
   );
 }
-
-
-
-
-

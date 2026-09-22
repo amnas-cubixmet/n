@@ -39,49 +39,50 @@ interface TransitionLinkProps extends React.AnchorHTMLAttributes<HTMLAnchorEleme
  * 2. Cross-page links (/work, /services) -> Ultra-fast 4-panel Geometric Transition
  * 3. Cross-page hash links (/work#selected-work) -> Transition -> Load Page -> Smooth Settle
  */
-export function TransitionLink({
-  href,
-  children,
-  className = "",
-  onClick,
-  ...props
-}: TransitionLinkProps) {
-  const { triggerTransition, isTransitioning } = usePageTransition();
-  const router = useRouter();
+export const TransitionLink = React.forwardRef<HTMLAnchorElement, TransitionLinkProps>(
+  function TransitionLink(
+    { href, children, className = "", onClick, ...props },
+    ref
+  ) {
+    const { triggerTransition, isTransitioning } = usePageTransition();
+    const router = useRouter();
 
-  // Prefetch route on hover to maximize speed
-  const handleMouseEnter = () => {
-    if (href && href.startsWith("/")) {
-      const urlPath = href.split("#")[0];
-      if (urlPath) router.prefetch(urlPath);
-    }
-  };
+    // Prefetch route on hover to maximize speed
+    const handleMouseEnter = () => {
+      if (href && href.startsWith("/")) {
+        const urlPath = href.split("#")[0];
+        if (urlPath) router.prefetch(urlPath);
+      }
+    };
 
-  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (onClick) onClick(e);
+    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+      if (onClick) onClick(e);
 
-    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
-      return;
-    }
+      if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) {
+        return;
+      }
 
-    e.preventDefault();
-    if (!isTransitioning) {
-      triggerTransition(href);
-    }
-  };
+      e.preventDefault();
+      if (!isTransitioning) {
+        triggerTransition(href);
+      }
+    };
 
-  return (
-    <a
-      href={href}
-      onClick={handleClick}
-      onMouseEnter={handleMouseEnter}
-      className={className}
-      {...props}
-    >
-      {children}
-    </a>
-  );
-}
+    return (
+      <a
+        ref={ref}
+        href={href}
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
+        className={className}
+        {...props}
+      >
+        {children}
+      </a>
+    );
+  }
+);
+TransitionLink.displayName = "TransitionLink";
 
 /**
  * Dedicated Smooth Section Link Component for explicit hash targets

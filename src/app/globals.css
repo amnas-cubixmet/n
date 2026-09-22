@@ -117,29 +117,25 @@ body::-webkit-scrollbar {
   height: 0;
 }
 
-/* HERO LOWER CONTENT — NORTHFRAME + GAP + SERVICE LIST */
+/* HERO LOWER CONTENT — MOBILE SAFE + DESKTOP EDITORIAL */
 .heroBottom {
   position: absolute;
-  left: 2.5vw;
-  bottom: 3vh;
+  left: max(clamp(20px, 2.5vw, 40px), env(safe-area-inset-left));
+  bottom: max(clamp(20px, 3.5vh, 40px), env(safe-area-inset-bottom));
   display: flex;
   flex-direction: row;
   align-items: flex-end;
-  gap: clamp(60px, 8vw, 150px);
+  gap: clamp(48px, 8vw, 130px);
   z-index: 3;
+  max-width: calc(100vw - 40px);
 }
 
-@media (max-width: 768px) {
-  .heroBottom {
-    left: clamp(16px, 4vw, 24px);
-    bottom: clamp(16px, 3vh, 24px);
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
+.hero-logo-wrapper {
+  width: clamp(260px, 34vw, 520px);
+  max-width: 85vw;
+  will-change: transform, opacity;
 }
 
-/* EDITORIAL SERVICE LABELS */
 .service-item {
   display: block;
   width: fit-content;
@@ -149,12 +145,15 @@ body::-webkit-scrollbar {
   color: #111111;
   border: 0;
   border-radius: 0;
+  font-family: var(--font-montserrat), "Montserrat", sans-serif;
   font-size: clamp(12px, 0.9vw, 17px);
   font-weight: 500;
   line-height: 1;
   letter-spacing: 0;
   text-transform: uppercase;
   white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 }
 
 .service-list {
@@ -162,6 +161,96 @@ body::-webkit-scrollbar {
   flex-direction: column;
   align-items: flex-start;
   gap: 3px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .service-item:hover {
+    opacity: 0.75 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .heroBottom {
+    left: max(16px, env(safe-area-inset-left));
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(16px, env(safe-area-inset-bottom));
+    max-width: none;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: clamp(10px, 2.2vh, 16px);
+  }
+
+  .hero-logo-wrapper {
+    width: min(76vw, 300px);
+    max-width: calc(100vw - 32px);
+  }
+
+  .service-item {
+    font-size: clamp(10px, 3vw, 12px);
+    line-height: 1.02;
+  }
+
+  .service-list,
+  .service-list nav,
+  .service-list ul {
+    max-width: calc(100vw - 32px);
+  }
+
+  .hero-side-light {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .heroBottom {
+    gap: 9px;
+  }
+
+  .hero-logo-wrapper {
+    width: min(72vw, 250px);
+  }
+
+  .service-item {
+    font-size: 10px;
+  }
+}
+
+@media (max-height: 640px) and (max-width: 768px) {
+  .heroBottom {
+    bottom: max(10px, env(safe-area-inset-bottom));
+    gap: 8px;
+  }
+
+  .hero-logo-wrapper {
+    width: min(64vw, 230px);
+  }
+
+  .service-item {
+    font-size: 9px;
+  }
+
+  .service-list ul {
+    gap: 2px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 540px) {
+  .heroBottom {
+    left: max(16px, env(safe-area-inset-left));
+    right: max(16px, env(safe-area-inset-right));
+    bottom: max(12px, env(safe-area-inset-bottom));
+    flex-direction: row;
+    align-items: flex-end;
+    gap: clamp(22px, 5vw, 48px);
+  }
+
+  .hero-logo-wrapper {
+    width: min(38vw, 300px);
+  }
+
+  .service-item {
+    font-size: 9px;
+  }
 }
 
 /* SCROLL TO EXPLORE INDICATOR */
@@ -201,26 +290,13 @@ body::-webkit-scrollbar {
   pointer-events: none;
 }
 
-@keyframes mobileAFloat {
-  0% {
-    transform: translate3d(0, 0, 0) rotateX(-2deg) rotateY(-2deg);
-  }
-  50% {
-    transform: translate3d(0, -10px, 0) rotateX(2deg) rotateY(3deg);
-  }
-  100% {
-    transform: translate3d(0, 0, 0) rotateX(-2deg) rotateY(-2deg);
-  }
-}
-
 .hero-a-float {
   width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: mobileAFloat 6s ease-in-out infinite;
-  will-change: transform;
+  transform: translate3d(0, 0, 0);
 
   -webkit-transform-style: preserve-3d;
   transform-style: preserve-3d;
@@ -278,3 +354,29 @@ body::-webkit-scrollbar {
   height: 100dvh;
 }
 
+
+/* HERO MOBILE / SAFARI STABILITY */
+.hero,
+.shared-3d-background {
+  min-height: 100vh;
+  min-height: 100svh;
+}
+
+@supports (height: 100dvh) {
+  .hero,
+  .shared-3d-background {
+    height: 100dvh;
+    min-height: 100dvh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-a-float,
+  .hero-a-interaction,
+  .hero-a-object,
+  .hero-logo-wrapper,
+  .service-item {
+    animation: none !important;
+    transition-duration: 0.01ms !important;
+  }
+}

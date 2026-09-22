@@ -273,8 +273,11 @@ export default function Shared3DBackground() {
 
     const syncViewport = () => {
       const width = window.innerWidth;
-      setIsMobile(width <= 768);
-      setIsTablet(width > 768 && width <= 1024);
+      const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+      const mobileLike = width <= 768 || (coarsePointer && width <= 1024);
+
+      setIsMobile(mobileLike);
+      setIsTablet(!mobileLike && width > 768 && width <= 1024);
     };
 
     const syncHover = () => setCanHover(hoverQuery.matches);

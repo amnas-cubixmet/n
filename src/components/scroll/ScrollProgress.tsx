@@ -11,8 +11,8 @@ export default function ScrollProgress() {
       if (barRef.current) {
         const scrollTop = window.scrollY;
         const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const percent = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
-        barRef.current.style.height = `${percent}%`;
+        const progress = docHeight > 0 ? scrollTop / docHeight : 0;
+        barRef.current.style.transform = `scaleY(${Math.min(1, Math.max(0, progress))})`;
       }
       rafIdRef.current = null;
     };
@@ -47,7 +47,10 @@ export default function ScrollProgress() {
         ref={barRef}
         className="w-full bg-[#1677FF]"
         style={{
-          height: "0%",
+          height: "100%",
+          transform: "scaleY(0)",
+          transformOrigin: "top center",
+          willChange: "transform",
           backgroundImage: "linear-gradient(to bottom, #1677FF 65%, transparent 35%)",
           backgroundSize: "100% 5px",
         }}

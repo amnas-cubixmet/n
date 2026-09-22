@@ -13,7 +13,7 @@ const ScrollIndicator = forwardRef<HTMLDivElement, ScrollIndicatorProps>(
       <div
         ref={labelRef}
         aria-hidden="true"
-        className="scroll-indicator-wrapper absolute top-[28px] sm:top-[34px] left-[20px] sm:left-[36px] z-[4] flex items-center gap-[10px] select-none pointer-events-none opacity-0"
+        className="scroll-indicator-wrapper absolute top-[max(20px,env(safe-area-inset-top))] sm:top-[max(28px,env(safe-area-inset-top))] left-[max(16px,env(safe-area-inset-left))] sm:left-[max(28px,env(safe-area-inset-left))] z-[4] flex items-center gap-[10px] select-none pointer-events-none opacity-0"
       >
         <span
           ref={lineRef}

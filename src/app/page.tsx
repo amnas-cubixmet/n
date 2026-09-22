@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import BrandIntro from "@/components/intro/BrandIntro";
 import Header from "@/components/navigation/Header";
 import Shared3DBackground from "@/components/hero/Shared3DBackground";
@@ -43,16 +43,18 @@ export default function Home() {
 
       {/* LAYER 2 — FOREGROUND SCROLLING CONTENT */}
       <div className="foreground relative z-10 w-full flex flex-col pointer-events-none">
-        {/* HERO */}
-        <Hero introCompleted={introCompleted} />
+        {/* HERO + INTRO share the fixed 3D background. This wrapper is also
+            used to pause the WebGL scene after the shared range leaves view. */}
+        <div className="shared-background-range relative w-full">
+          <Hero introCompleted={introCompleted} />
 
-        {/* INTRODUCTION */}
-        <section
-          id="intro"
-          className="introduction relative w-full min-h-[50svh] min-h-[50dvh] flex flex-col justify-center pointer-events-auto !bg-transparent m-0 p-0"
-        >
-          <IntroSection />
-        </section>
+          <section
+            id="intro"
+            className="introduction relative w-full min-h-[50svh] min-h-[50dvh] flex flex-col justify-center pointer-events-auto !bg-transparent m-0 p-0"
+          >
+            <IntroSection />
+          </section>
+        </div>
         
         {/* WAT WE DOEN */}
         <div className="relative w-full pointer-events-auto bg-[#030508]">

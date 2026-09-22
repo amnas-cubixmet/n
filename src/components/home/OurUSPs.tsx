@@ -127,20 +127,23 @@ export default function OurUSPs() {
 
       // MOBILE LAYOUT (< 1024px)
       mm.add("(max-width: 1023px)", () => {
-        const elements = gsap.utils.toArray<HTMLElement>(".mobile-usp-card, .mobile-usp-cta");
-        elements.forEach((el) => {
+        const elements = gsap.utils.toArray<HTMLElement>(
+          ".mobile-usp-card, .mobile-usp-cta"
+        );
+
+        elements.forEach((element) => {
           gsap.fromTo(
-            el,
-            { opacity: 0.4, y: 30 },
+            element,
+            { opacity: 0, y: 22 },
             {
               opacity: 1,
               y: 0,
-              duration: 0.6,
-              ease: "power2.out",
+              duration: 0.5,
+              ease: "power3.out",
               scrollTrigger: {
-                trigger: el,
-                start: "top 85%",
-                toggleActions: "play none none reverse",
+                trigger: element,
+                start: "top 88%",
+                once: true,
               },
             }
           );

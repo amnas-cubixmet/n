@@ -146,7 +146,7 @@ export default function StatementSection() {
       {/* STICKY FULL VIEWPORT CONTAINER */}
       <div
         ref={stickyRef}
-        className="sticky top-0 w-full h-[100svh] min-h-[100svh] md:h-[100dvh] md:min-h-[100dvh] flex flex-col justify-center items-center px-3 sm:px-6 md:px-12 bg-[#1677FF] overflow-hidden"
+        className="relative w-full h-[100svh] min-h-[100svh] md:h-[100dvh] md:min-h-[100dvh] flex flex-col justify-center items-center px-3 sm:px-6 md:px-12 bg-[#1677FF] overflow-hidden"
       >
         {/* CENTERED GRAPHIC TYPOGRAPHY GROUP */}
         <div

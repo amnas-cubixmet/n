@@ -239,13 +239,13 @@ export default function Header() {
           style={{
             top: "max(1rem, env(safe-area-inset-top))",
             right: "max(1rem, env(safe-area-inset-right))",
-            width: "min(270px, calc(100vw - 32px))",
-            minHeight: "270px",
+            width: "min(258px, calc(100vw - 28px))",
+            minHeight: "272px",
             WebkitBackfaceVisibility: "hidden",
             backfaceVisibility: "hidden",
           }}
         >
-          <div className="flex min-h-[270px] flex-col px-5 pt-4 pb-5">
+          <div className="flex min-h-[272px] flex-col px-5 pt-4 pb-5">
             <div className="flex items-center justify-between pr-12 font-mono text-[9px] uppercase tracking-[0.08em] leading-none text-white/90">
               <span>NORTHFRAME</span>
               <span>MENU</span>
@@ -253,7 +253,7 @@ export default function Header() {
 
             <nav
               aria-label="Primary navigation"
-              className="mt-8 flex flex-1 flex-col items-start justify-center gap-[5px]"
+              className="mt-7 flex flex-1 flex-col items-start justify-center gap-[4px]"
             >
               {NAV_ITEMS.map((item, index) => (
                 <TransitionLink
@@ -264,7 +264,7 @@ export default function Header() {
                   href={item.href}
                   onClick={handleLinkClick}
                   className={
-                    "block w-fit font-montserrat text-[25px] sm:text-[27px] font-medium uppercase tracking-[-0.055em] leading-[0.98] text-white transition-opacity duration-150 hover:opacity-70 " +
+                    "block w-fit font-montserrat text-[23px] sm:text-[24px] font-medium uppercase tracking-[-0.055em] leading-[0.98] text-white transition-opacity duration-150 hover:opacity-70 " +
                     (item.isAccent ? "mt-1" : "")
                   }
                 >

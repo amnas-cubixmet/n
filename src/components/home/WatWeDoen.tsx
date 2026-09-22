@@ -21,7 +21,11 @@ export default function WatWeDoen() {
   const desktopTitlesRef = useRef<(HTMLAnchorElement | null)[]>([]);
 
   const [activeIndex, setActiveIndex] = useState<number>(0);
-  const [isReducedMotion, setIsReducedMotion] = useState<boolean>(false);
+  const [isReducedMotion, setIsReducedMotion] = useState<boolean>(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false
+  );
 
   useEffect(() => {
     // Preload service images
@@ -33,7 +37,6 @@ export default function WatWeDoen() {
     });
 
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setIsReducedMotion(motionQuery.matches);
     const handler = (e: MediaQueryListEvent) => setIsReducedMotion(e.matches);
     motionQuery.addEventListener("change", handler);
 

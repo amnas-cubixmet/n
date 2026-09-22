@@ -45,11 +45,14 @@ export default function Footer({ hideBackground = false }: FooterProps = {}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionNotice, setSubmissionNotice] = useState<string | null>(null);
   const [videoError, setVideoError] = useState(false);
-  const [isReducedMotion, setIsReducedMotion] = useState(false);
+  const [isReducedMotion, setIsReducedMotion] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false
+  );
 
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setIsReducedMotion(motionQuery.matches);
     const handleChange = (e: MediaQueryListEvent) => setIsReducedMotion(e.matches);
     motionQuery.addEventListener("change", handleChange);
     return () => motionQuery.removeEventListener("change", handleChange);

@@ -16,22 +16,17 @@ import FoundedOnAVision from "@/components/home/FoundedOnAVision";
 import ContactSection from "@/components/home/ContactSection";
 
 export default function Home() {
-  const [introCompleted, setIntroCompleted] = useState(false);
+  const [introCompleted, setIntroCompleted] = useState(() => {
+    try {
+      return typeof window !== "undefined" && sessionStorage.getItem("northframe_intro_seen") === "true";
+    } catch {
+      return false;
+    }
+  });
 
   const handleIntroComplete = () => {
     setIntroCompleted(true);
   };
-
-  useEffect(() => {
-    // Check if intro was already seen in session
-    try {
-      if (sessionStorage.getItem("northframe_intro_seen") === "true") {
-        setIntroCompleted(true);
-      }
-    } catch {
-      // Ignore
-    }
-  }, []);
 
   return (
     <main className="page relative min-h-screen text-white flex flex-col font-sans bg-transparent">

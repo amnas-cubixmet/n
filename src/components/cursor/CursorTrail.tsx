@@ -46,7 +46,7 @@ export default function CursorTrail() {
     let lastMouseMoveTime = 0;
 
     // Layer B delayed lerp position
-    let posB = { x: -1000, y: -1000 };
+    const posB = { x: 50, y: 50 };
 
     for (let i = 0; i < NUM_NODES; i++) {
       nodes.push({ x: -1000, y: -1000 });

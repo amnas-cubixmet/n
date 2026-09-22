@@ -24,22 +24,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
   const skipBtnRef = useRef<HTMLButtonElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
-  useEffect(() => {
-    // Prevent body scrolling during intro
-    document.body.style.overflow = "hidden";
-
-    // Safety fallback timeout (4.5s limit)
-    const timeoutId = setTimeout(() => {
-      finishIntro();
-    }, 4500);
-
-    return () => {
-      clearTimeout(timeoutId);
-      document.body.style.overflow = "";
-    };
-  }, []);
-
-  const finishIntro = () => {
+  const finishIntro = useCallback(() => {
     document.body.style.overflow = "";
     if (timelineRef.current) {
       timelineRef.current.kill();
@@ -53,13 +38,27 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     }
     setIsVisible(false);
     onComplete?.();
-  };
+  }, [onComplete]);
+
+  useEffect(() => {
+    // Prevent body scrolling during intro
+    document.body.style.overflow = "hidden";
+
+    // Safety fallback timeout (4.5s limit)
+    const timeoutId = setTimeout(() => {
+      finishIntro();
+    }, 4500);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.body.style.overflow = "";
+    };
+  }, [finishIntro]);
 
   useLayoutEffect(() => {
     if (!isVisible) return;
 
     let ctx: gsap.Context | null = null;
-    let animFrame1: number;
     let animFrame2: number;
 
     const startAnimation = () => {
@@ -183,7 +182,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     };
 
     // Double requestAnimationFrame ensures iOS Safari renders first paint before timeline executes
-    animFrame1 = requestAnimationFrame(() => {
+    const animFrame1 = requestAnimationFrame(() => {
       animFrame2 = requestAnimationFrame(() => {
         startAnimation();
       });
@@ -194,7 +193,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
       cancelAnimationFrame(animFrame2);
       if (ctx) ctx.revert();
     };
-  }, [isVisible]);
+  }, [isVisible, finishIntro]);
 
   if (!isVisible) return null;
 

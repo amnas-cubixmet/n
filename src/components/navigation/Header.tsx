@@ -24,29 +24,6 @@ export default function Header() {
   const tlRef = useRef<gsap.core.Timeline | null>(null);
   const scrollPositionRef = useRef<number>(0);
 
-  // Keyboard accessibility for Menu overlay (Escape key)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && menuOpen && !isAnimating) {
-        handleToggleMenu();
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [menuOpen, isAnimating]);
-
-  // Focus trap for Menu overlay when open
-  useEffect(() => {
-    if (menuOpen && navOverlayRef.current) {
-      const focusableElements = navOverlayRef.current.querySelectorAll<HTMLElement>(
-        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-      );
-      if (focusableElements.length > 0) {
-        focusableElements[0].focus();
-      }
-    }
-  }, [menuOpen]);
-
   // Calculate exact button center coordinates relative to viewport for pixel-perfect clip-path origin
   const getButtonCenterPoint = useCallback(() => {
     if (menuBtnRef.current) {
@@ -202,6 +179,29 @@ export default function Header() {
       );
     }
   }, [isAnimating, getButtonCenterPoint]);
+
+  // Keyboard accessibility for Menu overlay (Escape key)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && menuOpen && !isAnimating) {
+        toggleMenuAnimation(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [menuOpen, isAnimating, toggleMenuAnimation]);
+
+  // Focus trap for Menu overlay when open
+  useEffect(() => {
+    if (menuOpen && navOverlayRef.current) {
+      const focusableElements = navOverlayRef.current.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      );
+      if (focusableElements.length > 0) {
+        focusableElements[0].focus();
+      }
+    }
+  }, [menuOpen]);
 
   const handleToggleMenu = () => {
     if (isAnimating) return;

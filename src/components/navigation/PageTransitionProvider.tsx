@@ -166,11 +166,14 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
   const pendingHrefRef = useRef<string | null>(null);
 
-  const [isReducedMotion, setIsReducedMotion] = useState(false);
+  const [isReducedMotion, setIsReducedMotion] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false
+  );
 
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setIsReducedMotion(motionQuery.matches);
     const handler = (e: MediaQueryListEvent) => setIsReducedMotion(e.matches);
     motionQuery.addEventListener("change", handler);
     return () => motionQuery.removeEventListener("change", handler);

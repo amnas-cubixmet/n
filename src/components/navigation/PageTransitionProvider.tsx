@@ -156,6 +156,10 @@ const PANELS_CONFIG: PanelConfig[] = [
   },
 ];
 
+const isCompactMotionDevice = () =>
+  typeof window !== "undefined" &&
+  window.matchMedia("(max-width: 768px), (pointer: coarse)").matches;
+
 export function PageTransitionProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -174,9 +178,16 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
 
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const handler = (e: MediaQueryListEvent) => setIsReducedMotion(e.matches);
-    motionQuery.addEventListener("change", handler);
-    return () => motionQuery.removeEventListener("change", handler);
+    const handler = (event: MediaQueryListEvent) =>
+      setIsReducedMotion(event.matches);
+
+    if (typeof motionQuery.addEventListener === "function") {
+      motionQuery.addEventListener("change", handler);
+      return () => motionQuery.removeEventListener("change", handler);
+    }
+
+    motionQuery.addListener(handler);
+    return () => motionQuery.removeListener(handler);
   }, []);
 
   // Smooth Section Scroll Helper with Header Offset calculation
@@ -191,8 +202,10 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
 
       if (!element) return;
 
-      // Calculate fixed header offset dynamically (standard desktop/mobile ~70px)
-      const headerOffset = 70;
+      const compactMotion = isCompactMotionDevice();
+
+      // Keep the target clear of the fixed menu while respecting phone safe areas.
+      const headerOffset = compactMotion ? 56 : 70;
       const elementPosition = element.getBoundingClientRect().top + window.scrollY;
       const offsetPosition = elementPosition - headerOffset;
 
@@ -208,7 +221,7 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
           { xPercent: -100, opacity: 1 },
           {
             xPercent: 100,
-            duration: 0.45,
+            duration: compactMotion ? 0.28 : 0.45,
             ease: "power2.inOut",
             onComplete: () => {
               gsap.set(streakRef.current, { opacity: 0, xPercent: -100 });
@@ -217,9 +230,10 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
         );
       }
 
-      // Calculate distance-based smooth scroll duration (near: ~0.7s, far: ~1.0s)
       const distance = Math.abs(window.scrollY - offsetPosition);
-      const scrollDuration = Math.min(1.1, Math.max(0.65, (distance / 2000) * 0.9));
+      const scrollDuration = compactMotion
+        ? Math.min(0.78, Math.max(0.42, (distance / 2200) * 0.7))
+        : Math.min(1.1, Math.max(0.65, (distance / 2000) * 0.9));
 
       const startY = window.scrollY;
       const diff = offsetPosition - startY;
@@ -264,6 +278,7 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
 
     const validPanels = panelRefs.current.filter(Boolean);
     const container = containerRef.current;
+    const compactMotion = isCompactMotionDevice();
 
     if (isReducedMotion) {
       if (container) {
@@ -289,8 +304,8 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
       requestAnimationFrame(() => {
         gsap.to(validPanels, {
           xPercent: 220,
-          duration: 0.42,
-          stagger: 0.03,
+          duration: compactMotion ? 0.32 : 0.42,
+          stagger: compactMotion ? 0.018 : 0.03,
           ease: "power3.inOut",
           onComplete: () => {
             if (container) gsap.set(container, { display: "none" });
@@ -330,6 +345,7 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
 
       const validPanels = panelRefs.current.filter(Boolean);
       const container = containerRef.current;
+      const compactMotion = isCompactMotionDevice();
 
       if (isReducedMotion) {
         if (container) {
@@ -353,11 +369,11 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
       // Hardware-accelerated GPU setup: xPercent -220%
       gsap.set(validPanels, { xPercent: -220 });
 
-      // Fast 0.42s entry sweep
+      // Same geometric transition on touch devices, with tighter timing.
       gsap.to(validPanels, {
         xPercent: 0,
-        duration: 0.42,
-        stagger: 0.03,
+        duration: compactMotion ? 0.32 : 0.42,
+        stagger: compactMotion ? 0.018 : 0.03,
         ease: "power3.inOut",
         onComplete: () => {
           router.push(targetPath || "/");

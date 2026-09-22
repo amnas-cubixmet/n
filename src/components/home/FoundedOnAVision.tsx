@@ -24,7 +24,7 @@ export default function FoundedOnAVision() {
       const label = labelRef.current;
       const text = textRef.current;
       const image = imageRef.current;
-      if (!label || text || image) return;
+      if (!containerRef.current || !label || !text || !image) return;
 
       const mm = gsap.matchMedia();
 

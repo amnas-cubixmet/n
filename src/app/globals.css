@@ -312,8 +312,6 @@ body::-webkit-scrollbar {
 
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-
-  will-change: transform;
 }
 
 /* INTRO BRANDING ANIMATION — IOS SAFARI ACCELERATED */

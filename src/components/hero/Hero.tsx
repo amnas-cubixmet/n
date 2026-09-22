@@ -248,7 +248,7 @@ export default function Hero({ introCompleted }: HeroProps) {
   return (
     <section
       ref={containerRef}
-      className="hero relative w-full h-screen h-[100svh] h-[100dvh] min-h-[560px] pointer-events-auto flex flex-col justify-between select-none !bg-transparent overflow-hidden"
+      className="hero relative w-full h-screen h-[100svh] h-[100dvh] pointer-events-auto flex flex-col justify-between select-none !bg-transparent overflow-hidden"
     >
       <ScrollIndicator labelRef={labelRef} lineRef={blueLineRef} />
 

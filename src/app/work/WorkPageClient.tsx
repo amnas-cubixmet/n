@@ -406,6 +406,7 @@ export default function WorkPageClient() {
                   </div>
                 </div>
               </div>
+              </div>
             </TransitionLink>
           );
         })}

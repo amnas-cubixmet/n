@@ -6,16 +6,13 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
+  ScrollTrigger.config({
+    ignoreMobileResize: true,
+  });
 }
 
 export default function MotionRuntime() {
   useEffect(() => {
-    // Prevent Safari/Chrome mobile URL-bar height changes from repeatedly
-    // rebuilding every ScrollTrigger on the page.
-    ScrollTrigger.config({
-      ignoreMobileResize: true,
-    });
-
     let refreshFrame = 0;
     let orientationTimer = 0;
     let active = true;

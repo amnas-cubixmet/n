@@ -97,11 +97,13 @@ export default function WatWeDoen() {
       const startPolygon =
         "polygon(0% 100%, 0% 100%, 20% 100%, 20% 100%, 40% 100%, 40% 100%, 60% 100%, 60% 100%, 80% 100%, 80% 100%, 100% 100%, 100% 100%)";
       const endPolygon =
-        "polygon(0% 100%, 0% 0%, 20% 0%, 20% -15%, 40% -15%, 40% -30%, 60% -30%, 60% -45%, 80% -45%, 80% -60%, 100% -60%, 100% 100%)";
+        "polygon(0% 100%, 0% 0%, 20% 0%, 20% -12%, 40% -12%, 40% -24%, 60% -24%, 60% -36%, 80% -36%, 80% -48%, 100% -48%, 100% 100%)";
 
       const mm = gsap.matchMedia();
 
       const buildTimeline = (mobile: boolean) => {
+        const transitionCount = Math.max(1, services.length - 1);
+
         panelsRef.current.forEach((panel, index) => {
           if (!panel) return;
 
@@ -110,7 +112,7 @@ export default function WatWeDoen() {
               inset: 0,
               xPercent: 0,
               yPercent: index === 0 ? 0 : 100,
-              opacity: 1,
+              autoAlpha: 1,
               zIndex: index + 1,
               clipPath: "none",
               willChange: "transform",
@@ -124,59 +126,75 @@ export default function WatWeDoen() {
               height: "100%",
               xPercent: 0,
               yPercent: 0,
-              opacity: 1,
+              autoAlpha: 1,
               zIndex: index + 1,
               clipPath:
                 index === 0
                   ? "polygon(0% 100%, 0% 0%, 100% 0%, 100% 100%)"
                   : startPolygon,
               willChange: "clip-path, transform",
+              force3D: true,
             });
           }
 
           const image = imagesRef.current[index];
           if (image) {
             gsap.set(image, {
-              scale: index === 0 ? 1 : mobile ? 1.025 : 1.05,
+              scale: index === 0 ? 1 : mobile ? 1.025 : 1.045,
               force3D: true,
+              transformOrigin: "center center",
             });
           }
 
           const titleLines = panel.querySelectorAll(".title-inner");
           const counters = panel.querySelectorAll(".service-counter");
 
-          if (index > 0) {
-            gsap.set(titleLines, { yPercent: 110, opacity: 0 });
-            gsap.set(counters, { y: mobile ? 10 : 18, opacity: 0 });
-          }
+          gsap.set(titleLines, {
+            yPercent: index === 0 ? 0 : 108,
+            autoAlpha: index === 0 ? 1 : 0,
+            force3D: true,
+          });
+
+          gsap.set(counters, {
+            y: index === 0 ? 0 : mobile ? 8 : 14,
+            autoAlpha: index === 0 ? 1 : 0,
+          });
         });
 
         if (bgShapeRef.current) {
           gsap.set(bgShapeRef.current, {
-            yPercent: mobile ? -3 : -15,
+            yPercent: mobile ? -2 : -10,
+            force3D: true,
           });
         }
 
-        const distanceMultiplier = mobile ? 122 : 140;
-        const scrubAmount = mobile ? 0.55 : 1;
-
         const timeline = gsap.timeline({
+          defaults: {
+            overwrite: "auto",
+          },
           scrollTrigger: {
             trigger: wrapperRef.current,
             start: "top top",
-            end: `+=${(services.length - 1) * distanceMultiplier}%`,
-            scrub: scrubAmount,
+            end: `+=${transitionCount * (mobile ? 110 : 125)}%`,
+            scrub: mobile ? 0.45 : 0.8,
             pin: stickyRef.current,
             pinSpacing: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
+            refreshPriority: 1,
             onUpdate: (self) => {
-              const index = Math.min(
+              const transitionProgress = self.progress * transitionCount;
+              const nextIndex = Math.min(
                 services.length - 1,
-                Math.floor(self.progress * services.length)
+                Math.max(0, Math.floor(transitionProgress + 0.5))
               );
-              setActiveIndex((previous) => (previous === index ? previous : index));
+
+              setActiveIndex((previous) =>
+                previous === nextIndex ? previous : nextIndex
+              );
             },
+            onLeave: () => setActiveIndex(services.length - 1),
+            onLeaveBack: () => setActiveIndex(0),
           },
         });
 
@@ -184,9 +202,10 @@ export default function WatWeDoen() {
           timeline.to(
             bgShapeRef.current,
             {
-              yPercent: mobile ? 3 : 15,
+              yPercent: mobile ? 2 : 10,
+              duration: transitionCount,
               ease: "none",
-              duration: services.length - 1,
+              force3D: true,
             },
             0
           );
@@ -197,28 +216,30 @@ export default function WatWeDoen() {
           const image = imagesRef.current[index];
           if (!panel) continue;
 
-          const startTime = (index - 1) * 1.1;
+          const segmentStart = index - 1;
+          const revealDuration = mobile ? 0.78 : 0.92;
 
           if (mobile) {
             timeline.to(
               panel,
               {
                 yPercent: 0,
-                duration: 0.82,
+                duration: revealDuration,
                 ease: "none",
                 force3D: true,
               },
-              startTime
+              segmentStart
             );
           } else {
             timeline.to(
               panel,
               {
                 clipPath: endPolygon,
-                duration: 1,
+                duration: revealDuration,
                 ease: "none",
+                force3D: true,
               },
-              startTime
+              segmentStart
             );
           }
 
@@ -227,11 +248,11 @@ export default function WatWeDoen() {
               image,
               {
                 scale: 1,
-                duration: mobile ? 0.82 : 1,
+                duration: revealDuration,
                 ease: "none",
                 force3D: true,
               },
-              startTime
+              segmentStart
             );
           }
 
@@ -242,37 +263,39 @@ export default function WatWeDoen() {
             titleLines,
             {
               yPercent: 0,
-              opacity: 1,
-              duration: mobile ? 0.28 : 0.36,
-              stagger: 0.035,
+              autoAlpha: 1,
+              duration: mobile ? 0.26 : 0.32,
+              stagger: mobile ? 0.025 : 0.035,
               ease: "power2.out",
+              force3D: true,
             },
-            startTime + (mobile ? 0.5 : 0.62)
+            segmentStart + (mobile ? 0.46 : 0.54)
           );
 
           timeline.to(
             counters,
             {
               y: 0,
-              opacity: 1,
-              duration: 0.22,
+              autoAlpha: 1,
+              duration: mobile ? 0.18 : 0.2,
               ease: "power2.out",
             },
-            startTime + (mobile ? 0.56 : 0.68)
+            segmentStart + (mobile ? 0.52 : 0.6)
           );
         }
 
-        const firstPanel = panelsRef.current[0];
-        if (firstPanel) {
-          const firstTitleLines = firstPanel.querySelectorAll(".title-inner");
-          const firstCounters = firstPanel.querySelectorAll(".service-counter");
-          gsap.set(firstTitleLines, { yPercent: 0, opacity: 1 });
-          gsap.set(firstCounters, { y: 0, opacity: 1 });
-        }
+        // Keep every service transition allocated to one equal scroll segment.
+        // This makes the active label/counter switch at the visual midpoint of
+        // each reveal rather than drifting ahead of the panel.
+        timeline.to({}, { duration: 0.001 }, transitionCount);
 
         return () => {
           panelsRef.current.forEach((panel) => {
-            if (panel) gsap.set(panel, { clearProps: "willChange" });
+            if (panel) {
+              gsap.set(panel, {
+                clearProps: "will-change",
+              });
+            }
           });
         };
       };

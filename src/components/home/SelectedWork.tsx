@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef } from "react";
-import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -152,12 +151,12 @@ export default function SelectedWork() {
                 We’re here to turn good ideas into something that makes people say
                 “wow.”
               </p>
-              <Link
+              <TransitionLink
                 href="/#contact"
-                className="inline-flex items-center gap-2 font-sans font-medium text-black hover:text-[#1677FF] text-sm tracking-wide transition-colors mt-2"
+                className="inline-flex items-center gap-2 font-sans font-medium text-black lg:hover:text-[#1677FF] text-sm tracking-wide transition-colors mt-2"
               >
                 Let’s talk →
-              </Link>
+              </TransitionLink>
             </div>
           </div>
 

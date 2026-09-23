@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -70,7 +70,7 @@ export function ProjectCard({
         isEvenMobile ? "ml-auto lg:ml-0" : "mr-auto lg:mr-0"
       } ${gridClass}`}
     >
-      <Link href={`/services/${project.slug}`} className="block w-full">
+      <TransitionLink href={`/services/${project.slug}`} className="block w-full">
         <button
           type="button"
           className="group relative flex w-full flex-col items-start text-left cursor-pointer"
@@ -106,7 +106,7 @@ export function ProjectCard({
             </span>
           </div>
         </button>
-      </Link>
+      </TransitionLink>
     </article>
   );
 }

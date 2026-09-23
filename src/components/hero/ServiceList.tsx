@@ -56,9 +56,11 @@ export default function ServiceList({
                   }
                 }}
                 href={service.href}
-                className="service-item cursor-pointer opacity-0 transition-opacity duration-150"
+                className="service-item cursor-pointer overflow-hidden"
               >
-                {service.name}
+                <span className="service-item-text block will-change-transform">
+                  {service.name}
+                </span>
               </TransitionLink>
             </li>
           ))}

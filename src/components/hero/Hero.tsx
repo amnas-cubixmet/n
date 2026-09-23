@@ -32,6 +32,9 @@ export default function Hero({ introCompleted }: HeroProps) {
       const serviceItems = serviceItemsRef.current.filter(
         (item): item is HTMLAnchorElement => Boolean(item)
       );
+      const serviceTextItems = serviceItems
+        .map((item) => item.querySelector<HTMLElement>(".service-item-text"))
+        .filter((item): item is HTMLElement => Boolean(item));
 
       // Keep the hero in a clean pre-intro state so the loading animation never
       // fights with the hero entrance behind it.
@@ -51,7 +54,10 @@ export default function Hero({ introCompleted }: HeroProps) {
           });
         }
         if (serviceItems.length) {
-          gsap.set(serviceItems, { opacity: 0, y: 10 });
+          gsap.set(serviceItems, { opacity: 0, y: 8 });
+        }
+        if (serviceTextItems.length) {
+          gsap.set(serviceTextItems, { yPercent: 110 });
         }
         if (headerBtn) {
           gsap.set(headerBtn, { opacity: 0, y: -10 });
@@ -89,16 +95,19 @@ export default function Hero({ introCompleted }: HeroProps) {
             if (serviceItems.length) {
               gsap.set(serviceItems, { opacity: 1, y: 0 });
             }
+            if (serviceTextItems.length) {
+              gsap.set(serviceTextItems, { yPercent: 0 });
+            }
             if (headerBtn) {
               gsap.set(headerBtn, { opacity: 1, y: 0 });
             }
             return;
           }
 
-          const duration = mobile ? 0.62 : 0.82;
-          const logoY = mobile ? 5 : 7;
-          const labelY = mobile ? 3 : 4;
-          const serviceY = mobile ? 3 : 4;
+          const duration = mobile ? 0.66 : 0.86;
+          const logoY = mobile ? 12 : 16;
+          const labelY = mobile ? 7 : 9;
+          const serviceY = mobile ? 6 : 8;
 
           if (bgVisual) gsap.set(bgVisual, { opacity: 0 });
           if (heroVisual) gsap.set(heroVisual, { opacity: 0 });
@@ -129,6 +138,12 @@ export default function Hero({ introCompleted }: HeroProps) {
               force3D: true,
             });
           }
+          if (serviceTextItems.length) {
+            gsap.set(serviceTextItems, {
+              yPercent: 110,
+              force3D: true,
+            });
+          }
           if (headerBtn) {
             gsap.set(headerBtn, {
               opacity: 0,
@@ -138,7 +153,7 @@ export default function Hero({ introCompleted }: HeroProps) {
           }
 
           const tl = gsap.timeline({
-            delay: mobile ? 0.04 : 0.06,
+            delay: mobile ? 0.12 : 0.16,
             defaults: { overwrite: "auto" },
           });
 
@@ -204,16 +219,30 @@ export default function Hero({ introCompleted }: HeroProps) {
 
           if (serviceItems.length) {
             tl.to(
-              serviceItems.slice().reverse(),
+              serviceItems,
               {
                 opacity: 1,
                 y: 0,
-                duration: duration * 0.56,
-                stagger: mobile ? 0.018 : 0.024,
+                duration: mobile ? 0.28 : 0.34,
+                stagger: mobile ? 0.045 : 0.06,
+                ease: "power2.out",
+                force3D: true,
+              },
+              "-=0.12"
+            );
+          }
+
+          if (serviceTextItems.length) {
+            tl.to(
+              serviceTextItems,
+              {
+                yPercent: 0,
+                duration: mobile ? 0.42 : 0.5,
+                stagger: mobile ? 0.045 : 0.06,
                 ease: "power3.out",
                 force3D: true,
               },
-              "-=0.18"
+              "<0.02"
             );
           }
 

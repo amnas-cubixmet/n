@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat, Poppins, Pixelify_Sans } from "next/font/google";
 import "./globals.css";
 import CursorTrail from "@/components/cursor/CursorTrail";
@@ -27,6 +27,13 @@ const pixelifySans = Pixelify_Sans({
 export const metadata: Metadata = {
   title: "NORTHFRAME | Built for what comes next",
   description: "Creative digital agency — strategy, design, technology, and growth.",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#05070B",
 };
 
 export default function RootLayout({

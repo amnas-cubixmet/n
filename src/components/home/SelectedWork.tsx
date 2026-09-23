@@ -8,11 +8,12 @@ import { workProjects } from "@/data/work";
 import { ProjectCard } from "@/components/work/ProjectCard";
 import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function SelectedWork() {
   const containerRef = useRef<HTMLElement>(null);
-  const shapeRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -29,16 +30,20 @@ export default function SelectedWork() {
         projectElements.forEach((element) => {
           gsap.fromTo(
             element,
-            { opacity: 0, y: 24 },
             {
-              opacity: 1,
+              autoAlpha: 0,
+              y: 20,
+            },
+            {
+              autoAlpha: 1,
               y: 0,
-              duration: 0.55,
+              duration: 0.48,
               ease: "power3.out",
               scrollTrigger: {
                 trigger: element,
-                start: "top 88%",
+                start: "top 90%",
                 once: true,
+                invalidateOnRefresh: true,
               },
             }
           );
@@ -49,37 +54,24 @@ export default function SelectedWork() {
         projectElements.forEach((element) => {
           gsap.fromTo(
             element,
-            { opacity: 0, y: 45 },
             {
-              opacity: 1,
+              autoAlpha: 0,
+              y: 30,
+            },
+            {
+              autoAlpha: 1,
               y: 0,
-              duration: 0.8,
-              ease: "power2.out",
+              duration: 0.62,
+              ease: "power3.out",
               scrollTrigger: {
                 trigger: element,
-                start: "top 85%",
+                start: "top 86%",
                 once: true,
+                invalidateOnRefresh: true,
               },
             }
           );
         });
-
-        if (shapeRef.current) {
-          gsap.fromTo(
-            shapeRef.current,
-            { yPercent: -5 },
-            {
-              yPercent: 5,
-              ease: "none",
-              scrollTrigger: {
-                trigger: containerRef.current,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 1.2,
-              },
-            }
-          );
-        }
       });
 
       return () => mm.revert();
@@ -91,80 +83,79 @@ export default function SelectedWork() {
     <section
       id="selected-work"
       ref={containerRef}
-      className="relative isolate w-full overflow-hidden bg-white text-black pointer-events-auto z-20 m-0 px-5 md:px-6 lg:px-8 pt-16 md:pt-20 pb-16 md:pb-28"
+      className="relative isolate z-20 m-0 w-full overflow-hidden bg-white px-[max(1.1rem,env(safe-area-inset-left))] pb-12 pt-10 pr-[max(1.1rem,env(safe-area-inset-right))] text-black pointer-events-auto sm:px-8 sm:pb-14 sm:pt-12 lg:px-10 lg:pb-18 lg:pt-14"
     >
-      {/* LAYER 2 — ARCHITECTURAL GREY DECORATIVE SHAPE (#F3F3F3) WITH PARALLAX */}
+      {/* Decorative shape intentionally stays in normal section space.
+          It has no separate parallax, so it travels at exactly the same
+          page-scroll speed as the project content. */}
       <div
-        ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-[18%] right-0 top-[30%] h-[60%] bg-[#F3F3F3] z-[1] hidden lg:block will-change-transform"
+        className="pointer-events-none absolute left-[8%] top-[18%] z-[1] h-[66%] w-[88%] bg-[#F2F3F5] sm:left-[12%] sm:w-[82%] lg:left-[18%] lg:top-[16%] lg:h-[70%] lg:w-[72%]"
         style={{
-          clipPath: "polygon(18% 0, 100% 0, 100% 100%, 0 100%, 0 28%)",
+          clipPath:
+            "polygon(12% 0, 100% 0, 100% 84%, 88% 84%, 88% 100%, 0 100%, 0 18%, 12% 18%)",
         }}
-      />
+      >
+        <span className="absolute left-[12%] top-0 h-[2px] w-[34%] bg-[#1677FF]/70" />
+        <span className="absolute bottom-[16%] right-0 h-[2px] w-[24%] bg-black/10" />
+      </div>
 
-      {/* LAYER 3 — FOREGROUND SCROLLING CONTENT (NORMAL PAGE MOVEMENT) */}
-      <div className="relative z-10 w-full">
-        {/* DESKTOP 12-COLUMN GRID WITH CONTROLLED ASYMMETRIC STAGGER */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-y-12 lg:gap-y-16 lg:gap-x-6 w-full items-start">
-          {/* SECTION HEADING (TOP-LEFT: COLS 1-4) */}
-          <div className="work-project-item col-span-full lg:col-span-4 lg:col-start-1 self-start text-left z-10">
+      <div className="relative z-10 mx-auto w-full max-w-[1500px]">
+        <div className="grid w-full grid-cols-1 items-start gap-x-0 gap-y-6 sm:gap-y-7 lg:grid-cols-12 lg:gap-x-7 lg:gap-y-8">
+          <div className="work-project-item col-span-full z-10 self-start text-left lg:col-span-4 lg:col-start-1">
             <div className="flex flex-col items-start gap-[2px]">
-              <span className="w-fit bg-black text-white px-[2px] py-0 font-mono font-bold text-[clamp(20px,2vw,34px)] leading-[0.95] uppercase tracking-wider">
+              <span className="w-fit bg-black px-[2px] py-0 font-mono text-[clamp(20px,2vw,34px)] font-bold uppercase leading-[0.95] tracking-wider text-white">
                 A SELECTION
               </span>
-              <span className="w-fit bg-black text-white px-[2px] py-0 font-mono font-bold text-[clamp(20px,2vw,34px)] leading-[0.95] uppercase tracking-wider">
+              <span className="w-fit bg-black px-[2px] py-0 font-mono text-[clamp(20px,2vw,34px)] font-bold uppercase leading-[0.95] tracking-wider text-white">
                 OF OUR WORK
               </span>
             </div>
           </div>
 
-          {/* PROJECT 01 (RIGHT: COLS 8-11, 4-COLUMN WIDTH) */}
           <ProjectCard
             project={workProjects[0]}
-            gridClass="col-span-full lg:col-span-4 lg:col-start-8 self-start z-10"
+            gridClass="col-span-full lg:col-span-4 lg:col-start-8 z-10"
             isEvenMobile={false}
           />
 
-          {/* PROJECT 02 (LOWER LEFT: COLS 1-4 WITH CONTROLLED NEGATIVE MARGIN STAGGER ON DESKTOP) */}
           <ProjectCard
             project={workProjects[1]}
-            gridClass="col-span-full lg:col-span-4 lg:col-start-1 lg:-mt-[180px] xl:-mt-[240px] z-10"
+            gridClass="col-span-full lg:col-span-4 lg:col-start-1 z-10"
             isEvenMobile={true}
           />
 
-          {/* PROJECT 03 (CENTER-RIGHT: COLS 7-10) */}
           <ProjectCard
             project={workProjects[2]}
-            gridClass="col-span-full lg:col-span-4 lg:col-start-7 lg:mt-8 z-10"
+            gridClass="col-span-full lg:col-span-4 lg:col-start-7 z-10"
             isEvenMobile={false}
           />
 
-          {/* CTA BLOCK (LOWER-LEFT: COLS 1-5 / MOBILE: BOTTOM) */}
-          <div className="work-project-item col-span-full lg:col-span-5 lg:col-start-1 flex flex-col items-start justify-end mt-8 lg:mt-12 pt-4 z-10">
-            <div className="max-w-[340px] flex flex-col gap-4 text-left">
-              <h4 className="font-sans font-medium text-black text-xl md:text-2xl tracking-tight leading-snug">
+          <div className="work-project-item col-span-full z-10 mt-1 flex flex-col items-start justify-end pt-1 lg:col-span-5 lg:col-start-1 lg:mt-2 lg:pt-2">
+            <div className="flex max-w-[340px] flex-col gap-3 text-left">
+              <h4 className="font-sans text-xl font-medium leading-snug tracking-tight text-black md:text-2xl">
                 Think your brand belongs here too?
               </h4>
-              <p className="font-sans font-normal text-black/80 text-sm md:text-base leading-relaxed">
+
+              <p className="font-sans text-sm font-normal leading-relaxed text-black/80 md:text-base">
                 Let’s get to know your brand, your ideas, and what you’re aiming for.
                 We’re here to turn good ideas into something that makes people say
                 “wow.”
               </p>
+
               <TransitionLink
                 href="/#contact"
-                className="inline-flex items-center gap-2 font-sans font-medium text-black lg:hover:text-[#1677FF] text-sm tracking-wide transition-colors mt-2"
+                className="mt-1 inline-flex items-center gap-2 font-sans text-sm font-medium tracking-wide text-black transition-colors lg:hover:text-[#1677FF]"
               >
                 Let’s talk →
               </TransitionLink>
             </div>
           </div>
 
-          {/* SEE MORE BUTTON */}
-          <div className="col-span-full flex justify-center pt-12 md:pt-16 pb-4 z-10">
+          <div className="col-span-full z-10 flex justify-center pt-5 sm:pt-6 lg:pt-8">
             <TransitionLink
               href="/work"
-              className="inline-flex items-center justify-center bg-black px-6 py-3 text-[12px] font-medium uppercase tracking-[0.04em] text-white transition-colors duration-300 lg:hover:bg-[#1677FF]"
+              className="inline-flex min-h-[44px] items-center justify-center bg-black px-6 py-3 text-[12px] font-medium uppercase tracking-[0.04em] text-white transition-colors duration-300 lg:hover:bg-[#1677FF]"
             >
               SEE MORE
             </TransitionLink>

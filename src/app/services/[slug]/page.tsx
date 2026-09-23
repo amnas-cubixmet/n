@@ -1,6 +1,6 @@
 import React from "react";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 import Image from "next/image";
 import { services } from "@/data/services";
 import Header from "@/components/navigation/Header";
@@ -30,12 +30,12 @@ export default async function ServiceDetailPage({ params }: ServiceDetailPagePro
       <div className="w-full max-w-7xl mx-auto px-[max(1rem,env(safe-area-inset-left))] sm:px-10 lg:px-12 pt-[max(6.5rem,env(safe-area-inset-top))] sm:pt-36 pb-[max(4rem,env(safe-area-inset-bottom))] flex flex-col gap-10 sm:gap-12">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center gap-3">
-          <Link
+          <TransitionLink
             href="/#wat-we-doen"
-            className="font-mono text-xs text-white/60 hover:text-white tracking-widest uppercase transition-colors inline-flex items-center gap-2"
+            className="font-mono text-xs text-white/60 lg:hover:text-white tracking-widest uppercase transition-colors inline-flex items-center gap-2"
           >
             ← Back to What We Do
-          </Link>
+          </TransitionLink>
           <span className="text-white/20 font-mono text-xs">/</span>
           <span className="font-mono text-xs text-[#1677FF] font-bold tracking-widest uppercase">
             {service.number}

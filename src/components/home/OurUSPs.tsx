@@ -1,20 +1,20 @@
 "use client";
 
 import React, { useRef } from "react";
-import Link from "next/link";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export interface USP {
   id: string;
   number: string;
   title: string;
   description: string;
-  desktopTop: string;
-  desktopLeft: string;
 }
 
 export const usps: USP[] = [
@@ -24,8 +24,6 @@ export const usps: USP[] = [
     title: "ONE PARTNER,\nEND-TO-END",
     description:
       "From strategy and branding to marketing, technology, and creative production, everything your brand needs works together under one roof.",
-    desktopTop: "80px",
-    desktopLeft: "46vw",
   },
   {
     id: "usp-2",
@@ -33,8 +31,6 @@ export const usps: USP[] = [
     title: "CREATIVITY WITH\nCOMMERCIAL PURPOSE",
     description:
       "Every creative decision is rooted in your business goals, ensuring our work is purposeful, practical, and commercially relevant.",
-    desktopTop: "560px",
-    desktopLeft: "6vw",
   },
   {
     id: "usp-3",
@@ -42,8 +38,6 @@ export const usps: USP[] = [
     title: "DEEP LOCAL\nFLUENCY",
     description:
       "Communication built in Malayalam, for the way business actually works in Kerala — including its many Gulf-returnee founders.",
-    desktopTop: "1060px",
-    desktopLeft: "52vw",
   },
   {
     id: "usp-4",
@@ -51,8 +45,6 @@ export const usps: USP[] = [
     title: "ATTENTION\nTO DETAIL",
     description:
       "We refine every element with precision, ensuring your brand delivers a consistent and memorable experience across every touchpoint.",
-    desktopTop: "1560px",
-    desktopLeft: "10vw",
   },
   {
     id: "usp-5",
@@ -60,273 +52,177 @@ export const usps: USP[] = [
     title: "STRATEGY BEFORE\nAESTHETICS",
     description:
       "Good design starts with good thinking. We look beyond surface-level visuals to understand your business, audience, and goals. Every creative decision is rooted in strategy, ensuring your brand looks great and communicates with purpose.",
-    desktopTop: "2060px",
-    desktopLeft: "54vw",
   },
 ];
 
 export default function OurUSPs() {
   const containerRef = useRef<HTMLElement>(null);
-  const stageRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLDivElement>(null);
-  const bgPlanesRef = useRef<HTMLDivElement>(null);
+  const shapeRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
-      if (typeof window === "undefined") return;
+      if (typeof window === "undefined" || !containerRef.current) return;
 
-      const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-      if (motionQuery.matches) return;
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
 
-      if (!containerRef.current || !stageRef.current || !canvasRef.current) return;
+      if (reducedMotion) return;
 
       const mm = gsap.matchMedia();
 
-      // DESKTOP SCROLL ANIMATION (>= 1024px)
-      mm.add("(min-width: 1024px)", () => {
-        if (!stageRef.current || !canvasRef.current) return;
-
-        const canvas = canvasRef.current;
-        const bgPlanes = bgPlanesRef.current;
-
-        const getTravelDistance = () => {
-          return Math.max(0, canvas.scrollHeight - window.innerHeight + 160);
-        };
-
-        const masterTL = gsap.timeline({
-          scrollTrigger: {
-            trigger: stageRef.current,
-            start: "top top",
-            end: () => `+=${getTravelDistance() + 500}`,
-            pin: stageRef.current,
-            pinSpacing: true,
-            scrub: 1,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        // Translate the staggered canvas vertically (cards + CTA block)
-        masterTL.to(canvas, {
-          y: () => -getTravelDistance(),
-          ease: "none",
-        });
-
-        // Parallax background planes at 0.7x speed
-        if (bgPlanes) {
-          masterTL.to(
-            bgPlanes,
-            {
-              y: () => -getTravelDistance() * 0.7,
-              ease: "none",
-            },
-            0
-          );
-        }
-      });
-
-      // MOBILE LAYOUT (< 1024px)
-      mm.add("(max-width: 1023px)", () => {
-        const elements = gsap.utils.toArray<HTMLElement>(
-          ".mobile-usp-card, .mobile-usp-cta"
+      const buildMotion = (mobile: boolean) => {
+        const reveals = gsap.utils.toArray<HTMLElement>(
+          ".usp-reveal",
+          containerRef.current
         );
 
-        elements.forEach((element) => {
+        reveals.forEach((element, index) => {
           gsap.fromTo(
             element,
-            { opacity: 0, y: 22 },
             {
-              opacity: 1,
+              autoAlpha: 0,
+              y: mobile ? 18 : 28,
+            },
+            {
+              autoAlpha: 1,
               y: 0,
-              duration: 0.5,
+              duration: mobile ? 0.48 : 0.52,
               ease: "power3.out",
+              force3D: true,
               scrollTrigger: {
                 trigger: element,
-                start: "top 88%",
+                start: mobile ? "top 89%" : "top 86%",
                 once: true,
+                invalidateOnRefresh: true,
               },
+              delay: index === 0 ? 0 : 0.01,
             }
           );
         });
-      });
+
+        if (shapeRef.current) {
+          gsap.fromTo(
+            shapeRef.current,
+            {
+              yPercent: mobile ? -4 : -9,
+            },
+            {
+              yPercent: mobile ? 12 : 22,
+              ease: "none",
+              force3D: true,
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: mobile ? 0.7 : 0.9,
+                invalidateOnRefresh: true,
+              },
+            }
+          );
+        }
+      };
+
+      mm.add("(max-width: 1023px)", () => buildMotion(true));
+      mm.add("(min-width: 1024px)", () => buildMotion(false));
+
+      return () => mm.revert();
     },
-    { scope: containerRef }
+    {
+      scope: containerRef,
+    }
   );
 
   return (
     <section
       id="our-usps"
       ref={containerRef}
-      className="relative w-full bg-[#000000] text-white pointer-events-auto z-30 m-0 p-0 overflow-x-clip select-none"
+      className="relative z-30 m-0 w-full overflow-hidden bg-black text-white pointer-events-auto"
     >
-      {/* 1. NORMAL DOCUMENT FLOW SECTION HEADER */}
-      <header className="relative w-full px-6 sm:px-10 md:px-16 lg:px-20 pt-16 sm:pt-20 md:pt-24 pb-8 sm:pb-12 z-20">
-        <div className="flex flex-col items-start gap-1">
-          <div className="bg-white text-black px-3 py-1">
-            <h2 className="font-pixel font-bold text-xl sm:text-2xl lg:text-3xl leading-none uppercase tracking-wider">
-              OUR
-            </h2>
-          </div>
-          <div className="bg-white text-black px-3 py-1">
-            <h2 className="font-pixel font-bold text-xl sm:text-2xl lg:text-3xl leading-none uppercase tracking-wider">
-              USPs
-            </h2>
-          </div>
-        </div>
-      </header>
-
-      {/* 2. DESKTOP ANIMATION STAGE (PINNED SCROLL CANVAS — CARDS, CTA & PLANES) */}
-      <div className="hidden lg:block w-full">
-        <div
-          ref={stageRef}
-          className="relative w-full h-[100dvh] min-h-[100dvh] bg-[#000000] overflow-hidden"
-        >
-          {/* PARALLAX LAYER 1: DARK ARCHITECTURAL BACKGROUND PLANES */}
-          <div
-            ref={bgPlanesRef}
-            aria-hidden="true"
-            className="absolute inset-0 w-full h-[3200px] pointer-events-none z-0 will-change-transform"
-          >
-            <div
-              className="absolute top-[120px] left-[28vw] w-[65vw] h-[520px] bg-[#171717] opacity-80"
-              style={{ clipPath: "polygon(0 0, 100% 12%, 88% 100%, 0 85%)" }}
-            />
-            <div
-              className="absolute top-[800px] left-[4vw] w-[58vw] h-[550px] bg-[#1B1B1B] opacity-75"
-              style={{ clipPath: "polygon(12% 0, 100% 0, 100% 88%, 0 100%)" }}
-            />
-            <div
-              className="absolute top-[1480px] left-[32vw] w-[62vw] h-[540px] bg-[#171717] opacity-80"
-              style={{ clipPath: "polygon(0 8%, 100% 0, 85% 100%, 0 92%)" }}
-            />
-            <div
-              className="absolute top-[2100px] left-[8vw] w-[60vw] h-[500px] bg-[#171717] opacity-75"
-              style={{ clipPath: "polygon(8% 0, 100% 10%, 90% 100%, 0 90%)" }}
-            />
-          </div>
-
-          {/* PARALLAX LAYER 2: OVERSIZED STAGGERED CARDS CANVAS & FINAL CTA BLOCK */}
-          <div
-            ref={canvasRef}
-            className="relative z-10 w-full h-[3150px] will-change-transform"
-          >
-            {usps.map((item) => (
-              <article
-                key={item.id}
-                className="absolute w-[420px] xl:w-[465px] min-h-[400px] bg-[#151515] text-white p-8 xl:p-10 flex flex-col justify-between shadow-2xl transition-opacity duration-300"
-                style={{
-                  top: item.desktopTop,
-                  left: item.desktopLeft,
-                  clipPath: "polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 10%)",
-                }}
-              >
-                {/* NUMBER & TITLE */}
-                <div className="flex flex-col items-start">
-                  <div className="inline-block bg-[#1677FF] text-black font-mono font-bold text-xs xl:text-sm px-2.5 py-1 mb-6 rounded-none leading-none">
-                    {item.number}
-                  </div>
-                  <h3 className="font-pixel font-bold text-white text-[clamp(22px,2vw,30px)] leading-[1.08] uppercase tracking-tight whitespace-pre-line text-left">
-                    {item.title}
-                  </h3>
-                </div>
-
-                {/* DESCRIPTION */}
-                <div className="mt-auto pt-6 border-t border-white/10">
-                  <p className="font-sans font-normal text-white/70 text-sm xl:text-base leading-relaxed text-left">
-                    {item.description}
-                  </p>
-                </div>
-              </article>
-            ))}
-
-            {/* FINAL NORTHFRAME CTA BLOCK (AFTER CARD 05 — BOTTOM-LEFT POSITION) */}
-            <div
-              className="absolute top-[2160px] left-[10vw] max-w-[360px] flex flex-col items-start text-left z-20"
-            >
-              <h4 className="font-sans font-semibold text-white text-[clamp(20px,1.6vw,24px)] leading-tight tracking-tight mb-4">
-                Ready to make
-                <br />
-                your mark?
-              </h4>
-
-              <p className="font-sans font-normal text-white/60 text-[clamp(14px,1.1vw,17px)] leading-relaxed mb-6">
-                Let’s create something that gets
-                <br />
-                noticed, remembered, and talked
-                <br />
-                about.
-              </p>
-
-              <Link
-                href="/#contact"
-                className="group inline-flex items-center gap-2 font-sans font-medium text-white text-base tracking-wide border-b border-white/40 lg:hover:border-white transition-colors duration-200 py-0.5"
-              >
-                <span>Let’s talk</span>
-                <span className="inline-block transition-transform duration-200 lg:group-hover:translate-x-1">
-                  →
-                </span>
-              </Link>
-            </div>
-          </div>
-        </div>
+      <div
+        ref={shapeRef}
+        aria-hidden="true"
+        className="pointer-events-none absolute left-[6%] top-[8%] z-0 h-[88%] w-[88%] bg-[#151515] will-change-transform sm:left-[10%] sm:w-[82%] lg:left-[18%] lg:top-[6%] lg:h-[90%] lg:w-[70%]"
+        style={{
+          clipPath:
+            "polygon(11% 0, 100% 0, 100% 22%, 91% 22%, 91% 48%, 100% 48%, 100% 100%, 14% 100%, 14% 90%, 0 90%, 0 16%, 11% 16%)",
+        }}
+      >
+        <div className="absolute left-[11%] top-0 h-[2px] w-[34%] bg-[#1677FF]/80" />
+        <div className="absolute bottom-[10%] right-0 h-[2px] w-[28%] bg-white/10" />
+        <div className="absolute right-[9%] top-[20%] h-[28%] w-[18%] bg-[#1E1E1E]" />
       </div>
 
-      {/* 3. MOBILE & TABLET RESPONSIVE LAYOUT (< 1024px) */}
-      <div className="lg:hidden w-full px-5 pb-16 sm:pb-20 flex flex-col items-start gap-10">
-        {/* MOBILE STAGGERED CARDS FLOW */}
-        <div className="w-full flex flex-col gap-10 sm:gap-12">
+      <div className="relative z-10 mx-auto w-full max-w-[1500px] px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-16 pr-[max(1.1rem,env(safe-area-inset-right))] sm:px-8 sm:pb-24 sm:pt-20 lg:px-12 lg:pb-32 lg:pt-24 xl:px-16">
+        <header className="usp-reveal mb-10 sm:mb-14 lg:mb-16">
+          <div className="flex flex-col items-start gap-[2px]">
+            <span className="inline-block bg-white px-2 py-[2px] font-pixel text-[clamp(18px,5vw,28px)] font-bold uppercase leading-none tracking-[0.04em] text-black">
+              OUR
+            </span>
+            <span className="inline-block bg-white px-2 py-[2px] font-pixel text-[clamp(18px,5vw,28px)] font-bold uppercase leading-none tracking-[0.04em] text-black">
+              USPs
+            </span>
+          </div>
+        </header>
+
+        <div className="flex w-full flex-col gap-7 sm:gap-9 lg:gap-10">
           {usps.map((item, index) => {
-            const isRight = index % 2 === 0;
+            const alignRight = index % 2 === 0;
+
             return (
               <article
                 key={item.id}
-                className={`mobile-usp-card w-[calc(100vw-40px)] max-w-[390px] min-h-[380px] bg-[#151515] text-white p-6 sm:p-8 flex flex-col justify-between shadow-xl ${
-                  isRight ? "ml-auto" : "mr-auto"
+                className={`usp-reveal relative flex min-h-[330px] w-[94%] max-w-[430px] flex-col justify-between bg-[#111111] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.22)] sm:min-h-[350px] sm:w-[88%] sm:p-8 lg:min-h-[390px] lg:w-[42%] lg:max-w-[500px] lg:p-9 xl:p-10 ${
+                  alignRight
+                    ? "ml-auto"
+                    : "mr-auto lg:ml-[4%]"
                 }`}
                 style={{
-                  clipPath: "polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 8%)",
+                  clipPath:
+                    index % 2 === 0
+                      ? "polygon(11% 0, 100% 0, 100% 100%, 0 100%, 0 11%)"
+                      : "polygon(0 0, 89% 0, 100% 11%, 100% 100%, 0 100%)",
                 }}
               >
-                {/* NUMBER & TITLE */}
                 <div className="flex flex-col items-start">
-                  <div className="inline-block bg-[#1677FF] text-black font-mono font-bold text-xs px-2.5 py-1 mb-5 leading-none">
+                  <div className="mb-5 inline-block bg-[#1677FF] px-2.5 py-1 font-mono text-[11px] font-bold leading-none text-black sm:mb-6 sm:text-xs">
                     {item.number}
                   </div>
-                  <h3 className="font-pixel font-bold text-white text-[clamp(20px,6vw,28px)] leading-[1.05] uppercase tracking-tight whitespace-pre-line text-left">
+
+                  <h3 className="whitespace-pre-line text-left font-pixel text-[clamp(22px,6vw,30px)] font-bold uppercase leading-[1.04] tracking-[-0.02em] text-white lg:text-[clamp(24px,2vw,32px)]">
                     {item.title}
                   </h3>
                 </div>
 
-                {/* DESCRIPTION */}
-                <div className="mt-auto pt-5 border-t border-white/10">
-                  <p className="font-sans font-normal text-white/75 text-[clamp(13px,3.8vw,16px)] leading-relaxed text-left">
+                <div className="mt-8 border-t border-white/10 pt-5 sm:pt-6">
+                  <p className="text-left font-sans text-[clamp(13px,3.7vw,16px)] font-normal leading-relaxed text-white/70 lg:text-base">
                     {item.description}
                   </p>
                 </div>
               </article>
             );
           })}
+        </div>
 
-          {/* MOBILE FINAL CTA BLOCK AFTER CARD 05 */}
-          <div className="mobile-usp-cta w-full max-w-[390px] pt-6 flex flex-col items-start text-left">
-            <h4 className="font-sans font-semibold text-white text-[clamp(20px,5.5vw,26px)] leading-tight tracking-tight mb-3">
-              Ready to make your mark?
-            </h4>
+        <div className="usp-reveal mt-10 flex w-full max-w-[430px] flex-col items-start text-left sm:mt-12 lg:ml-[8%] lg:mt-16 lg:max-w-[390px]">
+          <h4 className="mb-3 font-sans text-[clamp(21px,5.5vw,28px)] font-semibold leading-tight tracking-tight text-white lg:text-[28px]">
+            Ready to make your mark?
+          </h4>
 
-            <p className="font-sans font-normal text-white/60 text-[clamp(14px,3.8vw,17px)] leading-relaxed mb-6">
-              Let’s create something that gets noticed, remembered, and talked about.
-            </p>
+          <p className="mb-5 font-sans text-[clamp(14px,3.8vw,17px)] font-normal leading-relaxed text-white/60">
+            Let’s create something that gets noticed, remembered, and talked
+            about.
+          </p>
 
-            <Link
-              href="/#contact"
-              className="group inline-flex items-center gap-2 font-sans font-medium text-white text-base tracking-wide border-b border-white/40 lg:hover:border-white transition-colors duration-200 py-0.5"
-            >
-              <span>Let’s talk</span>
-              <span className="inline-block transition-transform duration-200 lg:group-hover:translate-x-1">
-                →
-              </span>
-            </Link>
-          </div>
+          <TransitionLink
+            href="/#contact"
+            className="group inline-flex min-h-[44px] items-center gap-2 border-b border-white/40 py-1 font-sans text-base font-medium tracking-wide text-white transition-colors duration-200 lg:hover:border-white"
+          >
+            <span>Let’s talk</span>
+            <span className="inline-block transition-transform duration-200 lg:group-hover:translate-x-1">
+              →
+            </span>
+          </TransitionLink>
         </div>
       </div>
     </section>

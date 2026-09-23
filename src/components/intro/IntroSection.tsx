@@ -62,7 +62,7 @@ export default function IntroSection() {
       const buildReveal = (mobile: boolean) => {
         gsap.set(heading, {
           autoAlpha: 0,
-          y: mobile ? 18 : 24,
+          yPercent: 115,
           force3D: true,
         });
 
@@ -91,8 +91,8 @@ export default function IntroSection() {
             heading,
             {
               autoAlpha: 1,
-              y: 0,
-              duration: 0.42,
+              yPercent: 0,
+              duration: mobile ? 0.34 : 0.4,
               force3D: true,
             },
             0
@@ -130,26 +130,26 @@ export default function IntroSection() {
   return (
     <div
       ref={containerRef}
-      className="relative z-10 box-border flex w-full flex-col justify-center bg-transparent m-0 px-[max(1rem,3vw)] py-[clamp(2.5rem,7vh,6rem)] pointer-events-auto"
+      className="relative z-10 box-border flex min-h-[50svh] w-full flex-col justify-center bg-white m-0 px-[max(1rem,3vw)] py-[clamp(3rem,8vh,6.5rem)] text-black pointer-events-auto"
     >
       <div className="flex w-full max-w-[850px] flex-col">
         <div
           ref={headingRef}
-          className="flex items-center"
+          className="flex items-center overflow-hidden"
           style={
             isReducedMotion
               ? { opacity: 1, transform: "none" }
               : { willChange: "transform, opacity" }
           }
         >
-          <h2 className="font-montserrat text-[12px] font-semibold tracking-[0.06em] text-white uppercase leading-none">
+          <h2 className="font-montserrat text-[12px] font-semibold tracking-[0.06em] text-black uppercase leading-none">
             {headingText}
           </h2>
         </div>
 
         <p
           ref={paragraphRef}
-          className="mt-3 sm:mt-4 max-w-[850px] text-left font-poppins text-zinc-100 text-[clamp(18px,5vw,23px)] sm:text-[clamp(21px,2vw,30px)] leading-[1.15] font-normal tracking-[-0.02em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.75)]"
+          className="mt-4 sm:mt-5 max-w-[850px] text-left font-poppins text-black text-[clamp(18px,5vw,23px)] sm:text-[clamp(21px,2vw,30px)] leading-[1.15] font-normal tracking-[-0.02em]"
           style={
             isReducedMotion
               ? { opacity: 1, transform: "none" }

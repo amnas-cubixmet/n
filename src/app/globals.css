@@ -131,7 +131,7 @@ body::-webkit-scrollbar {
 }
 
 .hero-logo-wrapper {
-  width: clamp(260px, 34vw, 520px);
+  width: clamp(300px, 40vw, 620px);
   max-width: 85vw;
   will-change: transform, opacity;
 }
@@ -181,7 +181,7 @@ body::-webkit-scrollbar {
   }
 
   .hero-logo-wrapper {
-    width: min(76vw, 300px);
+    width: min(78vw, 320px);
     max-width: calc(100vw - 32px);
   }
 

@@ -89,10 +89,10 @@ export default function Hero({ introCompleted }: HeroProps) {
             return;
           }
 
-          const duration = mobile ? 0.46 : 0.62;
-          const logoY = mobile ? 8 : 12;
-          const labelY = mobile ? 5 : 7;
-          const serviceY = mobile ? 4 : 6;
+          const duration = mobile ? 0.62 : 0.82;
+          const logoY = mobile ? 5 : 7;
+          const labelY = mobile ? 3 : 4;
+          const serviceY = mobile ? 3 : 4;
 
           if (bgVisual) gsap.set(bgVisual, { opacity: 0 });
           if (heroVisual) gsap.set(heroVisual, { opacity: 0 });
@@ -132,14 +132,14 @@ export default function Hero({ introCompleted }: HeroProps) {
           }
 
           const tl = gsap.timeline({
-            delay: 0.02,
+            delay: mobile ? 0.04 : 0.06,
             defaults: { overwrite: "auto" },
           });
 
           if (bgVisual) {
             tl.to(bgVisual, {
               opacity: 1,
-              duration: duration * 0.7,
+              duration: duration * 0.9,
               ease: "power2.out",
             });
           }
@@ -149,10 +149,10 @@ export default function Hero({ introCompleted }: HeroProps) {
               heroVisual,
               {
                 opacity: 1,
-                duration: duration * 0.82,
+                duration: duration,
                 ease: "power2.out",
               },
-              "-=0.24"
+              "-=0.5"
             );
           }
 
@@ -166,7 +166,7 @@ export default function Hero({ introCompleted }: HeroProps) {
                 ease: "power3.out",
                 force3D: true,
               },
-              "-=0.34"
+              "-=0.58"
             );
           }
 
@@ -176,11 +176,11 @@ export default function Hero({ introCompleted }: HeroProps) {
               {
                 opacity: 1,
                 y: 0,
-                duration: duration * 0.46,
+                duration: duration * 0.34,
                 ease: "power3.out",
                 force3D: true,
               },
-              "-=0.26"
+              "-=0.34"
             );
           }
 
@@ -189,7 +189,7 @@ export default function Hero({ introCompleted }: HeroProps) {
               blueLineRef.current,
               {
                 scaleX: 1,
-                duration: duration * 0.42,
+                duration: duration * 0.32,
                 ease: "power2.out",
               },
               "<0.05"
@@ -203,11 +203,11 @@ export default function Hero({ introCompleted }: HeroProps) {
                 opacity: 1,
                 y: 0,
                 duration: duration * 0.56,
-                stagger: mobile ? 0.025 : 0.035,
+                stagger: mobile ? 0.018 : 0.024,
                 ease: "power3.out",
                 force3D: true,
               },
-              "-=0.16"
+              "-=0.18"
             );
           }
 
@@ -221,7 +221,7 @@ export default function Hero({ introCompleted }: HeroProps) {
                 ease: "power3.out",
                 force3D: true,
               },
-              "-=0.12"
+              "-=0.14"
             );
           }
 

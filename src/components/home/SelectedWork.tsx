@@ -164,7 +164,7 @@ export default function SelectedWork() {
           <div className="col-span-full flex justify-center pt-12 md:pt-16 pb-4 z-10">
             <TransitionLink
               href="/work"
-              className="inline-flex items-center justify-center bg-black px-6 py-3 text-[12px] font-medium uppercase tracking-[0.04em] text-white transition-colors duration-300 hover:bg-[#1677FF]"
+              className="inline-flex items-center justify-center bg-black px-6 py-3 text-[12px] font-medium uppercase tracking-[0.04em] text-white transition-colors duration-300 lg:hover:bg-[#1677FF]"
             >
               SEE MORE
             </TransitionLink>

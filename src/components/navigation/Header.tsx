@@ -1,6 +1,12 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import gsap from "gsap";
 import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 
@@ -14,35 +20,52 @@ const NAV_ITEMS = [
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
 
   const menuBtnRef = useRef<HTMLButtonElement>(null);
   const navPanelRef = useRef<HTMLDivElement>(null);
+  const navSurfaceRef = useRef<HTMLDivElement>(null);
+  const navContentRef = useRef<HTMLDivElement>(null);
   const navLinksRef = useRef<(HTMLAnchorElement | null)[]>([]);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
 
-  useEffect(() => {
+  const getCompactScale = useCallback(() => {
+    if (typeof window === "undefined") return 0.16;
+    return window.innerWidth <= 768 ? 0.13 : 0.16;
+  }, []);
+
+  useLayoutEffect(() => {
     const panel = navPanelRef.current;
-    if (!panel) return;
+    const surface = navSurfaceRef.current;
+    const content = navContentRef.current;
+    if (!panel || !surface || !content) return;
 
     gsap.set(panel, {
       autoAlpha: 0,
-      scale: 0.16,
-      transformOrigin: "top right",
       pointerEvents: "none",
+    });
+    gsap.set(surface, {
+      autoAlpha: 0,
+      scale: getCompactScale(),
+      transformOrigin: "top right",
+      force3D: true,
+    });
+    gsap.set(content, { autoAlpha: 0 });
+    gsap.set(navLinksRef.current.filter(Boolean), {
+      autoAlpha: 0,
+      y: 12,
     });
 
     return () => {
       timelineRef.current?.kill();
     };
-  }, []);
+  }, [getCompactScale]);
 
   const animateMenu = useCallback(
     (open: boolean) => {
-      if (isAnimating) return;
-
       const panel = navPanelRef.current;
-      if (!panel) return;
+      const surface = navSurfaceRef.current;
+      const content = navContentRef.current;
+      if (!panel || !surface || !content) return;
 
       const links = navLinksRef.current.filter(
         (link): link is HTMLAnchorElement => Boolean(link)
@@ -51,165 +74,190 @@ export default function Header() {
         "(prefers-reduced-motion: reduce)"
       ).matches;
       const mobile = window.innerWidth <= 768;
+      const compactScale = getCompactScale();
 
       timelineRef.current?.kill();
-      setIsAnimating(true);
+      setMenuOpen(open);
 
       if (open) {
-        setMenuOpen(true);
-
         gsap.set(panel, {
-          visibility: "visible",
+          autoAlpha: 1,
           pointerEvents: "auto",
-          transformOrigin: "top right",
         });
 
         if (reducedMotion) {
-          gsap.set(panel, { scale: 1 });
-          gsap.to(panel, {
-            autoAlpha: 1,
-            duration: 0.16,
-            ease: "power2.out",
-            onComplete: () => {
-              gsap.set(links, { autoAlpha: 1, y: 0 });
-              setIsAnimating(false);
-            },
-          });
+          gsap.set(surface, { autoAlpha: 1, scale: 1 });
+          gsap.set(content, { autoAlpha: 1 });
+          gsap.set(links, { autoAlpha: 1, y: 0 });
+          window.setTimeout(() => navLinksRef.current[0]?.focus(), 0);
           return;
         }
 
-        gsap.set(panel, {
+        gsap.set(surface, {
           autoAlpha: 1,
-          scale: mobile ? 0.13 : 0.16,
-          force3D: true,
+          transformOrigin: "top right",
           willChange: "transform, opacity",
+          force3D: true,
         });
-
+        gsap.set(content, { autoAlpha: 0 });
         gsap.set(links, {
           autoAlpha: 0,
-          y: mobile ? 12 : 16,
+          y: mobile ? 10 : 14,
+          force3D: true,
         });
 
         const tl = gsap.timeline({
+          defaults: { overwrite: "auto" },
           onComplete: () => {
-            gsap.set(panel, { willChange: "auto" });
-            setIsAnimating(false);
+            gsap.set(surface, { willChange: "auto" });
+            navLinksRef.current[0]?.focus();
           },
         });
 
         timelineRef.current = tl;
 
-        tl.to(panel, {
+        tl.to(surface, {
           scale: 1,
           duration: mobile ? 0.48 : 0.56,
           ease: "power3.inOut",
           force3D: true,
-        }).to(
-          links,
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: mobile ? 0.3 : 0.36,
-            stagger: 0.045,
-            ease: "power3.out",
-          },
-          "-=0.22"
-        );
-      } else {
-        if (reducedMotion) {
-          gsap.to(panel, {
-            autoAlpha: 0,
-            duration: 0.14,
-            ease: "power2.in",
-            onComplete: () => {
-              gsap.set(panel, {
-                scale: 0.16,
-                visibility: "hidden",
-                pointerEvents: "none",
-              });
-              setMenuOpen(false);
-              setIsAnimating(false);
-              menuBtnRef.current?.focus();
+        })
+          .to(
+            content,
+            {
+              autoAlpha: 1,
+              duration: mobile ? 0.16 : 0.2,
+              ease: "power2.out",
             },
-          });
-          return;
-        }
+            "-=0.2"
+          )
+          .to(
+            links,
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: mobile ? 0.28 : 0.34,
+              stagger: mobile ? 0.038 : 0.045,
+              ease: "power3.out",
+              force3D: true,
+            },
+            "-=0.14"
+          );
+        return;
+      }
 
-        const tl = gsap.timeline({
-          onComplete: () => {
-            gsap.set(panel, {
-              autoAlpha: 0,
-              scale: mobile ? 0.13 : 0.16,
-              visibility: "hidden",
-              pointerEvents: "none",
-              willChange: "auto",
-            });
-            setMenuOpen(false);
-            setIsAnimating(false);
-            menuBtnRef.current?.focus();
-          },
-        });
-
-        timelineRef.current = tl;
-
-        tl.to(links, {
+      if (reducedMotion) {
+        gsap.set(panel, {
           autoAlpha: 0,
-          y: mobile ? 8 : 10,
-          duration: 0.18,
-          stagger: 0.025,
-          ease: "power2.in",
-        }).to(
-          panel,
-          {
-            scale: mobile ? 0.13 : 0.16,
+          pointerEvents: "none",
+        });
+        gsap.set(surface, {
+          autoAlpha: 0,
+          scale: compactScale,
+        });
+        gsap.set(content, { autoAlpha: 0 });
+        gsap.set(links, { autoAlpha: 0, y: 10 });
+        menuBtnRef.current?.focus();
+        return;
+      }
+
+      const tl = gsap.timeline({
+        defaults: { overwrite: "auto" },
+        onComplete: () => {
+          gsap.set(panel, {
             autoAlpha: 0,
-            duration: mobile ? 0.36 : 0.42,
+            pointerEvents: "none",
+          });
+          gsap.set(surface, {
+            autoAlpha: 0,
+            scale: compactScale,
+            willChange: "auto",
+          });
+          gsap.set(content, { autoAlpha: 0 });
+          menuBtnRef.current?.focus();
+        },
+      });
+
+      timelineRef.current = tl;
+
+      tl.to(links, {
+        autoAlpha: 0,
+        y: mobile ? 7 : 9,
+        duration: mobile ? 0.15 : 0.18,
+        stagger: {
+          each: 0.02,
+          from: "end",
+        },
+        ease: "power2.in",
+      })
+        .to(
+          content,
+          {
+            autoAlpha: 0,
+            duration: 0.12,
+            ease: "power2.in",
+          },
+          "-=0.08"
+        )
+        .to(
+          surface,
+          {
+            scale: compactScale,
+            autoAlpha: 0,
+            duration: mobile ? 0.34 : 0.4,
             ease: "power3.inOut",
             force3D: true,
           },
-          "-=0.08"
+          "-=0.06"
         );
-      }
     },
-    [isAnimating]
+    [getCompactScale]
   );
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape" && menuOpen && !isAnimating) {
+      if (event.key === "Escape" && menuOpen) {
         animateMenu(false);
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [animateMenu, isAnimating, menuOpen]);
+  }, [animateMenu, menuOpen]);
 
   const handleToggleMenu = () => {
-    if (!isAnimating) {
-      animateMenu(!menuOpen);
-    }
+    animateMenu(!menuOpen);
   };
 
   const handleLinkClick = () => {
-    if (menuOpen && !isAnimating) {
-      animateMenu(false);
-    }
+    if (menuOpen) animateMenu(false);
   };
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 w-full pointer-events-none">
-      <div className="relative w-full max-w-[1920px] mx-auto p-4 sm:p-6 pt-[max(1rem,env(safe-area-inset-top))] pr-[max(1rem,env(safe-area-inset-right))] flex justify-end pointer-events-auto">
+      <div className="relative w-full max-w-[1920px] mx-auto p-4 sm:p-6 pt-[max(1rem,env(safe-area-inset-top))] pr-[max(1rem,env(safe-area-inset-right))] flex justify-end pointer-events-none">
+        <div
+          aria-hidden="true"
+          onPointerDown={() => {
+            if (menuOpen) animateMenu(false);
+          }}
+          className={
+            "fixed inset-0 z-[80] bg-transparent transition-none " +
+            (menuOpen
+              ? "pointer-events-auto touch-none"
+              : "pointer-events-none")
+          }
+        />
+
         <button
           id="header-menu-button"
           ref={menuBtnRef}
           type="button"
           onClick={handleToggleMenu}
-          disabled={isAnimating}
           aria-expanded={menuOpen}
           aria-controls="northframe-menu-panel"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="header-menu-button relative z-[110] inline-flex min-w-[44px] min-h-[44px] items-center justify-center gap-2.5 bg-[#1677FF] px-3.5 py-2.5 text-white rounded-none select-none touch-action-manipulation cursor-pointer disabled:cursor-default focus:outline-none focus:ring-2 focus:ring-white/70"
+          className="header-menu-button pointer-events-auto relative z-[110] inline-flex min-w-[44px] min-h-[44px] items-center justify-center gap-2.5 bg-[#1677FF] px-3.5 py-2.5 text-white rounded-none select-none touch-action-manipulation cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/70"
         >
           <span className="hidden md:inline font-mono text-[10px] font-semibold uppercase tracking-[0.12em] leading-none">
             {menuOpen ? "CLOSE" : "MENU"}
@@ -235,7 +283,7 @@ export default function Header() {
           id="northframe-menu-panel"
           ref={navPanelRef}
           aria-hidden={!menuOpen}
-          className="fixed z-[100] overflow-hidden bg-[#1677FF] text-white pointer-events-none invisible shadow-none"
+          className="fixed z-[100] overflow-hidden text-white pointer-events-none opacity-0"
           style={{
             top: "max(1rem, env(safe-area-inset-top))",
             right: "max(1rem, env(safe-area-inset-right))",
@@ -245,7 +293,16 @@ export default function Header() {
             backfaceVisibility: "hidden",
           }}
         >
-          <div className="flex min-h-[272px] flex-col px-5 pt-4 pb-5">
+          <div
+            ref={navSurfaceRef}
+            aria-hidden="true"
+            className="absolute inset-0 bg-[#1677FF] pointer-events-none"
+          />
+
+          <div
+            ref={navContentRef}
+            className="relative z-10 flex min-h-[272px] flex-col px-5 pt-4 pb-5"
+          >
             <div className="flex items-center justify-between pr-12 font-mono text-[9px] uppercase tracking-[0.08em] leading-none text-white/90">
               <span>NORTHFRAME</span>
               <span>MENU</span>
@@ -264,7 +321,7 @@ export default function Header() {
                   href={item.href}
                   onClick={handleLinkClick}
                   className={
-                    "block w-fit font-montserrat text-[23px] sm:text-[24px] font-medium uppercase tracking-[-0.055em] leading-[0.98] text-white transition-opacity duration-150 hover:opacity-70 " +
+                    "block w-fit font-montserrat text-[23px] sm:text-[24px] font-medium uppercase tracking-[-0.055em] leading-[0.98] text-white transition-opacity duration-150 lg:hover:opacity-70 focus:outline-none focus-visible:opacity-70 " +
                     (item.isAccent ? "mt-1" : "")
                   }
                 >

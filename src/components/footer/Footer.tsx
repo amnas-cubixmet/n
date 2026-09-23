@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, FormEvent } from "react";
+import Image from "next/image";
 
 // Configuration for social and contact destinations (configurable via env vars)
 const CONTACT_CONFIG = {
@@ -166,10 +167,12 @@ export default function Footer({ hideBackground = false }: FooterProps = {}) {
               <source src="/videos/northframe-hero.mp4" type="video/mp4" />
             </video>
           ) : (
-            <img
+            <Image
               src="/images/studio_materials_bg.jpg"
               alt=""
-              className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none z-0 opacity-50 mix-blend-luminosity scale-105"
+              fill
+              sizes="100vw"
+              className="object-cover object-center pointer-events-none z-0 opacity-50 mix-blend-luminosity scale-105"
             />
           )}
           {/* SUBTLE NAVY OVERLAYS AND GRADIENTS FOR LEGIBILITY & VISIBLE BLUE LIGHT DETAILS */}

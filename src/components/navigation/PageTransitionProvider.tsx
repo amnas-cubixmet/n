@@ -47,8 +47,7 @@ export const TransitionLink = React.forwardRef<HTMLAnchorElement, TransitionLink
     const { triggerTransition, isTransitioning } = usePageTransition();
     const router = useRouter();
 
-    // Prefetch route on hover to maximize speed
-    const handleMouseEnter = () => {
+    const prefetchRoute = () => {
       if (href && href.startsWith("/")) {
         const urlPath = href.split("#")[0];
         if (urlPath) router.prefetch(urlPath);
@@ -73,7 +72,8 @@ export const TransitionLink = React.forwardRef<HTMLAnchorElement, TransitionLink
         ref={ref}
         href={href}
         onClick={handleClick}
-        onMouseEnter={handleMouseEnter}
+        onMouseEnter={prefetchRoute}
+        onPointerDown={prefetchRoute}
         className={className}
         {...props}
       >
@@ -169,6 +169,7 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
   const streakRef = useRef<HTMLDivElement>(null);
   const panelRefs = useRef<(HTMLDivElement | null)[]>([]);
   const pendingHrefRef = useRef<string | null>(null);
+  const scrollRafRef = useRef<number | null>(null);
 
   const [isReducedMotion, setIsReducedMotion] = useState(() =>
     typeof window !== "undefined"
@@ -190,9 +191,32 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
     return () => motionQuery.removeListener(handler);
   }, []);
 
+  const cancelActiveScroll = useCallback(() => {
+    if (scrollRafRef.current !== null) {
+      cancelAnimationFrame(scrollRafRef.current);
+      scrollRafRef.current = null;
+      setIsTransitioning(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const cancelFromUserInput = () => cancelActiveScroll();
+
+    window.addEventListener("touchstart", cancelFromUserInput, { passive: true });
+    window.addEventListener("wheel", cancelFromUserInput, { passive: true });
+
+    return () => {
+      window.removeEventListener("touchstart", cancelFromUserInput);
+      window.removeEventListener("wheel", cancelFromUserInput);
+      cancelActiveScroll();
+    };
+  }, [cancelActiveScroll]);
+
   // Smooth Section Scroll Helper with Header Offset calculation
   const scrollToSection = useCallback(
     (targetHash: string) => {
+      cancelActiveScroll();
+
       const cleanHash = targetHash.startsWith("#") ? targetHash.substring(1) : targetHash;
       if (!cleanHash) return;
 
@@ -251,16 +275,17 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
         window.scrollTo(0, startY + diff * easedProgress);
 
         if (progress < 1) {
-          requestAnimationFrame(step);
+          scrollRafRef.current = requestAnimationFrame(step);
         } else {
+          scrollRafRef.current = null;
           setIsTransitioning(false);
         }
       };
 
       setIsTransitioning(true);
-      requestAnimationFrame(step);
+      scrollRafRef.current = requestAnimationFrame(step);
     },
-    [isReducedMotion]
+    [cancelActiveScroll, isReducedMotion]
   );
 
   // REVEAL PHASE: Triggered after destination route mounts
@@ -324,20 +349,23 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
   // UNIFIED NAVIGATION CONTROLLER
   const triggerTransition = useCallback(
     (href: string) => {
-      if (isTransitioning) return;
-
-      // Extract target path and hash
+      // Extract target path and hash first so a new same-page request can
+      // replace an in-progress smooth scroll instead of feeling blocked.
       const [targetPath, targetHash] = href.split("#");
       const currentPath = pathname;
 
-      // Scenario A: SAME PAGE HASH NAVIGATION (e.g. href="#work" or href="/#work" while on "/")
       const isSamePage =
-        !targetPath || targetPath === currentPath || (targetPath === "/" && currentPath === "/");
+        !targetPath ||
+        targetPath === currentPath ||
+        (targetPath === "/" && currentPath === "/");
 
       if (isSamePage && targetHash) {
         scrollToSection(targetHash);
         return;
       }
+
+      if (isTransitioning) return;
+      cancelActiveScroll();
 
       // Scenario B: CROSS PAGE NAVIGATION (/work or /work#selected-work)
       setIsTransitioning(true);
@@ -380,7 +408,14 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
         },
       });
     },
-    [isTransitioning, pathname, router, isReducedMotion, scrollToSection]
+    [
+      cancelActiveScroll,
+      isTransitioning,
+      pathname,
+      router,
+      isReducedMotion,
+      scrollToSection,
+    ]
   );
 
   return (

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,8 +15,6 @@ export default function DeliverablesSection() {
 
   // Stepped Transition & WOW Overlay Refs
   const wowOverlayRef = useRef<HTMLDivElement>(null);
-  const wowStageRef = useRef<HTMLDivElement>(null);
-
   // WOW Vertical Typography Track Ref
   const wowTrackRef = useRef<HTMLDivElement>(null);
 
@@ -455,11 +454,13 @@ export default function DeliverablesSection() {
                           </span>
                         </div>
                       ) : (
-                        <img
+                        <Image
                           src={item.media}
                           alt={item.title}
+                          fill
+                          sizes="(max-width: 1023px) 100vw, 50vw"
                           onError={() => handleImageError(item.id)}
-                          className="w-full h-full object-cover"
+                          className="object-cover"
                         />
                       )}
                     </div>
@@ -554,11 +555,13 @@ export default function DeliverablesSection() {
                         </span>
                       </div>
                     ) : (
-                      <img
+                      <Image
                         src={item.media}
                         alt={item.title}
+                        fill
+                        sizes="(max-width: 1023px) 100vw, 50vw"
                         onError={() => handleImageError(item.id)}
-                        className="w-full h-full object-cover"
+                        className="object-cover"
                       />
                     )}
                   </div>

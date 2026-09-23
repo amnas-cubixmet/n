@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import Image from "next/image";
-import Link from "next/link";
+import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -70,11 +70,11 @@ export function ProjectCard({
         isEvenMobile ? "ml-auto lg:ml-0" : "mr-auto lg:mr-0"
       } ${gridClass}`}
     >
-      <Link href={`/services/${project.slug}`} className="block w-full">
-        <button
-          type="button"
-          className="group relative flex w-full flex-col items-start text-left cursor-pointer"
-        >
+      <TransitionLink
+        href={`/work/${project.slug}`}
+        className="group block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1677FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+      >
+        <div className="relative flex w-full flex-col items-start text-left cursor-pointer">
           {/* CONTROLLED 29/34 PORTRAIT ASPECT RATIO WITH DIAGONAL TOP-LEFT CLIP */}
           <div
             className="project-image relative w-full aspect-[29/34] overflow-hidden"
@@ -105,8 +105,8 @@ export function ProjectCard({
               {project.category}
             </span>
           </div>
-        </button>
-      </Link>
+        </div>
+      </TransitionLink>
     </article>
   );
 }

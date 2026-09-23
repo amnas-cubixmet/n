@@ -259,10 +259,10 @@ export default function OurUSPs() {
 
               <Link
                 href="/#contact"
-                className="group inline-flex items-center gap-2 font-sans font-medium text-white text-base tracking-wide border-b border-white/40 hover:border-white transition-colors duration-200 py-0.5"
+                className="group inline-flex items-center gap-2 font-sans font-medium text-white text-base tracking-wide border-b border-white/40 lg:hover:border-white transition-colors duration-200 py-0.5"
               >
                 <span>Let’s talk</span>
-                <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
+                <span className="inline-block transition-transform duration-200 lg:group-hover:translate-x-1">
                   →
                 </span>
               </Link>
@@ -319,10 +319,10 @@ export default function OurUSPs() {
 
             <Link
               href="/#contact"
-              className="group inline-flex items-center gap-2 font-sans font-medium text-white text-base tracking-wide border-b border-white/40 hover:border-white transition-colors duration-200 py-0.5"
+              className="group inline-flex items-center gap-2 font-sans font-medium text-white text-base tracking-wide border-b border-white/40 lg:hover:border-white transition-colors duration-200 py-0.5"
             >
               <span>Let’s talk</span>
-              <span className="inline-block transition-transform duration-200 group-hover:translate-x-1">
+              <span className="inline-block transition-transform duration-200 lg:group-hover:translate-x-1">
                 →
               </span>
             </Link>

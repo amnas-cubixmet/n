@@ -359,7 +359,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
       <div className="relative z-10 flex h-48 w-full max-w-[92vw] items-center justify-center">
         <div
           ref={frameRef}
-          className="intro-brackets-animation absolute h-[66px] sm:h-[72px] w-[min(78vw,300px)] sm:w-[min(78vw,340px)] pointer-events-none"
+          className="intro-brackets-animation absolute h-[66px] sm:h-[72px] w-[min(78vw,300px)] sm:w-[min(78vw,340px)] pointer-events-none opacity-0"
         >
           <span className="absolute left-0 top-0 h-4 w-4 border-l-2 border-t-2 border-[#1677FF]" />
           <span className="absolute right-0 top-0 h-4 w-4 border-r-2 border-t-2 border-[#1677FF]" />
@@ -369,7 +369,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
 
         <div
           ref={iconRef}
-          className="intro-icon-animation absolute z-10 flex items-center justify-center pointer-events-none"
+          className="intro-icon-animation absolute z-10 flex items-center justify-center pointer-events-none opacity-0"
         >
           <Image
             src="/images/brand/northframe-icon.webp"
@@ -384,7 +384,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
 
         <div
           ref={logoRef}
-          className="intro-logo-animation absolute z-10 flex items-center justify-center px-4 pointer-events-none"
+          className="intro-logo-animation absolute z-10 flex items-center justify-center px-4 pointer-events-none opacity-0"
         >
           <Image
             src="/images/brand/northframe-logo.webp"
@@ -400,7 +400,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
 
       <div
         ref={expandingMarkRef}
-        className="absolute left-1/2 top-1/2 z-20 h-14 w-14 sm:h-[72px] sm:w-[72px] -translate-x-1/2 -translate-y-1/2 pointer-events-none bg-[#1677FF]"
+        className="absolute left-1/2 top-1/2 z-20 h-14 w-14 sm:h-[72px] sm:w-[72px] -translate-x-1/2 -translate-y-1/2 pointer-events-none bg-[#1677FF] opacity-0"
         style={{
           WebkitMaskImage: "url('/images/brand/northframe-icon.webp')",
           maskImage: "url('/images/brand/northframe-icon.webp')",

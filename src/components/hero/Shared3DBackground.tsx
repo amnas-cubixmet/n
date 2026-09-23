@@ -22,17 +22,17 @@ function LivingStudioLighting({
     if (isHidden) return;
 
     const pointerX = !isMobile && canHover ? state.pointer.x : 0;
-    const rightBoost = Math.max(0, -pointerX) * 0.4;
-    const leftBoost = Math.max(0, pointerX) * 0.4;
+    const rightBoost = Math.max(0, -pointerX) * 0.14;
+    const leftBoost = Math.max(0, pointerX) * 0.14;
 
     if (leftRimRef.current) {
       leftRimRef.current.intensity +=
-        (0.9 + leftBoost - leftRimRef.current.intensity) * 0.08;
+        (0.9 + leftBoost - leftRimRef.current.intensity) * 0.05;
     }
 
     if (rightRimRef.current) {
       rightRimRef.current.intensity +=
-        (1.2 + rightBoost - rightRimRef.current.intensity) * 0.08;
+        (1.2 + rightBoost - rightRimRef.current.intensity) * 0.05;
     }
   });
 
@@ -165,9 +165,9 @@ function StationaryModel({
     const time = state.clock.getElapsedTime();
     const floatCycle = Math.sin((time * Math.PI) / 3);
 
-    const floatRotX = floatCycle * THREE.MathUtils.degToRad(isMobile ? 0.7 : 1.5);
-    const floatRotY = floatCycle * THREE.MathUtils.degToRad(isMobile ? 1 : 2);
-    const floatY = floatCycle * (isMobile ? -0.035 : -0.06);
+    const floatRotX = floatCycle * THREE.MathUtils.degToRad(isMobile ? 0.16 : 0.32);
+    const floatRotY = floatCycle * THREE.MathUtils.degToRad(isMobile ? 0.22 : 0.45);
+    const floatY = floatCycle * (isMobile ? -0.006 : -0.012);
 
     let targetRotX = baseRotX + floatRotX;
     let targetRotY = baseRotY + floatRotY;
@@ -179,14 +179,14 @@ function StationaryModel({
       const pointerX = state.pointer.x;
       const pointerY = state.pointer.y;
 
-      targetRotY += pointerX * THREE.MathUtils.degToRad(6.5);
-      targetRotX -= pointerY * THREE.MathUtils.degToRad(5.5);
-      targetX = pointerX * 0.12;
-      targetY += pointerY * 0.08;
-      targetZ = (Math.abs(pointerX) + Math.abs(pointerY)) * 0.05;
+      targetRotY += pointerX * THREE.MathUtils.degToRad(1.6);
+      targetRotX -= pointerY * THREE.MathUtils.degToRad(1.2);
+      targetX = pointerX * 0.035;
+      targetY += pointerY * 0.025;
+      targetZ = (Math.abs(pointerX) + Math.abs(pointerY)) * 0.012;
     }
 
-    const lerp = isMobile ? 0.035 : 0.045;
+    const lerp = isMobile ? 0.025 : 0.03;
 
     group.rotation.x += (targetRotX - group.rotation.x) * lerp;
     group.rotation.y += (targetRotY - group.rotation.y) * lerp;

@@ -17,6 +17,9 @@ export default function DeliverablesSection() {
 
   const wowOverlayRef = useRef<HTMLDivElement>(null);
   const wowTrackRef = useRef<HTMLDivElement>(null);
+  const wowExitRef = useRef<HTMLDivElement>(null);
+  const wowWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const wowBlockRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   const mobileTrackRef = useRef<HTMLDivElement>(null);
   const mobileItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -235,7 +238,8 @@ export default function DeliverablesSection() {
         !masterRef.current ||
         !stickyRef.current ||
         !wowOverlayRef.current ||
-        !wowTrackRef.current
+        !wowTrackRef.current ||
+        !wowExitRef.current
       ) {
         return;
       }
@@ -263,12 +267,35 @@ export default function DeliverablesSection() {
       );
 
       gsap.set(wowOverlayRef.current, {
-        yPercent: 100,
+        yPercent: 108,
         autoAlpha: 1,
+        force3D: true,
       });
 
       gsap.set(wowTrackRef.current, {
-        yPercent: 100,
+        yPercent: compact ? 38 : 34,
+        force3D: true,
+      });
+
+      gsap.set(wowExitRef.current, {
+        yPercent: 112,
+        autoAlpha: 1,
+        force3D: true,
+      });
+
+      wowBlockRefs.current.forEach((block) => {
+        if (!block) return;
+        gsap.set(block, {
+          scaleX: 0,
+          transformOrigin: "left center",
+        });
+      });
+
+      wowWordRefs.current.forEach((word) => {
+        if (!word) return;
+        gsap.set(word, {
+          color: "#000000",
+        });
       });
 
       activeIndexRef.current = activeIndex;
@@ -332,24 +359,95 @@ export default function DeliverablesSection() {
 
       scrollTriggerRef.current = timeline.scrollTrigger ?? null;
 
+      // Signature WOW takeover: stepped magenta block rises over the
+      // Deliverables stage, then the stacked statement travels upward.
       timeline.to(
         wowOverlayRef.current,
         {
           yPercent: 0,
-          duration: 0.1,
+          duration: compact ? 0.12 : 0.115,
           ease: "none",
+          force3D: true,
         },
-        compact ? 0.72 : 0.7
+        compact ? 0.69 : 0.685
       );
 
       timeline.to(
         wowTrackRef.current,
         {
-          yPercent: -80,
-          duration: compact ? 0.24 : 0.27,
+          yPercent: compact ? -31 : -27,
+          duration: compact ? 0.235 : 0.245,
           ease: "none",
+          force3D: true,
         },
-        compact ? 0.76 : 0.74
+        compact ? 0.735 : 0.73
+      );
+
+      const highlightStarts = compact
+        ? [0.755, 0.79, 0.825, 0.86, 0.895]
+        : [0.75, 0.785, 0.82, 0.855, 0.89];
+
+      highlightStarts.forEach((position, index) => {
+        const block = wowBlockRefs.current[index];
+        const word = wowWordRefs.current[index];
+        if (!block || !word) return;
+
+        timeline.to(
+          block,
+          {
+            scaleX: 1,
+            duration: 0.028,
+            ease: "none",
+            transformOrigin: "left center",
+          },
+          position
+        );
+
+        timeline.to(
+          word,
+          {
+            color: "#FFFFFF",
+            duration: 0.012,
+            ease: "none",
+          },
+          position + 0.01
+        );
+
+        if (index < highlightStarts.length - 1) {
+          timeline.to(
+            block,
+            {
+              scaleX: 0,
+              duration: 0.026,
+              ease: "none",
+              transformOrigin: "right center",
+            },
+            position + 0.055
+          );
+
+          timeline.to(
+            word,
+            {
+              color: "#000000",
+              duration: 0.012,
+              ease: "none",
+            },
+            position + 0.055
+          );
+        }
+      });
+
+      // Black stepped block takes over at the end so the pinned sequence
+      // hands off seamlessly into the black Our Vision section.
+      timeline.to(
+        wowExitRef.current,
+        {
+          yPercent: 0,
+          duration: compact ? 0.085 : 0.08,
+          ease: "none",
+          force3D: true,
+        },
+        compact ? 0.925 : 0.92
       );
 
       return () => {
@@ -668,11 +766,11 @@ export default function DeliverablesSection() {
 
         <div
           ref={wowOverlayRef}
-          className="absolute inset-0 z-20 h-[100svh] min-h-[100svh] w-full translate-y-full overflow-hidden bg-[#1677FF] select-none lg:h-[100dvh] lg:min-h-[100dvh]"
+          className="absolute inset-0 z-20 h-[100svh] min-h-[100svh] w-full translate-y-full overflow-hidden bg-[#F000E8] select-none lg:h-[100dvh] lg:min-h-[100dvh]"
         >
           <div className="pointer-events-none absolute bottom-full left-0 z-10 -mb-[1px] h-[30svh] w-full overflow-hidden sm:h-[40svh]">
             <div
-              className="h-full w-full bg-[#1677FF]"
+              className="h-full w-full bg-[#F000E8]"
               style={{
                 clipPath:
                   "polygon(0% 100%, 0% 24%, 14.28% 24%, 14.28% 42%, 28.56% 42%, 28.56% 26%, 42.84% 26%, 42.84% 31%, 57.12% 31%, 57.12% 35%, 71.4% 35%, 71.4% 23%, 85.68% 23%, 85.68% 48%, 100% 48%, 100% 100%)",
@@ -685,31 +783,60 @@ export default function DeliverablesSection() {
           <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center overflow-hidden">
             <div
               ref={wowTrackRef}
-              className="wow-track relative flex w-full max-w-full flex-col items-center justify-center gap-4 text-center will-change-transform select-none sm:gap-8 md:gap-12"
+              className="wow-track relative flex w-full max-w-full flex-col items-center justify-center gap-[0.02em] text-center will-change-transform select-none"
             >
               {["WE", "MAKE", "BRANDS", "GO", "WOOOOOOOOW!"].map(
                 (word, index) => (
                   <div
                     key={word}
-                    className="flex w-full items-center justify-center overflow-hidden"
+                    className="flex w-full items-center justify-center overflow-visible"
                   >
                     <span
-                      className={`font-pixel font-bold uppercase leading-[0.85] tracking-tight text-black select-none text-center ${
+                      className={`relative inline-block max-w-[98vw] px-[0.035em] font-pixel font-bold uppercase leading-[0.82] tracking-[-0.045em] text-black ${
                         index === 4
-                          ? "whitespace-nowrap px-2 text-[clamp(3.2rem,9.5vw,11rem)]"
+                          ? "whitespace-nowrap text-[clamp(2.7rem,11.5vw,11rem)]"
                           : word === "BRANDS"
-                            ? "text-[clamp(3.8rem,10.5vw,11.5rem)]"
-                            : word === "MAKE"
-                              ? "text-[clamp(4.5rem,12vw,13rem)]"
-                              : "text-[clamp(5rem,13vw,14rem)]"
+                            ? "text-[clamp(4rem,12vw,12.5rem)]"
+                            : "text-[clamp(4.8rem,14vw,14rem)]"
                       }`}
                     >
-                      {word}
+                      <span
+                        ref={(element) => {
+                          wowBlockRefs.current[index] = element;
+                        }}
+                        aria-hidden="true"
+                        className="absolute inset-0 z-0 origin-left scale-x-0 bg-black"
+                      />
+
+                      <span
+                        ref={(element) => {
+                          wowWordRefs.current[index] = element;
+                        }}
+                        className="relative z-10"
+                      >
+                        {word}
+                      </span>
                     </span>
                   </div>
                 )
               )}
             </div>
+          </div>
+        </div>
+
+        <div
+          ref={wowExitRef}
+          aria-hidden="true"
+          className="absolute inset-0 z-[60] h-[100svh] min-h-[100svh] w-full translate-y-full bg-black lg:h-[100dvh] lg:min-h-[100dvh]"
+        >
+          <div className="pointer-events-none absolute bottom-full left-0 -mb-[1px] h-[22svh] w-full overflow-hidden sm:h-[28svh]">
+            <div
+              className="h-full w-full bg-black"
+              style={{
+                clipPath:
+                  "polygon(0% 100%, 0% 62%, 13% 62%, 13% 36%, 30% 36%, 30% 72%, 47% 72%, 47% 48%, 64% 48%, 64% 78%, 80% 78%, 80% 44%, 100% 44%, 100% 100%)",
+              }}
+            />
           </div>
         </div>
       </div>

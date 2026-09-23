@@ -403,10 +403,10 @@ export default function WatWeDoen() {
               </div>
 
               <div className="relative z-20 flex h-full w-full pointer-events-none">
-                <div className="absolute bottom-[max(3rem,calc(env(safe-area-inset-bottom)+1.8rem))] left-[max(1.1rem,env(safe-area-inset-left))] z-30 max-w-[90vw] pointer-events-auto md:bottom-[max(3rem,env(safe-area-inset-bottom))] md:left-8 lg:left-12">
+                <div className="absolute bottom-[max(3.5rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] z-30 max-w-[90vw] pointer-events-auto md:bottom-[max(3rem,env(safe-area-inset-bottom))] md:left-8 lg:left-12">
                   <TransitionLink
                     href={`/services/${service.slug}`}
-                    className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(25px,7.7vw,39px)] font-bold uppercase leading-[0.93] tracking-normal text-white transition-opacity lg:font-sans lg:text-[clamp(3rem,7vw,7.5rem)] lg:leading-[0.88] lg:tracking-[-0.04em] lg:hover:opacity-85"
+                    className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(25px,7.7vw,39px)] font-bold uppercase leading-[0.93] tracking-normal text-white transition-opacity lg:font-sans lg:text-[clamp(3rem,7vw,7.5rem)] lg:leading-[0.88] lg:tracking-[-0.04em] lg:hover:opacity-[0.85]"
                   >
                     {service.displayLines.map((line) => (
                       <span key={line} className="title-mask">

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
+import Image from "next/image";
 import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -304,10 +305,12 @@ export default function WatWeDoen() {
                 className="relative overflow-hidden border border-white/10 bg-[#080E18] flex flex-col justify-between"
               >
                 <div className="h-64 sm:h-80 w-full overflow-hidden relative">
-                  <img
+                  <Image
                     src={service.image}
                     alt={service.imageAlt || service.title}
-                    className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 767px) 100vw, 50vw"
+                    className="object-cover"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                 </div>
@@ -433,14 +436,16 @@ export default function WatWeDoen() {
               >
                 {/* Full-bleed Background Image with Separate Zoom Wrapper */}
                 <div className="service-image absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
-                  <div className="service-image-inner w-full h-full overflow-hidden">
-                    <img
+                  <div className="service-image-inner relative w-full h-full overflow-hidden">
+                    <Image
                       ref={(el) => {
                         imagesRef.current[index] = el;
                       }}
                       src={service.image}
                       alt={service.imageAlt || service.title}
-                      className="panel-image w-full h-full object-cover select-none pointer-events-none will-change-transform"
+                      fill
+                      sizes="100vw"
+                      className="panel-image object-cover select-none pointer-events-none will-change-transform"
                       style={{
                         objectPosition: service.objectPosition || "center center",
                       }}

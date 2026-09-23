@@ -349,7 +349,15 @@ body::-webkit-scrollbar {
   width: 100%;
   height: 100vh;
   height: 100svh;
-  height: 100dvh;
+}
+
+/* Keep the pinned stage stable while mobile Safari/Chrome browser chrome
+   expands and collapses. Desktop can use the dynamic viewport safely. */
+@media (min-width: 768px) {
+  .wat-we-doen-sticky,
+  .wat-we-doen-stage {
+    height: 100dvh;
+  }
 }
 
 
@@ -439,5 +447,22 @@ video {
   *::before,
   *::after {
     scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .wat-we-doen-stage,
+  .service-panel,
+  .panel-image {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .service-panel {
+    transform: translate3d(0, 0, 0);
+  }
+
+  .panel-image {
+    transform-origin: center center;
   }
 }

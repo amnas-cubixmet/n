@@ -16,6 +16,7 @@ export default function IntroSection() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
+  const paragraphRef = useRef<HTMLParagraphElement>(null);
 
   const [isReducedMotion, setIsReducedMotion] = useState(() =>
     typeof window !== "undefined"
@@ -26,8 +27,8 @@ export default function IntroSection() {
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
-    const handleMotionChange = (e: MediaQueryListEvent) => {
-      setIsReducedMotion(e.matches);
+    const handleMotionChange = (event: MediaQueryListEvent) => {
+      setIsReducedMotion(event.matches);
     };
 
     if (typeof motionQuery.addEventListener === "function") {
@@ -41,38 +42,81 @@ export default function IntroSection() {
 
   useGSAP(
     () => {
-      if (isReducedMotion || !containerRef.current) return;
+      const container = containerRef.current;
+      const heading = headingRef.current;
+      const paragraph = paragraphRef.current;
 
-      const charElements =
-        containerRef.current.querySelectorAll<HTMLElement>(".intro-char");
-      if (!charElements.length) return;
+      if (!container || !heading || !paragraph) return;
+
+      if (isReducedMotion) {
+        gsap.set([heading, paragraph], {
+          autoAlpha: 1,
+          y: 0,
+          clearProps: "transform",
+        });
+        return;
+      }
 
       const mm = gsap.matchMedia();
 
-      const reveal = (mobile: boolean) => {
-        gsap.fromTo(
-          charElements,
-          {
-            opacity: 0,
-            y: mobile ? 5 : 8,
+      const buildReveal = (mobile: boolean) => {
+        gsap.set(heading, {
+          autoAlpha: 0,
+          y: mobile ? 18 : 24,
+          force3D: true,
+        });
+
+        gsap.set(paragraph, {
+          autoAlpha: 0,
+          y: mobile ? 28 : 38,
+          force3D: true,
+        });
+
+        const timeline = gsap.timeline({
+          defaults: {
+            ease: "none",
+            overwrite: "auto",
           },
-          {
-            opacity: 1,
-            y: 0,
-            duration: mobile ? 0.42 : 0.65,
-            stagger: mobile ? 0.045 : 0.07,
-            ease: "power2.out",
-            scrollTrigger: {
-              trigger: containerRef.current,
-              start: mobile ? "top 90%" : "top 85%",
-              once: true,
+          scrollTrigger: {
+            trigger: container,
+            start: mobile ? "top 96%" : "top 94%",
+            end: mobile ? "top 42%" : "top 38%",
+            scrub: mobile ? 0.28 : 0.45,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        timeline
+          .to(
+            heading,
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.42,
+              force3D: true,
             },
-          }
-        );
+            0
+          )
+          .to(
+            paragraph,
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: 0.72,
+              force3D: true,
+            },
+            0.12
+          );
+
+        return () => {
+          gsap.set([heading, paragraph], {
+            clearProps: "willChange",
+          });
+        };
       };
 
-      mm.add("(max-width: 768px)", () => reveal(true));
-      mm.add("(min-width: 769px)", () => reveal(false));
+      mm.add("(max-width: 768px)", () => buildReveal(true));
+      mm.add("(min-width: 769px)", () => buildReveal(false));
 
       return () => mm.revert();
     },
@@ -86,30 +130,32 @@ export default function IntroSection() {
   return (
     <div
       ref={containerRef}
-      className="relative w-full flex flex-col justify-center m-0 box-border pointer-events-auto bg-transparent z-10 px-[3vw] py-[4vh]"
+      className="relative z-10 box-border flex w-full flex-col justify-center bg-transparent m-0 px-[max(1rem,3vw)] py-[clamp(2.5rem,7vh,6rem)] pointer-events-auto"
     >
-      <div className="flex flex-col w-full max-w-[850px]">
-        {/* Eyebrow / INTRODUCTION Section Label Heading */}
+      <div className="flex w-full max-w-[850px] flex-col">
         <div
           ref={headingRef}
           className="flex items-center"
-          style={isReducedMotion ? { opacity: 1, transform: "none" } : undefined}
+          style={
+            isReducedMotion
+              ? { opacity: 1, transform: "none" }
+              : { willChange: "transform, opacity" }
+          }
         >
           <h2 className="font-montserrat text-[12px] font-semibold tracking-[0.06em] text-white uppercase leading-none">
-            {headingText.split("").map((char, index) => (
-              <span
-                key={index}
-                className="intro-char inline-block"
-                style={isReducedMotion ? { opacity: 1, transform: "none" } : undefined}
-              >
-                {char === " " ? "\u00A0" : char}
-              </span>
-            ))}
+            {headingText}
           </h2>
         </div>
 
-        {/* Editorial Paragraph Typography: clamp(21px, 2vw, 30px) on desktop, clamp(18px, 5vw, 23px) on mobile */}
-        <p className="mt-3 sm:mt-4 text-left font-poppins text-zinc-100 max-w-[850px] text-[clamp(18px,5vw,23px)] sm:text-[clamp(21px,2vw,30px)] leading-[1.15] font-normal tracking-[-0.02em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.75)]">
+        <p
+          ref={paragraphRef}
+          className="mt-3 sm:mt-4 max-w-[850px] text-left font-poppins text-zinc-100 text-[clamp(18px,5vw,23px)] sm:text-[clamp(21px,2vw,30px)] leading-[1.15] font-normal tracking-[-0.02em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.75)]"
+          style={
+            isReducedMotion
+              ? { opacity: 1, transform: "none" }
+              : { willChange: "transform, opacity" }
+          }
+        >
           {paragraphText}
         </p>
       </div>

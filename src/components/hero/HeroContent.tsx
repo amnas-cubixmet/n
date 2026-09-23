@@ -5,6 +5,7 @@ import Image from "next/image";
 import ServiceList, { ServiceItemData } from "./ServiceList";
 
 interface HeroContentProps {
+  handoffRef?: React.RefObject<HTMLDivElement | null>;
   logoWrapperRef: React.RefObject<HTMLDivElement | null>;
   servicesContainerRef?: React.RefObject<HTMLDivElement | null>;
   serviceItemsRef: React.MutableRefObject<(HTMLAnchorElement | null)[]>;
@@ -12,13 +13,17 @@ interface HeroContentProps {
 }
 
 export default function HeroContent({
+  handoffRef,
   logoWrapperRef,
   servicesContainerRef,
   serviceItemsRef,
   services,
 }: HeroContentProps) {
   return (
-    <div className="heroBottom absolute z-[3] pointer-events-none flex items-start">
+    <div
+      ref={handoffRef}
+      className="heroBottom absolute z-[3] pointer-events-none flex items-start"
+    >
       <div
         ref={logoWrapperRef}
         className="hero-logo-wrapper pointer-events-auto shrink-0 select-none opacity-0"

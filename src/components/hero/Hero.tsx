@@ -2,9 +2,14 @@
 
 import React, { useRef } from "react";
 import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
 import ScrollIndicator from "./ScrollIndicator";
 import HeroContent from "./HeroContent";
+
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export interface HeroProps {
   introCompleted: boolean;
@@ -12,6 +17,7 @@ export interface HeroProps {
 
 export default function Hero({ introCompleted }: HeroProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const handoffRef = useRef<HTMLDivElement>(null);
   const logoWrapperRef = useRef<HTMLDivElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
   const blueLineRef = useRef<HTMLSpanElement>(null);
@@ -245,6 +251,92 @@ export default function Hero({ introCompleted }: HeroProps) {
     }
   );
 
+  useGSAP(
+    () => {
+      if (!introCompleted || !containerRef.current || !handoffRef.current) return;
+
+      const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      if (motionQuery.matches) return;
+
+      const mm = gsap.matchMedia();
+
+      const buildHandoff = (mobile: boolean) => {
+        const handoff = handoffRef.current;
+        const indicator = labelRef.current;
+        const line = blueLineRef.current;
+
+        if (!handoff) return;
+
+        const timeline = gsap.timeline({
+          defaults: {
+            ease: "none",
+            overwrite: "auto",
+          },
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: "top top",
+            end: "bottom top",
+            scrub: mobile ? 0.28 : 0.45,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        timeline.to(
+          handoff,
+          {
+            yPercent: mobile ? -28 : -36,
+            autoAlpha: 0.08,
+            scale: mobile ? 0.985 : 0.975,
+            force3D: true,
+            duration: 1,
+          },
+          0
+        );
+
+        if (indicator) {
+          timeline.to(
+            indicator,
+            {
+              yPercent: -80,
+              autoAlpha: 0,
+              duration: 0.58,
+              force3D: true,
+            },
+            0
+          );
+        }
+
+        if (line) {
+          timeline.to(
+            line,
+            {
+              scaleX: 0.2,
+              autoAlpha: 0,
+              duration: 0.5,
+            },
+            0
+          );
+        }
+
+        return () => {
+          gsap.set(handoff, {
+            clearProps: "willChange",
+          });
+        };
+      };
+
+      mm.add("(max-width: 768px)", () => buildHandoff(true));
+      mm.add("(min-width: 769px)", () => buildHandoff(false));
+
+      return () => mm.revert();
+    },
+    {
+      scope: containerRef,
+      dependencies: [introCompleted],
+      revertOnUpdate: true,
+    }
+  );
+
   return (
     <section
       ref={containerRef}
@@ -253,6 +345,7 @@ export default function Hero({ introCompleted }: HeroProps) {
       <ScrollIndicator labelRef={labelRef} lineRef={blueLineRef} />
 
       <HeroContent
+        handoffRef={handoffRef}
         logoWrapperRef={logoWrapperRef}
         servicesContainerRef={servicesContainerRef}
         serviceItemsRef={serviceItemsRef}

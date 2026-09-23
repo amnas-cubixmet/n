@@ -11,98 +11,7 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-interface EditorialProject {
-  num: string;
-  title: string;
-  category: string;
-  description: string;
-  image: string;
-  imageAlt: string;
-  destination: string;
-  gridCols: string;
-  rotation: string;
-  bgLayerOffset: string;
-  bgLayerRotation: string;
-  imagePosition?: string;
-}
-
-const EDITORIAL_PROJECTS: EditorialProject[] = [
-  {
-    num: "01",
-    title: "AUREA",
-    category: "BRAND IDENTITY",
-    description:
-      "A complete visual identity built around clarity, precision and premium positioning.",
-    image: "/images/work/work-01-branding.jpg",
-    imageAlt: "AUREA Luxury Brand Identity & Packaging",
-    destination: "/work/aurea",
-    gridCols: "grid-cols-1 lg:grid-cols-[40%_60%]",
-    rotation: "-1deg",
-    bgLayerOffset: "top-[-12px] right-[-14px] bottom-[-10px] left-[-16px]",
-    bgLayerRotation: "+0.8deg",
-    imagePosition: "center center",
-  },
-  {
-    num: "02",
-    title: "VYRA",
-    category: "BRAND & SIGNAGE",
-    description:
-      "Transforming spaces through bold branding and environmental design.",
-    image: "/images/work/work-02-digital-marketing.jpg",
-    imageAlt: "VYRA Architectural Signage & Environmental Design",
-    destination: "/work/vyra",
-    gridCols: "grid-cols-1 lg:grid-cols-[58%_42%]",
-    rotation: "+1deg",
-    bgLayerOffset: "top-[-16px] right-[-10px] bottom-[-14px] left-[-12px]",
-    bgLayerRotation: "-1.1deg",
-    imagePosition: "center center",
-  },
-  {
-    num: "03",
-    title: "NEXON",
-    category: "CAMPAIGN",
-    description:
-      "A high-impact campaign that connects brands with people.",
-    image: "/images/work/work-03-creative-production.jpg",
-    imageAlt: "NEXON Advertising & Digital Billboard Campaign",
-    destination: "/work/nexon",
-    gridCols: "grid-cols-1 lg:grid-cols-[43%_57%]",
-    rotation: "-1.2deg",
-    bgLayerOffset: "top-[-10px] right-[-18px] bottom-[-12px] left-[-10px]",
-    bgLayerRotation: "+1.2deg",
-    imagePosition: "center center",
-  },
-  {
-    num: "04",
-    title: "MOMENTUM",
-    category: "EVENT EXPERIENCE",
-    description:
-      "Immersive event experiences that engage, inspire and create lasting connections.",
-    image: "/images/work/work-04-technology.jpg",
-    imageAlt: "MOMENTUM Conference & Stage Experience",
-    destination: "/work/momentum",
-    gridCols: "grid-cols-1 lg:grid-cols-[57%_43%]",
-    rotation: "+0.8deg",
-    bgLayerOffset: "top-[-14px] right-[-12px] bottom-[-16px] left-[-14px]",
-    bgLayerRotation: "-0.9deg",
-    imagePosition: "center center",
-  },
-  {
-    num: "05",
-    title: "LUME",
-    category: "DIGITAL EXPERIENCE",
-    description:
-      "Digital products that make complex ideas simple and human.",
-    image: "/images/work/work-02-digital-marketing.jpg",
-    imageAlt: "LUME Mobile Application & Digital Experience",
-    destination: "/work/lume",
-    gridCols: "grid-cols-1 lg:grid-cols-[41%_59%]",
-    rotation: "-0.9deg",
-    bgLayerOffset: "top-[-12px] right-[-16px] bottom-[-10px] left-[-12px]",
-    bgLayerRotation: "+0.7deg",
-    imagePosition: "center top",
-  },
-];
+import { editorialWorkProjects } from "@/data/work";
 
 export default function WorkPageClient() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -138,7 +47,7 @@ export default function WorkPageClient() {
         const imgElement = card.querySelector(".project-image");
         const titleElement = card.querySelector(".project-title");
         const descElement = card.querySelector(".project-desc");
-        const baseRotation = EDITORIAL_PROJECTS[index].rotation;
+        const baseRotation = editorialWorkProjects[index].rotation;
 
         if (isMobile) {
           gsap.fromTo(
@@ -302,13 +211,13 @@ export default function WorkPageClient() {
 
       {/* 3. WORK LIST CONCEPT — VERTICAL EDITORIAL SHOWCASE */}
       <section className="pt-4 pb-28 sm:pb-40 px-4 sm:px-8 lg:px-16 max-w-[1500px] w-full mx-auto space-y-20 sm:space-y-28 lg:space-y-36">
-        {EDITORIAL_PROJECTS.map((project, index) => {
+        {editorialWorkProjects.map((project, index) => {
           const isTextLeft = index % 2 === 0;
 
           return (
             <TransitionLink
               key={project.num}
-              href={project.destination}
+              href={`/work/${project.slug}`}
               className="group block cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1677FF] focus-visible:ring-offset-4 focus-visible:ring-offset-[#05070A]"
             >
               <div

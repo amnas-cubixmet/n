@@ -33,7 +33,7 @@ export default function WatWeDoen() {
     // Preload service images once so panel changes do not wait on network decode.
     services.forEach((service) => {
       if (service.image) {
-        const img = new Image();
+        const img = new window.Image();
         img.src = service.image;
       }
     });

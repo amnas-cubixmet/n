@@ -5,7 +5,7 @@ import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Header from "@/components/navigation/Header";
-import { usePageTransition } from "@/components/navigation/PageTransitionProvider";
+import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -107,7 +107,6 @@ const EDITORIAL_PROJECTS: EditorialProject[] = [
 export default function WorkPageClient() {
   const containerRef = useRef<HTMLDivElement>(null);
   const projectRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const { triggerTransition } = usePageTransition();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -268,11 +267,6 @@ export default function WorkPageClient() {
     return () => ctx.revert();
   }, [isMobile]);
 
-  const handleProjectClick = (e: React.MouseEvent<HTMLDivElement>, href: string) => {
-    e.preventDefault();
-    triggerTransition(href);
-  };
-
   return (
     <div
       ref={containerRef}
@@ -312,18 +306,21 @@ export default function WorkPageClient() {
           const isTextLeft = index % 2 === 0;
 
           return (
-            <div
+            <TransitionLink
               key={project.num}
-              ref={(el) => {
-                projectRefs.current[index] = el;
-              }}
-              onClick={(e) => handleProjectClick(e, project.destination)}
-              className="group relative cursor-pointer select-none"
-              style={{
-                WebkitBackfaceVisibility: "hidden",
-                backfaceVisibility: "hidden",
-              }}
+              href={project.destination}
+              className="group block cursor-pointer select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1677FF] focus-visible:ring-offset-4 focus-visible:ring-offset-[#05070A]"
             >
+              <div
+                ref={(el) => {
+                  projectRefs.current[index] = el;
+                }}
+                className="relative"
+                style={{
+                  WebkitBackfaceVisibility: "hidden",
+                  backfaceVisibility: "hidden",
+                }}
+              >
               {/* 10. SUBTLE LARGE DARK BACKGROUND LAYER */}
               <div
                 className={`project-bg-layer absolute ${project.bgLayerOffset} bg-[#080A0D] border border-white/[0.03] rounded-[2px] pointer-events-none hidden lg:block transition-transform duration-500`}
@@ -409,7 +406,7 @@ export default function WorkPageClient() {
                   </div>
                 </div>
               </div>
-            </div>
+            </TransitionLink>
           );
         })}
       </section>

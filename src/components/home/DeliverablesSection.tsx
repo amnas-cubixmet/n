@@ -555,11 +555,13 @@ export default function DeliverablesSection() {
                         </span>
                       </div>
                     ) : (
-                      <img
+                      <Image
                         src={item.media}
                         alt={item.title}
+                        fill
+                        sizes="(max-width: 1023px) 100vw, 50vw"
                         onError={() => handleImageError(item.id)}
-                        className="w-full h-full object-cover"
+                        className="object-cover"
                       />
                     )}
                   </div>

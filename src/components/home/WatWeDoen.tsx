@@ -324,7 +324,7 @@ export default function WatWeDoen() {
                   </div>
                   <TransitionLink
                     href={`/services/${service.slug}`}
-                    className="font-pixel font-bold text-2xl sm:text-4xl text-white uppercase leading-[0.92] tracking-normal hover:text-[#1677FF] transition-colors flex flex-col items-start gap-1"
+                    className="font-pixel font-bold text-2xl sm:text-4xl text-white uppercase leading-[0.92] tracking-normal lg:hover:text-[#1677FF] transition-colors flex flex-col items-start gap-1"
                   >
                     {service.displayLines.map((line, idx) => (
                       <span
@@ -459,7 +459,7 @@ export default function WatWeDoen() {
                         titlesRef.current[index] = el;
                       }}
                       href={`/services/${service.slug}`}
-                      className="font-pixel font-bold text-[clamp(24px,7.5vw,38px)] text-white uppercase leading-[0.94] tracking-normal hover:opacity-90 transition-opacity flex flex-col items-start gap-[2px]"
+                      className="font-pixel font-bold text-[clamp(24px,7.5vw,38px)] text-white uppercase leading-[0.94] tracking-normal lg:hover:opacity-90 transition-opacity flex flex-col items-start gap-[2px]"
                     >
                       {service.displayLines.map((line, idx) => (
                         <span key={idx} className="title-mask">
@@ -497,7 +497,7 @@ export default function WatWeDoen() {
                         desktopTitlesRef.current[index] = el;
                       }}
                       href={`/services/${service.slug}`}
-                      className="font-sans font-bold text-[clamp(2.5rem,7vw,7.5rem)] text-white uppercase leading-[0.88] tracking-[-0.04em] drop-shadow-md pointer-events-auto hover:opacity-90 transition-opacity flex flex-col items-start gap-1 max-w-[85vw]"
+                      className="font-sans font-bold text-[clamp(2.5rem,7vw,7.5rem)] text-white uppercase leading-[0.88] tracking-[-0.04em] drop-shadow-md pointer-events-auto lg:hover:opacity-90 transition-opacity flex flex-col items-start gap-1 max-w-[85vw]"
                     >
                       {service.displayLines.map((line, idx) => (
                         <span key={idx} className="title-mask">

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import Link from "next/link";
+import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -322,7 +322,7 @@ export default function WatWeDoen() {
                       </span>
                     ))}
                   </div>
-                  <Link
+                  <TransitionLink
                     href={`/services/${service.slug}`}
                     className="font-pixel font-bold text-2xl sm:text-4xl text-white uppercase leading-[0.92] tracking-normal hover:text-[#1677FF] transition-colors flex flex-col items-start gap-1"
                   >
@@ -334,7 +334,7 @@ export default function WatWeDoen() {
                         {line}
                       </span>
                     ))}
-                  </Link>
+                  </TransitionLink>
                   <div className="inline-flex items-center gap-1.5 bg-black px-2 py-0.5 text-white font-pixel text-xs w-fit">
                     <span>{String(index + 1).padStart(2, "0")}</span>
                     <span className="inline-block w-4 h-[1.5px] bg-[#1677FF]" />
@@ -454,7 +454,7 @@ export default function WatWeDoen() {
                 <div className="flex md:hidden relative z-20 w-full h-full pointer-events-none">
                   {/* Lower-Left Large Title */}
                   <div className="absolute bottom-[max(3rem,env(safe-area-inset-bottom)+1.8rem)] left-[max(1.2rem,env(safe-area-inset-left))] z-30 max-w-[85vw] pointer-events-auto">
-                    <Link
+                    <TransitionLink
                       ref={(el) => {
                         titlesRef.current[index] = el;
                       }}
@@ -468,7 +468,7 @@ export default function WatWeDoen() {
                           </span>
                         </span>
                       ))}
-                    </Link>
+                    </TransitionLink>
                   </div>
 
                   {/* Bottom Counter & Progress Bar */}
@@ -492,7 +492,7 @@ export default function WatWeDoen() {
                 <div className="hidden md:flex panel-content relative z-20 w-full h-full p-8 md:p-12 xl:p-16 flex-col justify-end pointer-events-none pb-[max(1.5rem,env(safe-area-inset-bottom))]">
                   <div className="flex items-end justify-between w-full">
                     {/* Lower Left: Huge Clean Title with Masked Bottom-to-Top Reveal */}
-                    <Link
+                    <TransitionLink
                       ref={(el) => {
                         desktopTitlesRef.current[index] = el;
                       }}
@@ -506,7 +506,7 @@ export default function WatWeDoen() {
                           </span>
                         </span>
                       ))}
-                    </Link>
+                    </TransitionLink>
 
                     {/* Bottom Right: Small Editorial Counter */}
                     <div className="service-counter inline-flex items-center gap-2 bg-black px-2 py-1 text-white font-mono text-xs tracking-wider shrink-0 mb-1">

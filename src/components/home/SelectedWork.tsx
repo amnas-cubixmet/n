@@ -14,6 +14,7 @@ if (typeof window !== "undefined") {
 
 export default function SelectedWork() {
   const containerRef = useRef<HTMLElement>(null);
+  const shapeRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -48,6 +49,27 @@ export default function SelectedWork() {
             }
           );
         });
+
+        if (shapeRef.current) {
+          gsap.fromTo(
+            shapeRef.current,
+            {
+              yPercent: -4,
+            },
+            {
+              yPercent: 12,
+              ease: "none",
+              force3D: true,
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 0.75,
+                invalidateOnRefresh: true,
+              },
+            }
+          );
+        }
       });
 
       mm.add("(min-width: 1024px)", () => {
@@ -72,6 +94,27 @@ export default function SelectedWork() {
             }
           );
         });
+
+        if (shapeRef.current) {
+          gsap.fromTo(
+            shapeRef.current,
+            {
+              yPercent: -8,
+            },
+            {
+              yPercent: 20,
+              ease: "none",
+              force3D: true,
+              scrollTrigger: {
+                trigger: containerRef.current,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 0.9,
+                invalidateOnRefresh: true,
+              },
+            }
+          );
+        }
       });
 
       return () => mm.revert();
@@ -85,12 +128,13 @@ export default function SelectedWork() {
       ref={containerRef}
       className="relative isolate z-20 m-0 w-full overflow-hidden bg-white px-[max(1.1rem,env(safe-area-inset-left))] pb-12 pt-10 pr-[max(1.1rem,env(safe-area-inset-right))] text-black pointer-events-auto sm:px-8 sm:pb-14 sm:pt-12 lg:px-10 lg:pb-18 lg:pt-14"
     >
-      {/* Decorative shape intentionally stays in normal section space.
-          It has no separate parallax, so it travels at exactly the same
-          page-scroll speed as the project content. */}
+      {/* Background moves more slowly than the normal document-flow content.
+          The cards keep regular scroll speed while this single transform-only
+          layer receives a small compensating downward parallax. */}
       <div
+        ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-[8%] top-[18%] z-[1] h-[66%] w-[88%] bg-[#F2F3F5] sm:left-[12%] sm:w-[82%] lg:left-[18%] lg:top-[16%] lg:h-[70%] lg:w-[72%]"
+        className="pointer-events-none absolute left-[8%] top-[14%] z-[1] h-[74%] w-[88%] bg-[#F2F3F5] will-change-transform sm:left-[12%] sm:w-[82%] lg:left-[18%] lg:top-[12%] lg:h-[78%] lg:w-[72%]"
         style={{
           clipPath:
             "polygon(12% 0, 100% 0, 100% 84%, 88% 84%, 88% 100%, 0 100%, 0 18%, 12% 18%)",

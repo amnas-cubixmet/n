@@ -89,10 +89,10 @@ export default function Hero({ introCompleted }: HeroProps) {
             return;
           }
 
-          const duration = mobile ? 0.54 : 0.78;
-          const logoY = mobile ? 16 : 30;
-          const labelY = mobile ? 9 : 18;
-          const serviceY = mobile ? 8 : 14;
+          const duration = mobile ? 0.46 : 0.62;
+          const logoY = mobile ? 8 : 12;
+          const labelY = mobile ? 5 : 7;
+          const serviceY = mobile ? 4 : 6;
 
           if (bgVisual) gsap.set(bgVisual, { opacity: 0 });
           if (heroVisual) gsap.set(heroVisual, { opacity: 0 });
@@ -126,20 +126,20 @@ export default function Hero({ introCompleted }: HeroProps) {
           if (headerBtn) {
             gsap.set(headerBtn, {
               opacity: 0,
-              y: mobile ? -8 : -12,
+              y: mobile ? -4 : -6,
               force3D: true,
             });
           }
 
           const tl = gsap.timeline({
-            delay: mobile ? 0.02 : 0.04,
+            delay: 0.02,
             defaults: { overwrite: "auto" },
           });
 
           if (bgVisual) {
             tl.to(bgVisual, {
               opacity: 1,
-              duration: duration * 0.76,
+              duration: duration * 0.7,
               ease: "power2.out",
             });
           }
@@ -149,10 +149,10 @@ export default function Hero({ introCompleted }: HeroProps) {
               heroVisual,
               {
                 opacity: 1,
-                duration: duration * 0.92,
+                duration: duration * 0.82,
                 ease: "power2.out",
               },
-              "-=0.34"
+              "-=0.24"
             );
           }
 
@@ -166,7 +166,7 @@ export default function Hero({ introCompleted }: HeroProps) {
                 ease: "power3.out",
                 force3D: true,
               },
-              "-=0.48"
+              "-=0.34"
             );
           }
 
@@ -176,11 +176,11 @@ export default function Hero({ introCompleted }: HeroProps) {
               {
                 opacity: 1,
                 y: 0,
-                duration: duration * 0.62,
+                duration: duration * 0.46,
                 ease: "power3.out",
                 force3D: true,
               },
-              "-=0.35"
+              "-=0.26"
             );
           }
 
@@ -189,7 +189,7 @@ export default function Hero({ introCompleted }: HeroProps) {
               blueLineRef.current,
               {
                 scaleX: 1,
-                duration: duration * 0.5,
+                duration: duration * 0.42,
                 ease: "power2.out",
               },
               "<0.05"
@@ -203,11 +203,11 @@ export default function Hero({ introCompleted }: HeroProps) {
                 opacity: 1,
                 y: 0,
                 duration: duration * 0.56,
-                stagger: mobile ? 0.035 : 0.055,
+                stagger: mobile ? 0.025 : 0.035,
                 ease: "power3.out",
                 force3D: true,
               },
-              "-=0.22"
+              "-=0.16"
             );
           }
 
@@ -217,11 +217,11 @@ export default function Hero({ introCompleted }: HeroProps) {
               {
                 opacity: 1,
                 y: 0,
-                duration: duration * 0.52,
+                duration: duration * 0.42,
                 ease: "power3.out",
                 force3D: true,
               },
-              "-=0.18"
+              "-=0.12"
             );
           }
 

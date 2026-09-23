@@ -6,12 +6,11 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Header from "@/components/navigation/Header";
 import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
+import { editorialWorkProjects } from "@/data/work";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
-
-import { editorialWorkProjects } from "@/data/work";
 
 export default function WorkPageClient() {
   const containerRef = useRef<HTMLDivElement>(null);

@@ -71,7 +71,7 @@ export function ProjectCard({
       } ${gridClass}`}
     >
       <TransitionLink
-        href={`/services/${project.slug}`}
+        href={`/work/${project.slug}`}
         className="group block w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#1677FF] focus-visible:ring-offset-2 focus-visible:ring-offset-white"
       >
         <div className="relative flex w-full flex-col items-start text-left cursor-pointer">

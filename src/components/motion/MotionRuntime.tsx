@@ -32,8 +32,13 @@ export default function MotionRuntime() {
       orientationTimer = window.setTimeout(refresh, 260);
     };
 
+    const handlePageShow = (event: PageTransitionEvent) => {
+      if (event.persisted) refresh();
+    };
+
     window.addEventListener("load", refresh, { once: true });
     window.addEventListener("orientationchange", handleOrientationChange);
+    window.addEventListener("pageshow", handlePageShow);
 
     if (document.fonts?.ready) {
       document.fonts.ready.then(() => {
@@ -47,6 +52,7 @@ export default function MotionRuntime() {
       window.clearTimeout(orientationTimer);
       window.removeEventListener("load", refresh);
       window.removeEventListener("orientationchange", handleOrientationChange);
+      window.removeEventListener("pageshow", handlePageShow);
     };
   }, []);
 

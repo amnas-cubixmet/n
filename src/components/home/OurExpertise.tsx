@@ -5,60 +5,100 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function OurExpertise() {
   const containerRef = useRef<HTMLElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
-  const copyRef = useRef<HTMLDivElement>(null);
+  const paragraphOneRef = useRef<HTMLParagraphElement>(null);
+  const paragraphTwoRef = useRef<HTMLParagraphElement>(null);
 
   useGSAP(
     () => {
-      if (typeof window === "undefined") return;
+      if (typeof window === "undefined" || !containerRef.current) return;
 
       const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-      if (motionQuery.matches) return;
 
       const label = labelRef.current;
-      const copy = copyRef.current;
-      if (!containerRef.current || !label || !copy) return;
+      const paragraphOne = paragraphOneRef.current;
+      const paragraphTwo = paragraphTwoRef.current;
+
+      if (!label || !paragraphOne || !paragraphTwo) return;
+
+      if (motionQuery.matches) {
+        gsap.set([label, paragraphOne, paragraphTwo], {
+          autoAlpha: 1,
+          y: 0,
+          clearProps: "transform",
+        });
+        return;
+      }
 
       const mm = gsap.matchMedia();
 
       const buildReveal = (mobile: boolean) => {
+        gsap.set(label, {
+          autoAlpha: 0,
+          y: mobile ? 6 : 8,
+          force3D: true,
+          willChange: "transform, opacity",
+        });
+
+        gsap.set([paragraphOne, paragraphTwo], {
+          autoAlpha: 0,
+          y: mobile ? 16 : 22,
+          force3D: true,
+          willChange: "transform, opacity",
+        });
+
         const timeline = gsap.timeline({
+          defaults: {
+            ease: "power3.out",
+            overwrite: "auto",
+          },
           scrollTrigger: {
             trigger: containerRef.current,
-            start: mobile ? "top 90%" : "top 85%",
+            start: mobile ? "top 88%" : "top 82%",
             once: true,
+            invalidateOnRefresh: true,
+          },
+          onComplete: () => {
+            gsap.set([label, paragraphOne, paragraphTwo], {
+              clearProps: "will-change",
+            });
           },
         });
 
-        if (label) {
-          timeline.from(
-            label,
+        timeline
+          .to(label, {
+            autoAlpha: 1,
+            y: 0,
+            duration: mobile ? 0.28 : 0.34,
+          })
+          .to(
+            paragraphOne,
             {
-              opacity: 0,
-              y: mobile ? 6 : 0,
-              duration: mobile ? 0.35 : 0.6,
-              ease: "power3.out",
+              autoAlpha: 1,
+              y: 0,
+              duration: mobile ? 0.46 : 0.56,
             },
-            "0"
+            mobile ? "-=0.12" : "-=0.14"
+          )
+          .to(
+            paragraphTwo,
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: mobile ? 0.46 : 0.56,
+            },
+            mobile ? "-=0.28" : "-=0.34"
           );
-        }
 
-        if (copy) {
-          timeline.from(
-            copy,
-            {
-              opacity: 0,
-              y: mobile ? 14 : 20,
-              duration: mobile ? 0.5 : 0.7,
-              ease: "power3.out",
-            },
-            "-=0.25"
-          );
-        }
+        return () => {
+          timeline.kill();
+        };
       };
 
       mm.add("(max-width: 768px)", () => buildReveal(true));
@@ -66,39 +106,47 @@ export default function OurExpertise() {
 
       return () => mm.revert();
     },
-    { scope: containerRef }
+    {
+      scope: containerRef,
+    }
   );
 
   return (
     <section
       id="our-expertise"
       ref={containerRef}
-      className="relative w-full bg-white text-black pointer-events-auto z-20 m-0 px-5 md:px-6 lg:px-8 py-16 md:py-20"
+      className="relative z-20 w-full bg-white text-black pointer-events-auto overflow-hidden"
     >
-      <div className="w-full text-left">
-        {/* UPPER-LEFT EDITORIAL LABEL */}
-        <div ref={labelRef} className="flex items-center">
-          <span className="inline-block bg-black text-white px-1 py-0 text-xs font-medium uppercase leading-tight">
-            OUR EXPERTISE
-          </span>
-        </div>
+      <div className="mx-auto flex min-h-[58svh] w-full max-w-[1600px] flex-col justify-center px-[max(1.1rem,env(safe-area-inset-left))] py-[clamp(4.5rem,10vh,8rem)] pr-[max(1.1rem,env(safe-area-inset-right))] sm:min-h-[62svh] sm:px-8 lg:min-h-[68svh] lg:px-12 xl:px-16">
+        <div className="w-full max-w-[1120px]">
+          <div
+            ref={labelRef}
+            className="flex items-center"
+          >
+            <span className="inline-block bg-black px-1.5 py-[2px] font-mono text-[10px] font-semibold uppercase leading-none tracking-[0.06em] text-white sm:text-[11px]">
+              OUR EXPERTISE
+            </span>
+          </div>
 
-        {/* MAIN EDITORIAL COPY */}
-        <div
-          ref={copyRef}
-          className="mt-10 max-w-[1000px] space-y-8 font-normal text-[clamp(22px,2.4vw,40px)] leading-[1.3] tracking-[-0.02em] text-left"
-        >
-          <p className="font-sans font-normal text-black m-0">
-            What do we do best? Branding, design, and digital experiences. Yes,
-            you’ve heard that before. But expertise isn’t just about what you
-            do, it’s about how exceptionally you do it.
-          </p>
+          <div className="mt-8 max-w-[1080px] space-y-5 sm:mt-10 sm:space-y-7 lg:mt-12 lg:space-y-8">
+            <p
+              ref={paragraphOneRef}
+              className="m-0 font-sans text-[clamp(22px,6.2vw,31px)] font-normal leading-[1.14] tracking-[-0.025em] text-black sm:text-[clamp(27px,3vw,40px)] lg:text-[clamp(32px,2.65vw,44px)]"
+            >
+              What do we do best? Branding, design, and digital experiences. Yes,
+              you’ve heard that before. But expertise isn’t just about what you
+              do, it’s about how exceptionally you do it.
+            </p>
 
-          <p className="font-sans font-normal text-black m-0">
-            We push every detail further, challenge the expected, and strive for
-            work that feels considered, distinctive, and precise. Because good
-            is never the finish line. There’s always a way to make it better.
-          </p>
+            <p
+              ref={paragraphTwoRef}
+              className="m-0 font-sans text-[clamp(22px,6.2vw,31px)] font-normal leading-[1.14] tracking-[-0.025em] text-black sm:text-[clamp(27px,3vw,40px)] lg:text-[clamp(32px,2.65vw,44px)]"
+            >
+              We push every detail further, challenge the expected, and strive for
+              work that feels considered, distinctive, and precise. Because good
+              is never the finish line. There’s always a way to make it better.
+            </p>
+          </div>
         </div>
       </div>
     </section>

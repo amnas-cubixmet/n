@@ -318,7 +318,7 @@ export default function WatWeDoen() {
       >
         <div className="wat-we-doen-stage relative h-full w-full overflow-hidden bg-transparent">
           <div className="absolute left-[max(1.1rem,env(safe-area-inset-left))] right-[max(4.5rem,env(safe-area-inset-right))] top-[max(1.1rem,env(safe-area-inset-top))] z-[80] flex items-start gap-4 pointer-events-none md:left-8 md:right-24 md:top-[max(2rem,env(safe-area-inset-top))] md:gap-12">
-            <span className="shrink-0 bg-black px-1.5 py-0.5 font-pixel text-[10px] font-bold uppercase leading-none tracking-[0.04em] text-white sm:text-[11px] md:font-mono md:text-xs">
+            <span className="shrink-0 bg-black px-1.5 py-0.5 font-pixel text-[9px] font-bold uppercase leading-none tracking-[0.04em] text-white sm:text-[10px] md:font-mono md:text-[10px]">
               WHAT WE DO
             </span>
 
@@ -329,7 +329,7 @@ export default function WatWeDoen() {
               {activeService.items.map((item) => (
                 <span
                   key={item}
-                  className="inline-block bg-black px-1 py-[1px] font-pixel text-[9px] uppercase leading-none tracking-[0.03em] text-white sm:text-[10px] md:font-mono md:text-[11px]"
+                  className="inline-block bg-black px-1 py-[1px] font-pixel text-[8px] uppercase leading-none tracking-[0.03em] text-white sm:text-[9px] md:font-mono md:text-[9px]"
                 >
                   {item}
                 </span>

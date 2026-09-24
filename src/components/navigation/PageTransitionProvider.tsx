@@ -75,19 +75,61 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
   const pathname = usePathname();
   const router = useRouter();
   const pendingHashRef = useRef<string | null>(null);
+  const wipeRef = useRef<HTMLDivElement>(null);
+  const wipeAnimationRef = useRef<Animation | null>(null);
+  const routeLineRef = useRef<HTMLDivElement>(null);
+  const routeLineAnimationRef = useRef<Animation | null>(null);
 
-  const scrollToSection = useCallback((targetHash: string) => {
+  const cancelWipe = useCallback(() => {
+    wipeAnimationRef.current?.cancel();
+    wipeAnimationRef.current = null;
+    if (wipeRef.current) wipeRef.current.style.transform = "translateY(100%)";
+  }, []);
+
+  const scrollToSection = useCallback((targetHash: string, animate = false) => {
     const id = decodeURIComponent(targetHash.replace(/^#/, ""));
     const target = document.getElementById(id);
     if (!target) return false;
 
-    const headerOffset = window.innerWidth <= 768 ? 56 : 70;
-    window.scrollTo({
-      top: Math.max(0, target.getBoundingClientRect().top + window.scrollY - headerOffset),
-      behavior: "instant",
-    });
+    const moveToTarget = () => {
+      const headerOffset = window.innerWidth <= 768 ? 56 : 70;
+      window.scrollTo({
+        top: Math.max(0, target.getBoundingClientRect().top + window.scrollY - headerOffset),
+        behavior: "instant",
+      });
+    };
+
+    cancelWipe();
+    const wipe = wipeRef.current;
+    if (
+      !animate ||
+      !wipe ||
+      typeof wipe.animate !== "function" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      moveToTarget();
+      return true;
+    }
+
+    // A short, transform-only wipe masks a long jump across pinned sections
+    // without making the browser animate every intervening scroll trigger.
+    const enter = wipe.animate(
+      [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }],
+      { duration: 170, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "forwards" }
+    );
+    wipeAnimationRef.current = enter;
+    enter.onfinish = () => {
+      moveToTarget();
+      const leave = wipe.animate(
+        [{ transform: "translateY(0)" }, { transform: "translateY(-100%)" }],
+        { duration: 210, easing: "cubic-bezier(0.65, 0, 0.35, 1)", fill: "forwards" }
+      );
+      enter.cancel();
+      wipeAnimationRef.current = leave;
+      leave.onfinish = cancelWipe;
+    };
     return true;
-  }, []);
+  }, [cancelWipe]);
 
   // The destination can mount a frame after the layout. Wait for the anchor,
   // never for an animation before starting the route change.
@@ -110,6 +152,7 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
 
   useEffect(() => {
     const restoreHash = () => {
+      cancelWipe();
       if (window.location.hash) {
         requestAnimationFrame(() => scrollToSection(window.location.hash));
       }
@@ -120,26 +163,59 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
       window.removeEventListener("popstate", restoreHash);
       window.removeEventListener("hashchange", restoreHash);
     };
-  }, [scrollToSection]);
+  }, [cancelWipe, scrollToSection]);
+
+  useEffect(() => cancelWipe, [cancelWipe]);
+  useEffect(() => () => routeLineAnimationRef.current?.cancel(), []);
 
   const triggerTransition = useCallback((href: string) => {
     const [targetPath, hash] = href.split("#");
     if (!targetPath || targetPath === pathname) {
       window.history.pushState(window.history.state, "", href);
-      if (hash) scrollToSection(hash);
-      else window.scrollTo({ top: 0, behavior: "instant" });
+      if (hash) scrollToSection(hash, true);
+      else {
+        cancelWipe();
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
       return;
     }
 
+    cancelWipe();
+    routeLineAnimationRef.current?.cancel();
+    const routeLine = routeLineRef.current;
+    if (
+      routeLine &&
+      typeof routeLine.animate === "function" &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
+      routeLineAnimationRef.current = routeLine.animate(
+        [
+          { transform: "scaleX(0)", opacity: 1 },
+          { transform: "scaleX(1)", opacity: 0 },
+        ],
+        { duration: 480, easing: "ease-out" }
+      );
+    }
     pendingHashRef.current = hash ? `#${hash}` : null;
     router.push(href, { scroll: !hash });
-  }, [pathname, router, scrollToSection]);
+  }, [cancelWipe, pathname, router, scrollToSection]);
 
   return (
     <PageTransitionContext.Provider
       value={{ triggerTransition, scrollToSection, isTransitioning: false }}
     >
       {children}
+      <div
+        ref={wipeRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-0 z-[99999] bg-[#1677FF]"
+        style={{ transform: "translateY(100%)" }}
+      />
+      <div
+        ref={routeLineRef}
+        aria-hidden="true"
+        className="pointer-events-none fixed inset-x-0 top-0 z-[100000] h-[3px] origin-left bg-[#1677FF] opacity-0"
+      />
     </PageTransitionContext.Provider>
   );
 }

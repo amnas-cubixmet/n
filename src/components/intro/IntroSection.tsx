@@ -15,7 +15,7 @@ export default function IntroSection() {
     "NORTHFRᐱME is a creative agency for strategy, branding, digital marketing, web development, technology, and creative production, built for brands that refuse to blend in. We don’t believe in ordinary. We believe in custom ideas, thoughtful design, and purposeful execution that create that unmistakable “wow” feeling. That’s who we are. That’s how we build brands that move forward.";
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const headingRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const paragraphRef = useRef<HTMLParagraphElement>(null);
 
   const [isReducedMotion, setIsReducedMotion] = useState(() =>
@@ -62,13 +62,13 @@ export default function IntroSection() {
       const buildReveal = (mobile: boolean) => {
         gsap.set(heading, {
           autoAlpha: 0,
-          yPercent: 75,
+          yPercent: 110,
           force3D: true,
         });
 
         gsap.set(paragraph, {
           autoAlpha: 0,
-          y: mobile ? 20 : 28,
+          y: mobile ? 32 : 42,
           force3D: true,
         });
 
@@ -91,7 +91,7 @@ export default function IntroSection() {
             {
               autoAlpha: 1,
               yPercent: 0,
-              duration: mobile ? 0.42 : 0.5,
+              duration: mobile ? 0.55 : 0.65,
               force3D: true,
             },
             0
@@ -101,10 +101,10 @@ export default function IntroSection() {
             {
               autoAlpha: 1,
               y: 0,
-              duration: mobile ? 0.6 : 0.72,
+              duration: mobile ? 0.75 : 0.85,
               force3D: true,
             },
-            0.1
+            0.16
           );
 
         return () => {
@@ -132,31 +132,33 @@ export default function IntroSection() {
       className="relative z-10 box-border flex min-h-[50svh] w-full flex-col justify-center bg-white m-0 px-[max(1rem,3vw)] py-[clamp(3rem,8vh,6.5rem)] text-black pointer-events-auto"
     >
       <div className="flex w-full max-w-[850px] flex-col">
-        <div
-          ref={headingRef}
-          className="flex items-center overflow-hidden"
-          style={
-            isReducedMotion
-              ? { opacity: 1, transform: "none" }
-              : { willChange: "transform, opacity" }
-          }
-        >
-          <h2 className="font-montserrat text-[12px] font-semibold tracking-[0.06em] text-black uppercase leading-none">
+        <div className="flex items-center overflow-hidden py-1">
+          <h2
+            ref={headingRef}
+            className="font-montserrat text-[12px] font-semibold tracking-[0.06em] text-black uppercase leading-none"
+            style={
+              isReducedMotion
+                ? { opacity: 1, transform: "none" }
+                : { willChange: "transform, opacity" }
+            }
+          >
             {headingText}
           </h2>
         </div>
 
-        <p
-          ref={paragraphRef}
-          className="mt-4 sm:mt-5 max-w-[850px] text-left font-poppins text-black text-[clamp(18px,5vw,23px)] sm:text-[clamp(21px,2vw,30px)] leading-[1.15] font-normal tracking-[-0.02em]"
-          style={
-            isReducedMotion
-              ? { opacity: 1, transform: "none" }
-              : { willChange: "transform, opacity" }
-          }
-        >
-          {paragraphText}
-        </p>
+        <div className="mt-4 overflow-hidden sm:mt-5">
+          <p
+            ref={paragraphRef}
+            className="m-0 max-w-[850px] text-left font-poppins text-black text-[clamp(18px,5vw,23px)] sm:text-[clamp(21px,2vw,30px)] leading-[1.15] font-normal tracking-[-0.02em]"
+            style={
+              isReducedMotion
+                ? { opacity: 1, transform: "none" }
+                : { willChange: "transform, opacity" }
+            }
+          >
+            {paragraphText}
+          </p>
+        </div>
       </div>
     </div>
   );

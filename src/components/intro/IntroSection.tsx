@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -17,66 +17,30 @@ export default function IntroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
 
-  const [isReducedMotion, setIsReducedMotion] = useState(() =>
-    typeof window !== "undefined"
-      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      : false
-  );
-
-  useEffect(() => {
-    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-
-    const handleMotionChange = (event: MediaQueryListEvent) => {
-      setIsReducedMotion(event.matches);
-    };
-
-    if (typeof motionQuery.addEventListener === "function") {
-      motionQuery.addEventListener("change", handleMotionChange);
-      return () => motionQuery.removeEventListener("change", handleMotionChange);
-    }
-
-    motionQuery.addListener(handleMotionChange);
-    return () => motionQuery.removeListener(handleMotionChange);
-  }, []);
-
   useGSAP(
     () => {
       const heading = headingRef.current;
-      if (!heading) return;
-
-      if (isReducedMotion) {
-        gsap.set(heading, {
-          autoAlpha: 1,
-          y: 0,
-          clearProps: "transform",
-        });
-        return;
-      }
+      if (!heading || !containerRef.current) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
       const mm = gsap.matchMedia();
 
       const buildReveal = (mobile: boolean) => {
-        gsap.set(heading, { autoAlpha: 0, y: mobile ? 12 : 16 });
-
-        gsap.to(heading, {
+        gsap.fromTo(heading, {
+          autoAlpha: 0,
+          y: mobile ? 8 : 12,
+        }, {
           autoAlpha: 1,
           y: 0,
-          duration: 1,
-          ease: "none",
+          duration: mobile ? 0.45 : 0.6,
+          ease: "power3.out",
           scrollTrigger: {
             trigger: containerRef.current,
-            start: "top 92%",
-            end: "top 72%",
-            scrub: mobile ? 0.18 : 0.3,
+            start: "top 78%",
+            once: true,
             invalidateOnRefresh: true,
           },
         });
-
-        return () => {
-          gsap.set(heading, {
-            clearProps: "willChange",
-          });
-        };
       };
 
       mm.add("(max-width: 768px)", () => buildReveal(true));
@@ -86,8 +50,6 @@ export default function IntroSection() {
     },
     {
       scope: containerRef,
-      dependencies: [isReducedMotion],
-      revertOnUpdate: true,
     }
   );
 
@@ -102,11 +64,6 @@ export default function IntroSection() {
             <h2
               ref={headingRef}
               className="w-fit font-montserrat text-[11px] font-medium tracking-[0.04em] text-white uppercase leading-none sm:text-[13px]"
-              style={
-                isReducedMotion
-                  ? { opacity: 1, transform: "none" }
-                  : { willChange: "transform, opacity" }
-              }
             >
               {headingText}
             </h2>
@@ -114,7 +71,7 @@ export default function IntroSection() {
 
           <div className="mt-5 sm:mt-7">
             <p
-              className="m-0 max-w-[950px] text-left font-poppins text-white text-[clamp(21px,5.6vw,27px)] sm:text-[clamp(26px,2.5vw,36px)] leading-[1.28] font-normal tracking-[-0.035em]"
+              className="m-0 max-w-[950px] text-left font-poppins text-white text-[clamp(18px,4.7vw,23px)] sm:text-[clamp(23px,2.1vw,30px)] leading-[1.34] font-normal tracking-[-0.025em]"
             >
               {paragraphText}
             </p>

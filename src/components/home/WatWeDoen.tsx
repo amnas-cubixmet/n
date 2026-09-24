@@ -123,8 +123,8 @@ export default function WatWeDoen() {
           }
 
           gsap.set(panel.querySelectorAll(".title-inner"), {
-            yPercent: index === 0 ? 112 : 0,
-            autoAlpha: index === 0 ? 0 : 1,
+            yPercent: 0,
+            autoAlpha: 1,
             force3D: true,
           });
 
@@ -187,13 +187,7 @@ export default function WatWeDoen() {
           const segmentStart = index;
 
           if (index === 0) {
-            // The image arrives with the section; its title follows as the
-            // first pinned scroll begins, then holds before panel two rises.
-            timeline.to(
-              panel.querySelectorAll(".title-inner"),
-              { yPercent: 0, autoAlpha: 1, duration: 0.24, stagger: 0.02, ease: "power2.out" },
-              0
-            );
+            // Keep the first title visible as soon as its image enters.
             timeline.to(
               panel.querySelectorAll(".service-counter"),
               { y: 0, autoAlpha: 1, duration: 0.16, ease: "power2.out" },
@@ -380,7 +374,7 @@ export default function WatWeDoen() {
                 <div className="absolute bottom-[max(3.5rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] z-30 max-w-[90vw] pointer-events-auto md:bottom-[max(3rem,env(safe-area-inset-bottom))] md:left-8 lg:left-12">
                   <TransitionLink
                     href={`/services/${service.slug}`}
-                    className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(25px,7.7vw,39px)] font-bold uppercase leading-[0.93] tracking-normal text-white transition-opacity lg:text-[clamp(64px,5.8vw,90px)] lg:leading-[0.96] lg:hover:opacity-[0.85]"
+                    className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(22px,6vw,32px)] font-bold uppercase leading-[0.93] tracking-normal text-white transition-opacity lg:text-[clamp(48px,4.5vw,70px)] lg:leading-[0.96] lg:hover:opacity-[0.85]"
                   >
                     {service.displayLines.map((line) => (
                       <span key={line} className="title-mask">

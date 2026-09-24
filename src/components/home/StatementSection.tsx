@@ -14,7 +14,6 @@ const words = ["WE", "MAKE", "BRANDS", "GO", "WOOOOOOOOW!"];
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const blackFillRef = useRef<HTMLDivElement>(null);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useGSAP(
@@ -22,7 +21,6 @@ export default function StatementSection() {
       if (
         !sectionRef.current ||
         !stageRef.current ||
-        !blackFillRef.current ||
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ) return;
 
@@ -35,7 +33,7 @@ export default function StatementSection() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 1.8 : 2.2))}`,
+          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 1.2 : 1.45))}`,
           pin: stageRef.current,
           pinSpacing: true,
           scrub: compact ? 0.15 : 0.25,
@@ -49,28 +47,24 @@ export default function StatementSection() {
         if (word) timeline.to(word, { yPercent: 0, autoAlpha: 1, duration: 0.18, ease: "power2.out" }, position);
       });
 
-      // Reveal the full message on blue before the black layer rises. The
-      // white copy lives inside that layer so the message stays legible.
-      timeline.to(blackFillRef.current, {
-        clipPath: "inset(0% 0% 0% 0%)",
-        duration: 0.28,
-        ease: "none",
-      }, 0.72);
+      // Let the complete message sit on blue before scrolling directly into
+      // the next section, without a separate black statement frame.
+      timeline.to({}, { duration: 0.34 }, 0.66);
     },
     { scope: sectionRef }
   );
 
   const headingClass = "m-0 flex w-full flex-col items-center justify-center gap-[clamp(6px,1.5svh,16px)] text-center font-pixel font-bold uppercase leading-[0.9] tracking-[-0.035em]";
 
-  const renderWords = (onBlack: boolean) => words.map((word, index) => (
+  const renderWords = () => words.map((word, index) => (
     <span key={word} className="block w-full overflow-hidden py-[0.04em]">
       <span
-        ref={onBlack ? undefined : (element) => { wordRefs.current[index] = element; }}
+        ref={(element) => { wordRefs.current[index] = element; }}
         className={`relative inline-block whitespace-nowrap px-[0.06em] ${
           index === 4
             ? "text-[clamp(32px,min(7vw,7.5svh),82px)]"
             : "text-[clamp(48px,min(12vw,11svh),116px)]"
-        } ${onBlack ? "text-white" : index === 0 || index === 2 || index === 4 ? "bg-black text-white" : "text-black"}`}
+        } ${index === 0 || index === 2 || index === 4 ? "bg-black text-white" : "text-black"}`}
       >
         {word}
       </span>
@@ -95,15 +89,7 @@ export default function StatementSection() {
         ref={stageRef}
         className="relative flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 select-none md:h-[100dvh] md:min-h-[100dvh]"
       >
-        <h2 className={`relative z-10 ${headingClass}`}>{renderWords(false)}</h2>
-        <div
-          ref={blackFillRef}
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black px-3"
-          style={{ clipPath: "inset(100% 0% 0% 0%)" }}
-        >
-          <div className={headingClass}>{renderWords(true)}</div>
-        </div>
+        <h2 className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
       </div>
     </section>
   );

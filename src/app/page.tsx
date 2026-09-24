@@ -50,7 +50,7 @@ export default function Home() {
 
           <section
             id="intro"
-            className="introduction relative w-full min-h-[50svh] min-h-[50dvh] flex flex-col justify-center pointer-events-auto bg-white m-0 p-0"
+            className="introduction relative w-full min-h-[60svh] flex flex-col justify-center pointer-events-auto bg-transparent m-0 p-0"
           >
             <IntroSection />
           </section>
@@ -85,5 +85,4 @@ export default function Home() {
     </main>
   );
 }
-
 

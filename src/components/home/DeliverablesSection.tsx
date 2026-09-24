@@ -520,10 +520,6 @@ export default function DeliverablesSection() {
         <div className="relative z-[1] flex h-full w-full flex-col justify-center overflow-hidden bg-white px-4 py-0 sm:px-8 md:px-12">
           <div className="hidden lg:grid w-full max-w-[1500px] mx-auto grid-cols-[minmax(0,0.9fr)_24px_minmax(0,1.1fr)] items-center gap-x-12 xl:gap-x-16 min-h-[72vh]">
             <div className="flex w-full flex-col items-start overflow-hidden pr-4">
-              <span className="mb-6 inline-block bg-black px-1.5 py-[2px] font-mono text-[16px] font-semibold uppercase leading-none tracking-[0.08em] text-white">
-                DELIVERABLES
-              </span>
-
               <nav className="relative w-full overflow-visible" aria-label="Deliverable services">
                 <div className="flex w-full flex-col items-start gap-3.5">
                   {deliverables.map((item, index) => {
@@ -643,11 +639,7 @@ export default function DeliverablesSection() {
           </div>
 
           <div className="lg:hidden mx-auto flex h-full w-full max-w-[540px] flex-col px-0 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))]">
-            <div className="mb-2 flex items-center justify-between">
-              <span className="inline-block bg-black px-1.5 py-[2px] font-mono text-[12px] font-semibold uppercase leading-none tracking-[0.08em] text-white">
-                DELIVERABLES
-              </span>
-
+            <div className="mb-2 flex items-center justify-end">
               <div className="flex items-center gap-1 font-mono text-[10px]">
                 <span className="font-bold text-black">
                   {String(activeIndex + 1).padStart(2, "0")}

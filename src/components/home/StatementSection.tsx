@@ -10,8 +10,6 @@ if (typeof window !== "undefined") {
 }
 
 const words = ["WE", "MAKE", "BRANDS", "GO", "WOW"];
-const blackStartClip = "polygon(0% 116%, 14% 116%, 14% 102%, 28% 102%, 28% 113%, 43% 113%, 43% 100%, 57% 100%, 57% 118%, 72% 118%, 72% 107%, 86% 107%, 86% 115%, 100% 115%, 100% 100%, 0% 100%)";
-const blackEndClip = "polygon(0% -8%, 14% -8%, 14% -22%, 28% -22%, 28% -11%, 43% -11%, 43% -24%, 57% -24%, 57% -6%, 72% -6%, 72% -17%, 86% -17%, 86% -9%, 100% -9%, 100% 100%, 0% 100%)";
 
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -44,6 +42,16 @@ export default function StatementSection() {
       const wowBox = wow.getBoundingClientRect();
       const centerWow = stage.clientHeight / 2 - (wowBox.top - stageBox.top + wowBox.height / 2);
       const fillWidth = Math.max(1, (stage.clientWidth * 0.94) / wowBox.width);
+      const bandHeight = wowBox.height * fillWidth + Math.max(16, stage.clientHeight * 0.025);
+      const bandTop = (stage.clientHeight - bandHeight) / 2;
+      const bandBottom = bandTop + bandHeight;
+      const startClip = `polygon(0px ${bandTop}px, 0px ${bandTop}px, 0px ${bandBottom}px, 0px ${bandBottom}px)`;
+      const endClip = `polygon(0px ${bandTop}px, ${stage.clientWidth}px ${bandTop}px, ${stage.clientWidth}px ${bandBottom}px, 0px ${bandBottom}px)`;
+
+      // The duplicate white lettering sits in a black strip. Keep that strip
+      // invisible until WOW has filled the screen, then reveal it from left
+      // to right so the letters change colour exactly at its leading edge.
+      gsap.set(exitRef.current, { clipPath: startClip });
 
       const timeline = gsap.timeline({
         scrollTrigger: {
@@ -76,7 +84,7 @@ export default function StatementSection() {
         duration: 0.2,
         ease: "none",
       }, 0.55);
-      timeline.to(exitRef.current, { clipPath: blackEndClip, duration: 0.3, ease: "none" }, 0.8);
+      timeline.to(exitRef.current, { clipPath: endClip, duration: 0.3, ease: "none" }, 0.8);
     },
     { scope: sectionRef }
   );
@@ -129,7 +137,7 @@ export default function StatementSection() {
           ref={exitRef}
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-20 flex items-start justify-center bg-black px-3 pt-[clamp(5rem,10svh,7rem)]"
-          style={{ clipPath: blackStartClip }}
+          style={{ clipPath: "inset(100% 0 0 0)" }}
         >
           <div ref={whiteTrackRef} className={headingClass}>{renderWords(true)}</div>
         </div>

@@ -63,7 +63,6 @@ export default function SelectedWork() {
       aria-label="A selection of our work"
       className="relative isolate z-20 w-full overflow-hidden bg-white px-[max(1.25rem,env(safe-area-inset-left))] py-16 pr-[max(1.25rem,env(safe-area-inset-right))] text-black pointer-events-auto sm:px-8 lg:px-10 lg:py-0"
     >
-      <span aria-hidden="true" className="absolute left-[19%] top-7 hidden h-2.5 w-2.5 bg-[#F000E8] lg:block" />
       <div
         ref={shapeRef}
         aria-hidden="true"

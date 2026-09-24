@@ -78,7 +78,7 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-30 m-0 w-full bg-[#1677FF] p-0 text-black pointer-events-auto"
+      className="relative z-30 w-full bg-[#1677FF] p-0 text-black pointer-events-auto motion-safe:-mt-[100svh] lg:motion-safe:-mt-[100dvh]"
       aria-label="We make brands go wow"
     >
       <div

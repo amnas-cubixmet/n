@@ -27,7 +27,6 @@ export default function StatementSection() {
       ) return;
 
       const compact = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
-      gsap.set(blackFillRef.current, { scaleY: 0, transformOrigin: "bottom center" });
       wordRefs.current.forEach((word, index) => {
         if (word && index > 0) gsap.set(word, { yPercent: 45, autoAlpha: 0 });
       });
@@ -36,26 +35,47 @@ export default function StatementSection() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 2.5 : 3))}`,
+          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 1.8 : 2.2))}`,
           pin: stageRef.current,
           pinSpacing: true,
-          scrub: compact ? 0.25 : 0.4,
+          scrub: compact ? 0.15 : 0.25,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
       });
 
-      [0.08, 0.22, 0.36, 0.5].forEach((position, index) => {
+      [0.06, 0.2, 0.34, 0.48].forEach((position, index) => {
         const word = wordRefs.current[index + 1];
         if (word) timeline.to(word, { yPercent: 0, autoAlpha: 1, duration: 0.18, ease: "power2.out" }, position);
       });
 
-      // The blue statement covers the preceding showcase; after the whole
-      // message is visible, black rises to meet the following dark section.
-      timeline.to(blackFillRef.current, { scaleY: 1, duration: 0.32, ease: "none" }, 0.78);
+      // Reveal the full message on blue before the black layer rises. The
+      // white copy lives inside that layer so the message stays legible.
+      timeline.to(blackFillRef.current, {
+        clipPath: "inset(0% 0% 0% 0%)",
+        duration: 0.28,
+        ease: "none",
+      }, 0.72);
     },
     { scope: sectionRef }
   );
+
+  const headingClass = "m-0 flex w-full flex-col items-center justify-center gap-[clamp(6px,1.5svh,16px)] text-center font-pixel font-bold uppercase leading-[0.9] tracking-[-0.035em]";
+
+  const renderWords = (onBlack: boolean) => words.map((word, index) => (
+    <span key={word} className="block w-full overflow-hidden py-[0.04em]">
+      <span
+        ref={onBlack ? undefined : (element) => { wordRefs.current[index] = element; }}
+        className={`relative inline-block whitespace-nowrap px-[0.06em] ${
+          index === 4
+            ? "text-[clamp(32px,min(7vw,7.5svh),82px)]"
+            : "text-[clamp(48px,min(12vw,11svh),116px)]"
+        } ${onBlack ? "text-white" : index === 0 || index === 2 || index === 4 ? "bg-black text-white" : "text-black"}`}
+      >
+        {word}
+      </span>
+    </span>
+  ));
 
   return (
     <section
@@ -75,33 +95,15 @@ export default function StatementSection() {
         ref={stageRef}
         className="relative flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 select-none md:h-[100dvh] md:min-h-[100dvh]"
       >
+        <h2 className={`relative z-10 ${headingClass}`}>{renderWords(false)}</h2>
         <div
           ref={blackFillRef}
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-20 origin-bottom scale-y-0 bg-black"
-        />
-        <h2
-          className="relative z-10 m-0 flex w-full flex-col items-center justify-center gap-[clamp(6px,1.5svh,16px)] text-center font-pixel font-bold uppercase leading-[0.9] tracking-[-0.035em]"
+          className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black px-3"
+          style={{ clipPath: "inset(100% 0% 0% 0%)" }}
         >
-          {words.map((word, index) => (
-            <span key={word} className="block w-full overflow-hidden py-[0.04em]">
-              <span
-                ref={(element) => { wordRefs.current[index] = element; }}
-                className={`relative inline-block whitespace-nowrap px-[0.06em] ${
-                  index === 0
-                    ? "bg-black text-[clamp(48px,min(12vw,11svh),116px)] text-white"
-                    : index === 4
-                      ? "bg-black text-[clamp(32px,min(7vw,7.5svh),82px)] text-white"
-                      : index === 2
-                        ? "bg-black text-[clamp(48px,min(12vw,11svh),116px)] text-white"
-                        : "text-[clamp(48px,min(12vw,11svh),116px)] text-black"
-                }`}
-              >
-                {word}
-              </span>
-            </span>
-          ))}
-        </h2>
+          <div className={headingClass}>{renderWords(true)}</div>
+        </div>
       </div>
     </section>
   );

@@ -75,8 +75,8 @@ export default function IntroSection() {
           },
           scrollTrigger: {
             trigger: heading,
-            start: "top 95%",
-            end: "top 65%",
+            start: "top 105%",
+            end: "top 82%",
             scrub: mobile ? 0.32 : 0.45,
             invalidateOnRefresh: true,
           },
@@ -99,7 +99,7 @@ export default function IntroSection() {
               duration: 0.5,
               force3D: true,
             },
-            0.2
+            0.08
           );
 
         return () => {

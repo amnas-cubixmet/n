@@ -43,14 +43,13 @@ export default function Home() {
 
       {/* LAYER 2 — FOREGROUND SCROLLING CONTENT */}
       <div className="foreground relative z-10 w-full flex flex-col pointer-events-none">
-        {/* The hero sculpture sits behind the dark hero. The introduction
-            follows as a white panel and covers the fixed background. */}
+        {/* The hero and introduction share the fixed 3D background. */}
         <div className="shared-background-range relative w-full">
           <Hero introCompleted={introCompleted} />
 
           <section
             id="intro"
-            className="introduction relative w-full min-h-[50svh] flex flex-col justify-center pointer-events-auto bg-white text-black m-0 p-0"
+            className="introduction relative w-full min-h-[50svh] flex flex-col justify-center pointer-events-auto bg-transparent text-white m-0 p-0"
           >
             <IntroSection />
           </section>

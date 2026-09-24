@@ -42,12 +42,10 @@ export default function IntroSection() {
 
   useGSAP(
     () => {
-      const container = containerRef.current;
       const heading = headingRef.current;
       const paragraph = paragraphRef.current;
 
-      if (!container || !heading || !paragraph) return;
-      const letters = heading.querySelectorAll<HTMLElement>(".intro-heading-letter");
+      if (!heading || !paragraph) return;
 
       if (isReducedMotion) {
         gsap.set([heading, paragraph], {
@@ -55,14 +53,14 @@ export default function IntroSection() {
           y: 0,
           clearProps: "transform",
         });
-        gsap.set(letters, { autoAlpha: 1, yPercent: 0 });
+        gsap.set(heading, { clipPath: "inset(0 0% 0 0)" });
         return;
       }
 
       const mm = gsap.matchMedia();
 
       const buildReveal = (mobile: boolean) => {
-        gsap.set(letters, { autoAlpha: 0, yPercent: 110, force3D: true });
+        gsap.set(heading, { clipPath: "inset(0 100% 0 0)" });
 
         gsap.set(paragraph, {
           autoAlpha: 0,
@@ -76,8 +74,8 @@ export default function IntroSection() {
             overwrite: "auto",
           },
           scrollTrigger: {
-            trigger: container,
-            start: "top 100%",
+            trigger: heading,
+            start: "top 95%",
             end: "top 65%",
             scrub: mobile ? 0.32 : 0.45,
             invalidateOnRefresh: true,
@@ -86,13 +84,10 @@ export default function IntroSection() {
 
         timeline
           .to(
-            letters,
+            heading,
             {
-              autoAlpha: 1,
-              yPercent: 0,
-              duration: 0.22,
-              stagger: 0.035,
-              force3D: true,
+              clipPath: "inset(0 0% 0 0)",
+              duration: 0.5,
             },
             0
           )
@@ -104,7 +99,7 @@ export default function IntroSection() {
               duration: 0.5,
               force3D: true,
             },
-            0.12
+            0.2
           );
 
         return () => {
@@ -136,7 +131,6 @@ export default function IntroSection() {
           <div className="flex items-center overflow-hidden py-1">
             <h2
               ref={headingRef}
-              aria-label={headingText}
               className="w-fit overflow-hidden bg-white px-1 font-montserrat text-[11px] font-semibold tracking-[0.06em] text-black uppercase leading-none sm:text-[13px]"
               style={
                 isReducedMotion
@@ -144,15 +138,7 @@ export default function IntroSection() {
                   : { willChange: "transform, opacity" }
               }
             >
-              {Array.from(headingText, (letter, index) => (
-                <span
-                  key={index}
-                  aria-hidden="true"
-                  className="intro-heading-letter inline-block"
-                >
-                  {letter}
-                </span>
-              ))}
+              {headingText}
             </h2>
           </div>
 

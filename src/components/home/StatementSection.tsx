@@ -10,12 +10,13 @@ if (typeof window !== "undefined") {
 }
 
 const words = ["WE", "MAKE", "BRANDS", "GO", "WOOOOOOOOW!"];
+const blackStartClip = "polygon(0% 116%, 14% 116%, 14% 102%, 28% 102%, 28% 113%, 43% 113%, 43% 100%, 57% 100%, 57% 118%, 72% 118%, 72% 107%, 86% 107%, 86% 115%, 100% 115%, 100% 100%, 0% 100%)";
+const blackEndClip = "polygon(0% -8%, 14% -8%, 14% -22%, 28% -22%, 28% -11%, 43% -11%, 43% -24%, 57% -24%, 57% -6%, 72% -6%, 72% -17%, 86% -17%, 86% -9%, 100% -9%, 100% 100%, 0% 100%)";
 
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const exitRef = useRef<HTMLDivElement>(null);
-  const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useGSAP(
     () => {
@@ -27,10 +28,6 @@ export default function StatementSection() {
       ) return;
 
       const compact = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
-      gsap.set(exitRef.current, { yPercent: 100 });
-      wordRefs.current.forEach((word, index) => {
-        if (word && index > 0) gsap.set(word, { yPercent: 45, autoAlpha: 0 });
-      });
 
       const timeline = gsap.timeline({
         scrollTrigger: {
@@ -45,29 +42,23 @@ export default function StatementSection() {
         },
       });
 
-      [0.06, 0.2, 0.34, 0.48].forEach((position, index) => {
-        const word = wordRefs.current[index + 1];
-        if (word) timeline.to(word, { yPercent: 0, autoAlpha: 1, duration: 0.18, ease: "power2.out" }, position);
-      });
-
-      // Once the full statement has landed, the following black section
-      // enters through a stepped edge. It covers the blue at the pin exit.
-      timeline.to(exitRef.current, { yPercent: 0, duration: 0.28, ease: "none" }, 0.72);
+      // The full black statement is present as soon as blue enters. Only
+      // scrolling after the panel is fully in view reveals the black layer.
+      timeline.to(exitRef.current, { clipPath: blackEndClip, duration: 0.72, ease: "none" }, 0.28);
     },
     { scope: sectionRef }
   );
 
   const headingClass = "m-0 flex w-full flex-col items-center justify-center gap-[clamp(6px,1.5svh,16px)] text-center font-pixel font-bold uppercase leading-[0.9] tracking-[-0.035em]";
 
-  const renderWords = () => words.map((word, index) => (
+  const renderWords = (onBlack: boolean) => words.map((word, index) => (
     <span key={word} className="block w-full overflow-hidden py-[0.04em]">
       <span
-        ref={(element) => { wordRefs.current[index] = element; }}
         className={`relative inline-block whitespace-nowrap px-[0.06em] ${
           index === 4
             ? "text-[clamp(32px,min(7vw,7.5svh),82px)]"
             : "text-[clamp(48px,min(12vw,11svh),116px)]"
-        } ${index === 0 || index === 2 || index === 4 ? "bg-black text-white" : "text-black"}`}
+        } ${onBlack ? "text-white" : "text-black"}`}
       >
         {word}
       </span>
@@ -92,15 +83,15 @@ export default function StatementSection() {
         ref={stageRef}
         className="relative flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 select-none md:h-[100dvh] md:min-h-[100dvh]"
       >
-        <h2 className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
+        <h2 className={`relative z-10 ${headingClass}`}>{renderWords(false)}</h2>
         <div
           ref={exitRef}
           aria-hidden="true"
-          className="pointer-events-none absolute -top-[24svh] left-0 z-20 h-[124svh] w-full translate-y-full bg-black"
-          style={{
-            clipPath: "polygon(0% 16%, 14% 16%, 14% 2%, 28% 2%, 28% 13%, 43% 13%, 43% 0%, 57% 0%, 57% 18%, 72% 18%, 72% 7%, 86% 7%, 86% 15%, 100% 15%, 100% 100%, 0% 100%)",
-          }}
-        />
+          className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center bg-black px-3"
+          style={{ clipPath: blackStartClip }}
+        >
+          <div className={headingClass}>{renderWords(true)}</div>
+        </div>
       </div>
     </section>
   );

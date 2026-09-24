@@ -14,6 +14,7 @@ const words = ["WE", "MAKE", "BRANDS", "GO", "WOOOOOOOOW!"];
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const blackFillRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLHeadingElement>(null);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
@@ -22,11 +23,13 @@ export default function StatementSection() {
       if (
         !sectionRef.current ||
         !stageRef.current ||
+        !blackFillRef.current ||
         !trackRef.current ||
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ) return;
 
       const compact = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
+      gsap.set(blackFillRef.current, { scaleY: 0, transformOrigin: "bottom center" });
       gsap.set(trackRef.current, { yPercent: compact ? 32 : 22 });
       wordRefs.current.forEach((word, index) => {
         if (word) gsap.set(word, { yPercent: 55, autoAlpha: 0 });
@@ -36,7 +39,7 @@ export default function StatementSection() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 2.2 : 2.7))}`,
+          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 2.5 : 3))}`,
           pin: stageRef.current,
           pinSpacing: true,
           scrub: compact ? 0.25 : 0.4,
@@ -45,13 +48,16 @@ export default function StatementSection() {
         },
       });
 
-      timeline.to(trackRef.current, { yPercent: compact ? -7 : -12, duration: 1, ease: "none" }, 0);
-      [0.02, 0.2, 0.38, 0.56, 0.74].forEach((position, index) => {
+      timeline.to(trackRef.current, { yPercent: compact ? -7 : -12, duration: 0.62, ease: "none" }, 0);
+      [0.02, 0.14, 0.26, 0.38, 0.5].forEach((position, index) => {
         const word = wordRefs.current[index];
         if (word) timeline.to(word, { yPercent: 0, autoAlpha: 1, duration: 0.18, ease: "power2.out" }, position);
       });
 
-      timeline.to({}, { duration: 0.28 });
+      // The blue statement covers the preceding showcase; after the whole
+      // message is visible, black rises to meet the following dark section.
+      timeline.to(blackFillRef.current, { scaleY: 1, duration: 0.38, ease: "none" }, 0.66);
+      timeline.to({}, { duration: 0.08 });
     },
     { scope: sectionRef }
   );
@@ -60,23 +66,28 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-30 m-0 w-full bg-[#F000E8] p-0 text-black pointer-events-auto"
+      className="relative z-30 m-0 w-full bg-[#1677FF] p-0 text-black pointer-events-auto"
       aria-label="We make brands go wow"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-full left-0 h-[18svh] w-full bg-[#F000E8]"
+        className="pointer-events-none absolute bottom-full left-0 h-[18svh] w-full bg-[#1677FF]"
         style={{
           clipPath: "polygon(0% 100%, 0% 42%, 14% 42%, 14% 72%, 28% 72%, 28% 30%, 43% 30%, 43% 58%, 57% 58%, 57% 38%, 72% 38%, 72% 68%, 86% 68%, 86% 26%, 100% 26%, 100% 100%)",
         }}
       />
       <div
         ref={stageRef}
-        className="relative flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#F000E8] px-3 select-none md:h-[100dvh] md:min-h-[100dvh]"
+        className="relative flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 select-none md:h-[100dvh] md:min-h-[100dvh]"
       >
+        <div
+          ref={blackFillRef}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-20 origin-bottom scale-y-0 bg-black"
+        />
         <h2
           ref={trackRef}
-          className="m-0 flex w-full flex-col items-center justify-center gap-1 text-center font-pixel font-bold uppercase leading-[0.9] tracking-[-0.035em] sm:gap-2"
+          className="relative z-10 m-0 flex w-full flex-col items-center justify-center gap-1 text-center font-pixel font-bold uppercase leading-[0.9] tracking-[-0.035em] sm:gap-2"
         >
           {words.map((word, index) => (
             <span key={word} className="block w-full overflow-hidden py-[0.04em]">

@@ -98,7 +98,7 @@ export default function StatementSection() {
             ? "text-[clamp(84px,16vw,220px)]"
             : "text-[clamp(68px,14vw,205px)]"
         } motion-reduce:!text-[clamp(36px,8vw,90px)] ${
-          onBlack ? "text-white" : index === 4 ? "text-black" : "bg-black text-white"
+          onBlack ? "text-white" : "text-black"
         }`}
       >
         {word}

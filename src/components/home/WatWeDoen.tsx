@@ -18,31 +18,6 @@ const CLOSED_STEPS =
 const OPEN_STEPS =
   "polygon(0% 100%, 0% 0%, 20% 0%, 20% -12%, 40% -12%, 40% -24%, 60% -24%, 60% -36%, 80% -36%, 80% -48%, 100% -48%, 100% 100%)";
 
-function WhatWeDoIntro() {
-  return (
-    <div
-      id="wat-we-doen"
-      className="relative flex h-[55svh] min-h-[270px] w-full items-start bg-white px-[max(1.1rem,env(safe-area-inset-left))] pt-[max(4.5rem,env(safe-area-inset-top))] text-black md:h-[56dvh] md:min-h-[340px] md:px-8 md:pt-[max(5rem,env(safe-area-inset-top))]"
-    >
-      <div className="grid w-full grid-cols-[38%_1fr] items-start gap-3 md:grid-cols-[28%_1fr] md:gap-8">
-        <span className="w-fit bg-black px-1.5 py-0.5 font-pixel text-[10px] font-bold uppercase leading-none text-white md:font-mono md:text-[16px]">
-          WHAT WE DO
-        </span>
-        <div className="flex flex-col items-start gap-[3px]">
-          {services.map((service) => (
-            <span
-              key={service.id}
-              className="bg-black px-1 py-[1px] font-pixel text-[9px] uppercase leading-none text-white sm:text-[10px] md:font-mono md:text-[16px]"
-            >
-              {service.title}
-            </span>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function WatWeDoen() {
   const wrapperRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
@@ -128,7 +103,7 @@ export default function WatWeDoen() {
 
           gsap.set(panel, {
             inset: 0,
-            // The first image enters as a full viewport panel after the white intro.
+            // The first image is full-bleed as soon as this section enters.
             clipPath: index === 0 ? "inset(0)" : CLOSED_STEPS,
             WebkitClipPath: index === 0 ? "inset(0)" : CLOSED_STEPS,
             autoAlpha: 1,
@@ -278,9 +253,13 @@ export default function WatWeDoen() {
 
   if (isReducedMotion) {
     return (
-      <section className="relative w-full bg-white text-black">
-        <WhatWeDoIntro />
+      <section id="wat-we-doen" className="relative w-full bg-white text-black">
         <div className="mx-auto max-w-7xl space-y-14">
+          <div className="px-5 pt-16 sm:px-8">
+            <span className="bg-black px-1.5 py-0.5 font-pixel text-xs font-bold uppercase text-white">
+              WHAT WE DO
+            </span>
+          </div>
           <div className="grid grid-cols-1 gap-8 px-5 py-20 sm:px-8 md:grid-cols-2">
             {services.map((service, index) => (
               <article key={service.id} className="overflow-hidden bg-[#080E18]">
@@ -324,12 +303,11 @@ export default function WatWeDoen() {
   const activeService = services[activeIndex];
 
   return (
-    <>
-      <WhatWeDoIntro />
-      <section
-        ref={wrapperRef}
-        className="wat-we-doen-scroll relative w-full bg-transparent text-black"
-      >
+    <section
+      ref={wrapperRef}
+      id="wat-we-doen"
+      className="wat-we-doen-scroll relative w-full bg-transparent text-black"
+    >
       <div
         ref={stickyRef}
         className="wat-we-doen-sticky relative h-[100svh] min-h-[100svh] w-full overflow-hidden bg-transparent md:h-[100dvh] md:min-h-[100dvh]"
@@ -416,7 +394,6 @@ export default function WatWeDoen() {
           ))}
         </div>
       </div>
-      </section>
-    </>
+    </section>
   );
 }

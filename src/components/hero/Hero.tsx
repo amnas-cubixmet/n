@@ -49,8 +49,8 @@ export default function Hero({ introCompleted }: HeroProps) {
         }
         if (blueLineRef.current) {
           gsap.set(blueLineRef.current, {
-            scaleX: 0,
-            transformOrigin: "left center",
+            scaleY: 0,
+            transformOrigin: "center bottom",
           });
         }
         if (serviceItems.length) {
@@ -90,7 +90,7 @@ export default function Hero({ introCompleted }: HeroProps) {
               gsap.set(labelRef.current, { opacity: 1, y: 0 });
             }
             if (blueLineRef.current) {
-              gsap.set(blueLineRef.current, { scaleX: 1 });
+              gsap.set(blueLineRef.current, { scaleY: 1 });
             }
             if (serviceItems.length) {
               gsap.set(serviceItems, { opacity: 1, y: 0 });
@@ -127,8 +127,8 @@ export default function Hero({ introCompleted }: HeroProps) {
           }
           if (blueLineRef.current) {
             gsap.set(blueLineRef.current, {
-              scaleX: 0,
-              transformOrigin: "left center",
+              scaleY: 0,
+              transformOrigin: "center bottom",
             });
           }
           if (serviceItems.length) {
@@ -209,7 +209,7 @@ export default function Hero({ introCompleted }: HeroProps) {
             tl.to(
               blueLineRef.current,
               {
-                scaleX: 1,
+                scaleY: 1,
                 duration: duration * 0.32,
                 ease: "power2.out",
               },
@@ -331,7 +331,7 @@ export default function Hero({ introCompleted }: HeroProps) {
           timeline.to(
             line,
             {
-              scaleX: 0.2,
+              scaleY: 0.2,
               autoAlpha: 0,
               duration: 0.5,
             },
@@ -363,6 +363,14 @@ export default function Hero({ introCompleted }: HeroProps) {
       ref={containerRef}
       className="hero relative w-full h-[100svh] pointer-events-auto flex flex-col justify-between select-none !bg-transparent overflow-hidden"
     >
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[1]"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(5,8,11,0.1) 0%, rgba(5,8,11,0) 38%, rgba(5,8,11,0.52) 100%)",
+        }}
+      />
       <ScrollIndicator labelRef={labelRef} lineRef={blueLineRef} />
 
       <HeroContent

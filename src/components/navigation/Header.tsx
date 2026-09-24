@@ -8,6 +8,7 @@ import React, {
   useState,
 } from "react";
 import gsap from "gsap";
+import { usePathname } from "next/navigation";
 import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 
 const NAV_ITEMS = [
@@ -19,7 +20,9 @@ const NAV_ITEMS = [
 ];
 
 export default function Header() {
+  const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [activeHash, setActiveHash] = useState("");
 
   const menuBtnRef = useRef<HTMLButtonElement>(null);
   const navPanelRef = useRef<HTMLDivElement>(null);
@@ -215,6 +218,17 @@ export default function Header() {
   );
 
   useEffect(() => {
+    const updateHash = () => setActiveHash(window.location.hash);
+    updateHash();
+    window.addEventListener("popstate", updateHash);
+    window.addEventListener("hashchange", updateHash);
+    return () => {
+      window.removeEventListener("popstate", updateHash);
+      window.removeEventListener("hashchange", updateHash);
+    };
+  }, [pathname]);
+
+  useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && menuOpen) {
         animateMenu(false);
@@ -229,14 +243,10 @@ export default function Header() {
     animateMenu(!menuOpen);
   };
 
-  const handleLinkClick = () => {
-    if (!menuOpen) return;
-    // A selected route must not sit behind the menu-close animation.
-    timelineRef.current?.kill();
-    gsap.set(navPanelRef.current, { autoAlpha: 0, pointerEvents: "none" });
-    gsap.set(navSurfaceRef.current, { autoAlpha: 0, scale: getCompactScale() });
-    gsap.set(navContentRef.current, { autoAlpha: 0 });
-    setMenuOpen(false);
+  const handleLinkClick = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    setActiveHash(new URL(event.currentTarget.href).hash);
+    animateMenu(false);
   };
 
   return (
@@ -263,7 +273,7 @@ export default function Header() {
           aria-expanded={menuOpen}
           aria-controls="northframe-menu-panel"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="header-menu-button pointer-events-auto relative z-[110] inline-flex min-w-[44px] min-h-[44px] items-center justify-center gap-2.5 bg-[#1677FF] px-3.5 py-2.5 text-white rounded-none select-none touch-action-manipulation cursor-pointer focus:outline-none focus:ring-2 focus:ring-white/70"
+          className="header-menu-button pointer-events-auto relative z-[110] inline-flex min-w-[44px] min-h-[44px] items-center justify-center gap-2.5 bg-[#1677FF] px-3.5 py-2.5 text-white rounded-none select-none touch-action-manipulation cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
         >
           <span className="hidden md:inline font-mono text-[10px] font-semibold uppercase tracking-[0.12em] leading-none">
             {menuOpen ? "CLOSE" : "MENU"}
@@ -289,12 +299,12 @@ export default function Header() {
           id="northframe-menu-panel"
           ref={navPanelRef}
           aria-hidden={!menuOpen}
-          className="fixed z-[100] overflow-hidden text-white pointer-events-none opacity-0"
+          className="fixed z-[100] max-h-[calc(100dvh-2rem)] overflow-y-auto overflow-x-hidden text-white pointer-events-none opacity-0"
           style={{
             top: "max(1rem, env(safe-area-inset-top))",
             right: "max(1rem, env(safe-area-inset-right))",
-            width: "min(258px, calc(100vw - 28px))",
-            minHeight: "272px",
+            width: "min(460px, calc(100vw - 28px))",
+            minHeight: "min(460px, calc(100dvh - 2rem))",
             WebkitBackfaceVisibility: "hidden",
             backfaceVisibility: "hidden",
           }}
@@ -307,16 +317,16 @@ export default function Header() {
 
           <div
             ref={navContentRef}
-            className="relative z-10 flex min-h-[272px] flex-col px-5 pt-4 pb-5"
+            className="relative z-10 flex min-h-[min(460px,calc(100dvh-2rem))] flex-col px-6 pt-5 pb-7 sm:px-9 sm:pt-8 sm:pb-9"
           >
-            <div className="flex items-center justify-between pr-12 font-mono text-[9px] uppercase tracking-[0.08em] leading-none text-white/90">
+            <div className="flex items-center justify-between pr-12 font-mono text-[10px] uppercase tracking-[0.08em] leading-none text-white/90">
               <span>NORTHFRAME</span>
               <span>MENU</span>
             </div>
 
             <nav
               aria-label="Primary navigation"
-              className="mt-7 flex flex-1 flex-col items-start justify-center gap-[4px]"
+              className="mt-8 flex flex-1 flex-col items-start justify-center gap-2 sm:gap-3"
             >
               {NAV_ITEMS.map((item, index) => (
                 <TransitionLink
@@ -326,13 +336,19 @@ export default function Header() {
                   }}
                   href={item.href}
                   onClick={handleLinkClick}
+                  aria-current={
+                    pathname === item.href.split("#")[0] &&
+                    (item.href.includes("#") ? activeHash === `#${item.href.split("#")[1]}` : !activeHash)
+                      ? "page"
+                      : undefined
+                  }
                   className={
-                    "block w-fit font-montserrat text-[23px] sm:text-[24px] font-medium uppercase tracking-[-0.055em] leading-[0.98] text-white transition-opacity duration-150 lg:hover:opacity-70 focus:outline-none focus-visible:opacity-70 " +
-                    (item.isAccent ? "mt-1" : "")
+                    "group block w-fit font-montserrat text-[clamp(1.7rem,7vw,2.7rem)] font-semibold uppercase tracking-[-0.065em] leading-[1.02] text-white transition-colors duration-200 hover:text-[#061321] focus-visible:text-[#061321] focus-visible:outline-2 focus-visible:outline-white aria-[current=page]:bg-white aria-[current=page]:px-1 aria-[current=page]:text-[#061321] " +
+                    (item.isAccent ? "mt-3" : "")
                   }
                 >
                   {item.label}
-                  <sup className="ml-1 align-top font-mono text-[8px] tracking-normal text-white/80">
+                  <sup className="ml-1 align-top font-mono text-[10px] tracking-normal text-current opacity-75">
                     {String(index + 1).padStart(2, "0")}
                   </sup>
                 </TransitionLink>

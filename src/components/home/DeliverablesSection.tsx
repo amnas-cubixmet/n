@@ -253,18 +253,14 @@ export default function DeliverablesSection() {
       ).matches;
 
       const servicePhaseEnd = compact ? 0.7 : 0.68;
-      const stableViewportHeight = Math.max(
-        compact ? 560 : 700,
-        document.documentElement.clientHeight
-      );
-
-      // Fixed pixel travel keeps the scrollbar stable while mobile browser
-      // chrome expands/collapses. There is no snap; all motion follows the
-      // native document scroll continuously.
-      const pinDistance = Math.round(
-        stableViewportHeight *
-          (compact ? total * 0.72 + 2.8 : total * 0.84 + 3.1)
-      );
+      // The pinned element uses 100svh on phones, so browser chrome does not
+      // change its height during scrolling. Orientation refreshes can still
+      // measure its new size and update the travel distance.
+      const getPinDistance = () =>
+        Math.round(
+          Math.max(320, stickyRef.current?.clientHeight ?? window.innerHeight) *
+            (compact ? total * 0.72 + 2.8 : total * 0.84 + 3.1)
+        );
 
       gsap.set(wowOverlayRef.current, {
         yPercent: 108,
@@ -304,7 +300,7 @@ export default function DeliverablesSection() {
         scrollTrigger: {
           trigger: masterRef.current,
           start: "top top",
-          end: `+=${pinDistance}`,
+          end: () => `+=${getPinDistance()}`,
           pin: stickyRef.current,
           pinSpacing: true,
           scrub: compact ? 0.3 : 0.45,
@@ -666,7 +662,7 @@ export default function DeliverablesSection() {
             <div className="relative w-full overflow-hidden py-1">
               <div
                 ref={mobileTrackRef}
-                className="flex w-max items-center gap-2 will-change-transform"
+                className="flex w-max items-center gap-1.5 will-change-transform"
               >
                 {deliverables.map((item, index) => {
                   const isActive = index === activeIndex;
@@ -680,15 +676,12 @@ export default function DeliverablesSection() {
                       type="button"
                       onClick={() => handleSelectService(index)}
                       aria-current={isActive ? "true" : undefined}
-                      className={`min-h-[38px] whitespace-nowrap px-3 py-1.5 font-sans text-xs font-medium transition-colors duration-300 select-none sm:text-sm ${
+                      className={`min-h-[44px] whitespace-nowrap px-2.5 py-1.5 font-sans text-xs font-medium transition-colors duration-300 select-none sm:text-sm ${
                         isActive
                           ? "bg-black text-white"
-                          : "bg-[#F3F3F3] text-black/45"
+                          : "bg-transparent text-black/40"
                       }`}
                     >
-                      <span className="mr-1.5 font-mono text-[9px] opacity-60">
-                        {String(item.id).padStart(2, "0")}
-                      </span>
                       {item.title}
                     </button>
                   );
@@ -706,7 +699,7 @@ export default function DeliverablesSection() {
               />
             </div>
 
-            <div className="relative my-auto w-full aspect-[16/10] overflow-hidden bg-black shadow-[0_16px_45px_rgba(0,0,0,0.13)]">
+            <div className="relative my-auto w-full aspect-[16/10] overflow-hidden bg-black">
               {deliverables.map((item, index) => {
                 const isError = imageErrors[item.id];
 

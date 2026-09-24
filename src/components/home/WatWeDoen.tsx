@@ -22,7 +22,7 @@ function WhatWeDoIntro() {
   return (
     <div
       id="wat-we-doen"
-      className="relative flex h-[100svh] w-full items-start bg-white px-[max(1.1rem,env(safe-area-inset-left))] pt-[max(4.5rem,env(safe-area-inset-top))] text-black md:h-[100dvh] md:px-8 md:pt-[max(5rem,env(safe-area-inset-top))]"
+      className="relative flex h-[55svh] min-h-[270px] w-full items-start bg-white px-[max(1.1rem,env(safe-area-inset-left))] pt-[max(4.5rem,env(safe-area-inset-top))] text-black md:h-[56dvh] md:min-h-[340px] md:px-8 md:pt-[max(5rem,env(safe-area-inset-top))]"
     >
       <div className="grid w-full grid-cols-[38%_1fr] items-start gap-3 md:grid-cols-[28%_1fr] md:gap-8">
         <span className="w-fit bg-black px-1.5 py-0.5 font-pixel text-[10px] font-bold uppercase leading-none text-white md:font-mono md:text-[16px]">

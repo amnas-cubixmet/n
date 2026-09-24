@@ -77,6 +77,7 @@ export function ProjectCard({
         <div className="relative flex w-full flex-col items-start text-left cursor-pointer">
           {/* CONTROLLED 29/34 PORTRAIT ASPECT RATIO WITH DIAGONAL TOP-LEFT CLIP */}
           <div
+            data-cursor-theme="image"
             className="project-image relative w-full aspect-[29/34] overflow-hidden"
             style={{
               clipPath: "polygon(12% 0, 100% 0, 100% 100%, 0 100%, 0 12%)",

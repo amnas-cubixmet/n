@@ -23,7 +23,6 @@ export default function WatWeDoen() {
   const stickyRef = useRef<HTMLDivElement>(null);
   const panelsRef = useRef<(HTMLElement | null)[]>([]);
   const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
-  const activeMetaRef = useRef<HTMLDivElement>(null);
   const viewportWidthRef = useRef(0);
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -89,25 +88,6 @@ export default function WatWeDoen() {
     };
   }, []);
 
-  useEffect(() => {
-    if (isReducedMotion || !activeMetaRef.current) return;
-
-    const items = Array.from(activeMetaRef.current.children);
-    gsap.killTweensOf(items);
-    gsap.fromTo(
-      items,
-      { autoAlpha: 0, y: 5 },
-      {
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.2,
-        stagger: 0.022,
-        ease: "power2.out",
-        overwrite: true,
-      }
-    );
-  }, [activeIndex, isReducedMotion]);
-
   useGSAP(
     () => {
       if (isReducedMotion || !wrapperRef.current || !stickyRef.current) return;
@@ -117,16 +97,13 @@ export default function WatWeDoen() {
       const buildShowcase = (mobile: boolean) => {
         const panelCount = services.length;
         const revealDuration = mobile ? 0.82 : 0.86;
-        const titlePoint = mobile ? 0.54 : 0.56;
-        const counterPoint = mobile ? 0.6 : 0.62;
 
         panelsRef.current.forEach((panel, index) => {
           if (!panel) return;
 
           gsap.set(panel, {
             inset: 0,
-            // The first service is already visible when the white stage enters.
-            // Otherwise a full empty viewport appears before its reveal begins.
+            // The first full-bleed image is visible as the section arrives.
             clipPath: index === 0 ? OPEN_STEPS : CLOSED_STEPS,
             WebkitClipPath: index === 0 ? OPEN_STEPS : CLOSED_STEPS,
             autoAlpha: 1,
@@ -138,7 +115,7 @@ export default function WatWeDoen() {
           const image = imagesRef.current[index];
           if (image) {
             gsap.set(image, {
-              scale: index === 0 ? 1 : mobile ? 1.04 : 1.055,
+              scale: 1,
               transformOrigin: "center center",
               force3D: true,
               willChange: "transform",
@@ -146,14 +123,14 @@ export default function WatWeDoen() {
           }
 
           gsap.set(panel.querySelectorAll(".title-inner"), {
-            yPercent: 112,
-            autoAlpha: 0,
+            yPercent: index === 0 ? 112 : 0,
+            autoAlpha: index === 0 ? 0 : 1,
             force3D: true,
           });
 
           gsap.set(panel.querySelectorAll(".service-counter"), {
-            y: mobile ? 8 : 12,
-            autoAlpha: 0,
+            y: index === 0 ? (mobile ? 8 : 12) : 0,
+            autoAlpha: index === 0 ? 0 : 1,
           });
         });
 
@@ -242,38 +219,14 @@ export default function WatWeDoen() {
             timeline.to(
               image,
               {
-                scale: 1,
-                duration: revealDuration,
+                scale: mobile ? 1.075 : 1.095,
+                duration: 1,
                 ease: "none",
                 force3D: true,
               },
               segmentStart
             );
           }
-
-          timeline.to(
-            panel.querySelectorAll(".title-inner"),
-            {
-              yPercent: 0,
-              autoAlpha: 1,
-              duration: mobile ? 0.22 : 0.26,
-              stagger: mobile ? 0.022 : 0.03,
-              ease: "power2.out",
-              force3D: true,
-            },
-            segmentStart + titlePoint
-          );
-
-          timeline.to(
-            panel.querySelectorAll(".service-counter"),
-            {
-              y: 0,
-              autoAlpha: 1,
-              duration: 0.18,
-              ease: "power2.out",
-            },
-            segmentStart + counterPoint
-          );
 
           timeline.to({}, { duration: 1 - revealDuration }, segmentStart + revealDuration);
         });
@@ -363,20 +316,19 @@ export default function WatWeDoen() {
     <section
       ref={wrapperRef}
       id="wat-we-doen"
-      className="wat-we-doen-scroll relative w-full bg-white text-black"
+      className="wat-we-doen-scroll relative w-full bg-transparent text-black"
     >
       <div
         ref={stickyRef}
-        className="wat-we-doen-sticky relative h-[100svh] min-h-[100svh] w-full overflow-hidden bg-white md:h-[100dvh] md:min-h-[100dvh]"
+        className="wat-we-doen-sticky relative h-[100svh] min-h-[100svh] w-full overflow-hidden bg-transparent md:h-[100dvh] md:min-h-[100dvh]"
       >
-        <div className="wat-we-doen-stage relative h-full w-full overflow-hidden bg-white">
+        <div className="wat-we-doen-stage relative h-full w-full overflow-hidden bg-transparent">
           <div className="absolute left-[max(1.1rem,env(safe-area-inset-left))] right-[max(4.5rem,env(safe-area-inset-right))] top-[max(1.1rem,env(safe-area-inset-top))] z-[80] flex items-start gap-4 pointer-events-none md:left-8 md:right-24 md:top-[max(2rem,env(safe-area-inset-top))] md:gap-12">
             <span className="shrink-0 bg-black px-1.5 py-0.5 font-pixel text-[10px] font-bold uppercase leading-none tracking-[0.04em] text-white sm:text-[11px] md:font-mono md:text-xs">
               WHAT WE DO
             </span>
 
             <div
-              ref={activeMetaRef}
               key={activeService.id}
               className="flex max-w-[55vw] flex-col items-start gap-[2px] md:max-w-[440px]"
             >
@@ -399,8 +351,8 @@ export default function WatWeDoen() {
               }}
               className="service-panel absolute inset-0 overflow-hidden select-none"
               style={{
-                clipPath: CLOSED_STEPS,
-                WebkitClipPath: CLOSED_STEPS,
+                clipPath: index === 0 ? OPEN_STEPS : CLOSED_STEPS,
+                WebkitClipPath: index === 0 ? OPEN_STEPS : CLOSED_STEPS,
               }}
             >
               <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
@@ -412,6 +364,7 @@ export default function WatWeDoen() {
                     src={service.image}
                     alt={service.imageAlt || service.title}
                     fill
+                    priority={index === 0}
                     sizes="100vw"
                     className="panel-image object-cover select-none pointer-events-none"
                     style={{

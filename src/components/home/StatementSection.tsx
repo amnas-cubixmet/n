@@ -27,31 +27,31 @@ export default function StatementSection() {
       ) return;
 
       const compact = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
-      gsap.set(trackRef.current, { yPercent: 18 });
+      gsap.set(trackRef.current, { yPercent: compact ? 32 : 22 });
       wordRefs.current.forEach((word, index) => {
-        if (word && index > 0) gsap.set(word, { yPercent: 45, autoAlpha: 0 });
+        if (word) gsap.set(word, { yPercent: 55, autoAlpha: 0 });
       });
 
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 2.7 : 3.2))}`,
+          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 2.2 : 2.7))}`,
           pin: stageRef.current,
           pinSpacing: true,
-          scrub: compact ? 0.3 : 0.45,
+          scrub: compact ? 0.25 : 0.4,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
       });
 
-      timeline.to(trackRef.current, { yPercent: -12, duration: 0.78, ease: "none" }, 0.08);
-      [0.13, 0.28, 0.43, 0.58].forEach((position, index) => {
-        const word = wordRefs.current[index + 1];
+      timeline.to(trackRef.current, { yPercent: compact ? -7 : -12, duration: 1, ease: "none" }, 0);
+      [0.02, 0.2, 0.38, 0.56, 0.74].forEach((position, index) => {
+        const word = wordRefs.current[index];
         if (word) timeline.to(word, { yPercent: 0, autoAlpha: 1, duration: 0.18, ease: "power2.out" }, position);
       });
 
-      timeline.to({}, { duration: 1 });
+      timeline.to({}, { duration: 0.28 });
     },
     { scope: sectionRef }
   );
@@ -79,15 +79,17 @@ export default function StatementSection() {
           className="m-0 flex w-full flex-col items-center justify-center gap-1 text-center font-pixel font-bold uppercase leading-[0.9] tracking-[-0.035em] sm:gap-2"
         >
           {words.map((word, index) => (
-            <span key={word} className="block w-full">
+            <span key={word} className="block w-full overflow-hidden py-[0.04em]">
               <span
                 ref={(element) => { wordRefs.current[index] = element; }}
                 className={`relative inline-block whitespace-nowrap px-[0.06em] ${
                   index === 0
-                    ? "text-[clamp(52px,13vw,132px)] text-black"
+                    ? "bg-black text-[clamp(52px,13vw,132px)] text-white"
                     : index === 4
-                      ? "max-w-none bg-black text-[clamp(72px,22vw,240px)] text-white md:text-[clamp(110px,15vw,220px)]"
-                      : "bg-black text-[clamp(76px,18vw,175px)] text-white"
+                      ? "bg-black text-[clamp(35px,7.7vw,110px)] text-white"
+                      : index === 2
+                        ? "bg-black text-[clamp(56px,16vw,155px)] text-white"
+                        : "text-[clamp(62px,17vw,160px)] text-black"
                 }`}
               >
                 {word}

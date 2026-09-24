@@ -7,6 +7,33 @@ interface NodePoint {
   y: number;
 }
 
+type CursorTheme = "dark" | "light" | "image" | "blue";
+
+const palettes: Record<CursorTheme, { head: [number, number, number]; tail: [number, number, number] }> = {
+  dark: { head: [22, 119, 255], tail: [0, 229, 153] },
+  light: { head: [12, 30, 67], tail: [13, 82, 184] },
+  image: { head: [255, 255, 255], tail: [22, 119, 255] },
+  blue: { head: [255, 255, 255], tail: [8, 34, 83] },
+};
+
+function getCursorTheme(element: Element | null): CursorTheme {
+  for (let node = element; node && node !== document.documentElement; node = node.parentElement) {
+    const explicit = (node as HTMLElement).dataset?.cursorTheme;
+    if (explicit === "dark" || explicit === "light" || explicit === "image" || explicit === "blue") return explicit;
+    if (node.matches("img, video, picture")) return "image";
+
+    const color = getComputedStyle(node).backgroundColor;
+    const background = color.match(/^rgba?\((\d+)[, ]+?(\d+)[, ]+?(\d+)/);
+    if (!background) continue;
+    const [, red, green, blue] = background.map(Number);
+    const opacity = Number(color.match(/(?:\/|,)\s*([\d.]+)\)$/)?.[1] ?? 1);
+    if (opacity < 0.8) continue;
+    if (blue > red * 1.35 && blue > green * 1.12 && blue > 110) return "blue";
+    return (red * 0.299 + green * 0.587 + blue * 0.114) > 150 ? "light" : "dark";
+  }
+  return "dark";
+}
+
 export default function CursorTrail() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const atmosphereRef = useRef<HTMLDivElement>(null);
@@ -53,11 +80,21 @@ export default function CursorTrail() {
     }
 
     const rootEl = document.documentElement;
+    let theme: CursorTheme = "dark";
+    let previousTarget: EventTarget | null = null;
 
     const handleMouseMove = (e: MouseEvent) => {
       target.x = e.clientX;
       target.y = e.clientY;
       lastMouseMoveTime = performance.now();
+
+      if (e.target !== previousTarget) {
+        previousTarget = e.target;
+        theme = getCursorTheme(e.target instanceof Element ? e.target : null);
+        const { head, tail } = palettes[theme];
+        rootEl.style.setProperty("--cursor-head-rgb", head.join(", "));
+        rootEl.style.setProperty("--cursor-tail-rgb", tail.join(", "));
+      }
 
       if (!isMouseActive) {
         isMouseActive = true;
@@ -135,7 +172,9 @@ export default function CursorTrail() {
       ctx.lineCap = "butt";
       ctx.lineJoin = "miter";
 
-      // Render dual-color segmented strokes (Accent A -> Accent B transition)
+      const { head, tail } = palettes[theme];
+
+      // Reveal the palette of the surface below the pointer.
       for (let i = 0; i < NUM_NODES - 1; i++) {
         const p1 = nodes[i];
         const p2 = nodes[i + 1];
@@ -148,10 +187,19 @@ export default function CursorTrail() {
 
         ctx.lineWidth = 2 + progress * 1.2;
         
-        // Transition from Accent A (#1677FF -> 22, 119, 255) to Accent B (#00E599 -> 0, 229, 153)
-        const r = Math.round(22 * progress + 0 * (1 - progress));
-        const g = Math.round(119 * progress + 229 * (1 - progress));
-        const b = Math.round(255 * progress + 153 * (1 - progress));
+        const r = Math.round(head[0] * progress + tail[0] * (1 - progress));
+        const g = Math.round(head[1] * progress + tail[1] * (1 - progress));
+        const b = Math.round(head[2] * progress + tail[2] * (1 - progress));
+
+        if (theme === "image") {
+          ctx.strokeStyle = `rgba(0, 0, 0, ${(segmentAlpha * 0.6).toFixed(3)})`;
+          ctx.lineWidth += 2;
+          ctx.beginPath();
+          ctx.moveTo(p1.x, p1.y);
+          ctx.lineTo(p2.x, p2.y);
+          ctx.stroke();
+          ctx.lineWidth -= 2;
+        }
 
         ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${segmentAlpha.toFixed(3)})`;
 
@@ -173,6 +221,8 @@ export default function CursorTrail() {
       window.removeEventListener("resize", resizeCanvas);
       window.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseleave", handleMouseLeave);
+      rootEl.style.removeProperty("--cursor-head-rgb");
+      rootEl.style.removeProperty("--cursor-tail-rgb");
     };
   }, []);
 
@@ -185,8 +235,8 @@ export default function CursorTrail() {
         className="fixed inset-0 pointer-events-none z-20 overflow-hidden mix-blend-screen opacity-35 hidden md:block"
         style={{
           background: `
-            radial-gradient(450px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), rgba(var(--accent-a-rgb), 0.08), transparent 75%),
-            radial-gradient(650px circle at var(--mouse-x-b, 50vw) var(--mouse-y-b, 50vh), rgba(var(--accent-b-rgb), 0.05), transparent 75%)
+            radial-gradient(450px circle at var(--mouse-x, 50vw) var(--mouse-y, 50vh), rgba(var(--cursor-head-rgb, 22, 119, 255), 0.08), transparent 75%),
+            radial-gradient(650px circle at var(--mouse-x-b, 50vw) var(--mouse-y-b, 50vh), rgba(var(--cursor-tail-rgb, 0, 229, 153), 0.05), transparent 75%)
           `,
         }}
       />
@@ -199,4 +249,3 @@ export default function CursorTrail() {
     </>
   );
 }
-

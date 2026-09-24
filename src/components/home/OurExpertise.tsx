@@ -117,8 +117,8 @@ export default function OurExpertise() {
       ref={containerRef}
       className="relative z-20 w-full bg-white text-black pointer-events-auto overflow-hidden"
     >
-      <div className="mx-auto flex min-h-[58svh] w-full max-w-[1600px] flex-col justify-center px-[max(1.1rem,env(safe-area-inset-left))] py-[clamp(4.5rem,10vh,8rem)] pr-[max(1.1rem,env(safe-area-inset-right))] sm:min-h-[62svh] sm:px-8 lg:min-h-[68svh] lg:px-12 xl:px-16">
-        <div className="w-full max-w-[1120px]">
+      <div className="mx-auto flex min-h-[58svh] w-full max-w-[1600px] flex-col justify-center px-[max(1.1rem,env(safe-area-inset-left))] py-[clamp(3.5rem,8vh,7rem)] pr-[max(1.1rem,env(safe-area-inset-right))] sm:min-h-[62svh] sm:px-8 lg:min-h-[68svh] lg:px-12 xl:px-16">
+        <div className="w-full max-w-[950px]">
           <div
             ref={labelRef}
             className="flex items-center"
@@ -128,10 +128,10 @@ export default function OurExpertise() {
             </span>
           </div>
 
-          <div className="mt-8 max-w-[1080px] space-y-5 sm:mt-10 sm:space-y-7 lg:mt-12 lg:space-y-8">
+          <div className="mt-6 max-w-[900px] space-y-4 sm:mt-9 sm:space-y-6 lg:mt-11 lg:space-y-7">
             <p
               ref={paragraphOneRef}
-              className="m-0 font-sans text-[clamp(22px,6.2vw,31px)] font-normal leading-[1.14] tracking-[-0.025em] text-black sm:text-[clamp(27px,3vw,40px)] lg:text-[clamp(32px,2.65vw,44px)]"
+              className="m-0 font-sans text-[clamp(17px,4.4vw,21px)] font-normal leading-[1.28] tracking-[-0.02em] text-black sm:text-[clamp(22px,2.7vw,34px)] sm:leading-[1.2] lg:text-[clamp(30px,2.35vw,40px)]"
             >
               What do we do best? Branding, design, and digital experiences. Yes,
               you’ve heard that before. But expertise isn’t just about what you
@@ -140,7 +140,7 @@ export default function OurExpertise() {
 
             <p
               ref={paragraphTwoRef}
-              className="m-0 font-sans text-[clamp(22px,6.2vw,31px)] font-normal leading-[1.14] tracking-[-0.025em] text-black sm:text-[clamp(27px,3vw,40px)] lg:text-[clamp(32px,2.65vw,44px)]"
+              className="m-0 font-sans text-[clamp(17px,4.4vw,21px)] font-normal leading-[1.28] tracking-[-0.02em] text-black sm:text-[clamp(22px,2.7vw,34px)] sm:leading-[1.2] lg:text-[clamp(30px,2.35vw,40px)]"
             >
               We push every detail further, challenge the expected, and strive for
               work that feels considered, distinctive, and precise. Because good

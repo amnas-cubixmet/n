@@ -18,7 +18,7 @@ interface ProjectCardProps {
 
 export function ProjectCard({
   project,
-  gridClass = "col-span-full lg:col-span-4 lg:col-start-8",
+  gridClass = "col-span-full lg:col-span-4 lg:col-start-8 lg:w-full",
   isEvenMobile = false,
 }: ProjectCardProps) {
   const cardRef = useRef<HTMLElement>(null);
@@ -66,7 +66,7 @@ export function ProjectCard({
   return (
     <article
       ref={cardRef}
-      className={`work-project-item col-span-full w-[88%] sm:w-[92%] lg:w-full ${
+      className={`work-project-item col-span-full w-[88%] sm:w-[92%] ${
         isEvenMobile ? "ml-auto lg:ml-0" : "mr-auto lg:mr-0"
       } ${gridClass}`}
     >

@@ -313,9 +313,8 @@ export default function Hero({ introCompleted }: HeroProps) {
         timeline.to(
           handoff,
           {
-            // Carry the brand wordmark through the hero as in the reference:
-            // it rises toward the middle before the next section takes over.
-            y: () => -containerRef.current!.clientHeight * (mobile ? 0.62 : 0.5),
+            // Keep the wordmark in view until the introduction copy arrives.
+            y: () => -containerRef.current!.clientHeight * (mobile ? 0.14 : 0.12),
             scale: mobile ? 0.84 : 0.88,
             force3D: true,
             duration: 0.82,

@@ -313,14 +313,17 @@ export default function Hero({ introCompleted }: HeroProps) {
         timeline.to(
           handoff,
           {
-            yPercent: mobile ? -28 : -36,
-            autoAlpha: 0.08,
-            scale: mobile ? 0.985 : 0.975,
+            // Carry the brand wordmark through the hero as in the reference:
+            // it rises toward the middle before the next section takes over.
+            y: () => -containerRef.current!.clientHeight * (mobile ? 0.62 : 0.5),
+            scale: mobile ? 0.84 : 0.88,
             force3D: true,
-            duration: 1,
+            duration: 0.82,
           },
           0
         );
+
+        timeline.to(handoff, { autoAlpha: 0, duration: 0.18 }, 0.82);
 
         if (indicator) {
           timeline.to(
@@ -369,7 +372,7 @@ export default function Hero({ introCompleted }: HeroProps) {
   return (
     <section
       ref={containerRef}
-      className="hero relative w-full h-screen h-[100svh] h-[100dvh] pointer-events-auto flex flex-col justify-between select-none !bg-transparent overflow-hidden"
+      className="hero relative w-full h-[100svh] pointer-events-auto flex flex-col justify-between select-none !bg-transparent overflow-hidden"
     >
       <ScrollIndicator labelRef={labelRef} lineRef={blueLineRef} />
 

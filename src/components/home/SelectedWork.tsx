@@ -25,7 +25,7 @@ export default function SelectedWork() {
 
       const mm = gsap.matchMedia();
       const projectElements =
-        gsap.utils.toArray<HTMLElement>(".work-project-item");
+        gsap.utils.toArray<HTMLElement>(containerRef.current.querySelectorAll(".work-project-item"));
 
       mm.add("(max-width: 1023px)", () => {
         projectElements.forEach((element) => {

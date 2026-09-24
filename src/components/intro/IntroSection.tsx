@@ -62,26 +62,25 @@ export default function IntroSection() {
       const buildReveal = (mobile: boolean) => {
         gsap.set(heading, {
           autoAlpha: 0,
-          yPercent: 115,
+          yPercent: 75,
           force3D: true,
         });
 
         gsap.set(paragraph, {
           autoAlpha: 0,
-          y: mobile ? 28 : 38,
+          y: mobile ? 20 : 28,
           force3D: true,
         });
 
         const timeline = gsap.timeline({
           defaults: {
-            ease: "none",
+            ease: "power2.out",
             overwrite: "auto",
           },
           scrollTrigger: {
             trigger: container,
-            start: mobile ? "top 96%" : "top 94%",
-            end: mobile ? "top 42%" : "top 38%",
-            scrub: mobile ? 0.28 : 0.45,
+            start: mobile ? "top 90%" : "top 85%",
+            once: true,
             invalidateOnRefresh: true,
           },
         });
@@ -92,7 +91,7 @@ export default function IntroSection() {
             {
               autoAlpha: 1,
               yPercent: 0,
-              duration: mobile ? 0.34 : 0.4,
+              duration: mobile ? 0.42 : 0.5,
               force3D: true,
             },
             0
@@ -102,10 +101,10 @@ export default function IntroSection() {
             {
               autoAlpha: 1,
               y: 0,
-              duration: 0.72,
+              duration: mobile ? 0.6 : 0.72,
               force3D: true,
             },
-            0.12
+            0.1
           );
 
         return () => {

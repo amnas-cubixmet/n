@@ -125,8 +125,10 @@ export default function WatWeDoen() {
 
           gsap.set(panel, {
             inset: 0,
-            clipPath: CLOSED_STEPS,
-            WebkitClipPath: CLOSED_STEPS,
+            // The first service is already visible when the white stage enters.
+            // Otherwise a full empty viewport appears before its reveal begins.
+            clipPath: index === 0 ? OPEN_STEPS : CLOSED_STEPS,
+            WebkitClipPath: index === 0 ? OPEN_STEPS : CLOSED_STEPS,
             autoAlpha: 1,
             zIndex: 10 + index,
             force3D: true,
@@ -136,7 +138,7 @@ export default function WatWeDoen() {
           const image = imagesRef.current[index];
           if (image) {
             gsap.set(image, {
-              scale: mobile ? 1.04 : 1.055,
+              scale: index === 0 ? 1 : mobile ? 1.04 : 1.055,
               transformOrigin: "center center",
               force3D: true,
               willChange: "transform",
@@ -144,14 +146,14 @@ export default function WatWeDoen() {
           }
 
           gsap.set(panel.querySelectorAll(".title-inner"), {
-            yPercent: 112,
-            autoAlpha: 0,
+            yPercent: index === 0 ? 0 : 112,
+            autoAlpha: index === 0 ? 1 : 0,
             force3D: true,
           });
 
           gsap.set(panel.querySelectorAll(".service-counter"), {
-            y: mobile ? 8 : 12,
-            autoAlpha: 0,
+            y: index === 0 ? 0 : mobile ? 8 : 12,
+            autoAlpha: index === 0 ? 1 : 0,
           });
         });
 
@@ -162,7 +164,9 @@ export default function WatWeDoen() {
           scrollTrigger: {
             trigger: wrapperRef.current,
             start: "top top",
-            end: `+=${panelCount * (mobile ? 108 : 122)}%`,
+            // A fixed distance based on the stable pinned stage avoids
+            // mobile address-bar changes shifting the scroll boundaries.
+            end: () => `+=${Math.round(stickyRef.current!.clientHeight * panelCount * (mobile ? 1.08 : 1.22))}`,
             pin: stickyRef.current,
             pinSpacing: true,
             scrub: mobile ? 0.32 : 0.5,
@@ -204,6 +208,11 @@ export default function WatWeDoen() {
           if (!panel) return;
 
           const segmentStart = index;
+
+          if (index === 0) {
+            timeline.to({}, { duration: 1 }, segmentStart);
+            return;
+          }
 
           timeline.to(
             panel,

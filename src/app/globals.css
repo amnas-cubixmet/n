@@ -371,6 +371,14 @@ body::-webkit-scrollbar {
 @supports (height: 100dvh) {
   .hero,
   .shared-3d-background {
+    height: 100svh;
+    min-height: 100svh;
+  }
+}
+
+@media (min-width: 769px) {
+  .hero,
+  .shared-3d-background {
     height: 100dvh;
     min-height: 100dvh;
   }

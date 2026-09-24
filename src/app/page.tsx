@@ -37,7 +37,7 @@ export default function Home() {
       <Header />
 
       {/* LAYER 1 — GLOBAL FIXED BACKGROUND */}
-      <div className="global-visual-background fixed inset-0 w-[100vw] h-[100dvh] min-h-[100vh] min-h-[100svh] z-0 overflow-hidden pointer-events-none bg-[#05080B]">
+      <div className="global-visual-background fixed inset-0 w-full h-[100svh] lg:h-[100dvh] z-0 overflow-hidden pointer-events-none bg-[#05080B]">
         <Shared3DBackground />
       </div>
 
@@ -85,6 +85,5 @@ export default function Home() {
     </main>
   );
 }
-
 
 

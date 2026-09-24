@@ -10,10 +10,12 @@ function LivingStudioLighting({
   isHidden,
   isMobile,
   canHover,
+  reducedMotion,
 }: {
   isHidden: boolean;
   isMobile: boolean;
   canHover: boolean;
+  reducedMotion: boolean;
 }) {
   const leftRimRef = useRef<THREE.DirectionalLight>(null);
   const rightRimRef = useRef<THREE.DirectionalLight>(null);
@@ -22,17 +24,18 @@ function LivingStudioLighting({
     if (isHidden) return;
 
     const pointerX = !isMobile && canHover ? state.pointer.x : 0;
+    const sweep = reducedMotion ? 0 : Math.sin(state.clock.elapsedTime * 0.48);
     const rightBoost = Math.max(0, -pointerX) * 0.05;
     const leftBoost = Math.max(0, pointerX) * 0.05;
 
     if (leftRimRef.current) {
       leftRimRef.current.intensity +=
-        (0.9 + leftBoost - leftRimRef.current.intensity) * 0.035;
+        (0.9 + leftBoost + sweep * 0.14 - leftRimRef.current.intensity) * 0.035;
     }
 
     if (rightRimRef.current) {
       rightRimRef.current.intensity +=
-        (1.2 + rightBoost - rightRimRef.current.intensity) * 0.035;
+        (1.2 + rightBoost - sweep * 0.14 - rightRimRef.current.intensity) * 0.035;
     }
   });
 
@@ -96,7 +99,7 @@ function createFloorAlphaMap(size = 256): THREE.CanvasTexture | null {
   return texture;
 }
 
-function StationaryModel({
+function AnimatedModel({
   isMobile,
   isTablet,
   isHidden,
@@ -110,7 +113,21 @@ function StationaryModel({
   reducedMotion: boolean;
 }) {
   const groupRef = useRef<THREE.Group>(null);
+  const heroHeightRef = useRef(1);
   const geometry = useMemo(() => createNorthframeGeometry(), []);
+
+  useEffect(() => {
+    const measureHero = () => {
+      heroHeightRef.current = document.querySelector<HTMLElement>(".hero")?.offsetHeight || window.innerHeight;
+    };
+    measureHero();
+    window.addEventListener("orientationchange", measureHero);
+    window.addEventListener("resize", measureHero, { passive: true });
+    return () => {
+      window.removeEventListener("orientationchange", measureHero);
+      window.removeEventListener("resize", measureHero);
+    };
+  }, []);
 
   const frontMaterial = useMemo(
     () =>
@@ -149,7 +166,7 @@ function StationaryModel({
   const baseRotY = THREE.MathUtils.degToRad(4.5);
   const baseY = isMobile ? 0.26 : isTablet ? 0.1 : 0;
 
-  useFrame((state) => {
+  useFrame((state, delta) => {
     const group = groupRef.current;
     if (!group || isHidden) return;
 
@@ -159,21 +176,26 @@ function StationaryModel({
       group.position.x += (0 - group.position.x) * 0.08;
       group.position.y += (baseY - group.position.y) * 0.08;
       group.position.z += (0 - group.position.z) * 0.08;
+      group.scale.setScalar(group.scale.x + (responsiveScale - group.scale.x) * 0.08);
       return;
     }
 
-    const time = state.clock.getElapsedTime();
-    const floatCycle = Math.sin((time * Math.PI) / 6);
+    // A slow, automatic orbit and float make the sculpture feel alive even on
+    // touch screens. The limited angles preserve the original A silhouette.
+    const time = state.clock.elapsedTime;
+    const orbit = Math.sin(time * 0.48);
+    const float = Math.sin(time * 0.72);
+    const scrollProgress = Math.min(1, Math.max(0, window.scrollY / heroHeightRef.current));
 
-    const floatRotX = floatCycle * THREE.MathUtils.degToRad(isMobile ? 0.08 : 0.18);
-    const floatRotY = floatCycle * THREE.MathUtils.degToRad(isMobile ? 0.1 : 0.24);
-    const floatY = floatCycle * (isMobile ? -0.003 : -0.006);
+    const floatRotX = float * THREE.MathUtils.degToRad(isMobile ? 0.9 : 1.3);
+    const floatRotY = orbit * THREE.MathUtils.degToRad(isMobile ? 2.3 : 3.5);
+    const floatY = float * (isMobile ? 0.045 : 0.065);
 
     let targetRotX = baseRotX + floatRotX;
-    let targetRotY = baseRotY + floatRotY;
+    let targetRotY = baseRotY + floatRotY + scrollProgress * THREE.MathUtils.degToRad(isMobile ? 5 : 7);
     let targetX = 0;
-    let targetY = baseY + floatY;
-    let targetZ = 0;
+    let targetY = baseY + floatY + scrollProgress * (isMobile ? 0.18 : 0.24);
+    let targetZ = (orbit + 1) * (isMobile ? 0.018 : 0.035) + scrollProgress * 0.12;
 
     if (!isMobile && canHover) {
       const pointerX = state.pointer.x;
@@ -183,16 +205,19 @@ function StationaryModel({
       targetRotX -= pointerY * THREE.MathUtils.degToRad(0.5);
       targetX = pointerX * 0.015;
       targetY += pointerY * 0.012;
-      targetZ = (Math.abs(pointerX) + Math.abs(pointerY)) * 0.005;
+      targetZ += (Math.abs(pointerX) + Math.abs(pointerY)) * 0.005;
     }
 
-    const lerp = isMobile ? 0.018 : 0.022;
+    // Time-based damping keeps the pace consistent at 30, 60 and 120 fps.
+    const lerp = 1 - Math.exp(-(isMobile ? 1.4 : 1.7) * Math.min(delta, 0.05));
 
     group.rotation.x += (targetRotX - group.rotation.x) * lerp;
     group.rotation.y += (targetRotY - group.rotation.y) * lerp;
     group.position.x += (targetX - group.position.x) * lerp;
     group.position.y += (targetY - group.position.y) * lerp;
     group.position.z += (targetZ - group.position.z) * lerp;
+    const targetScale = responsiveScale * (1 + scrollProgress * 0.06);
+    group.scale.setScalar(group.scale.x + (targetScale - group.scale.x) * lerp);
   });
 
   return (
@@ -340,7 +365,7 @@ export default function Shared3DBackground() {
   const isHidden = documentHidden || !rangeVisible;
 
   return (
-    <div className="shared-3d-background hero-a-stage fixed inset-0 z-0 h-screen h-[100svh] h-[100dvh] w-full overflow-hidden bg-[#05080B] pointer-events-none">
+    <div className="shared-3d-background hero-a-stage fixed inset-0 z-0 h-[100svh] w-full overflow-hidden bg-[#05080B] pointer-events-none">
       <div
         aria-hidden="true"
         className="hero-side-light left-light absolute -left-[20vw] top-[35%] h-[45vh] w-[35vw] rounded-full blur-[50px] pointer-events-none"
@@ -389,11 +414,12 @@ export default function Shared3DBackground() {
                 isHidden={isHidden}
                 isMobile={isMobile}
                 canHover={canHover}
+                reducedMotion={reducedMotion}
               />
 
               <FloorBackdrop isMobile={isMobile} />
 
-              <StationaryModel
+              <AnimatedModel
                 isMobile={isMobile}
                 isTablet={isTablet}
                 isHidden={isHidden}

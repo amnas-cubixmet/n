@@ -130,9 +130,9 @@ export default function IntroSection() {
   return (
     <div
       ref={containerRef}
-      className="relative z-10 box-border flex min-h-[50svh] w-full flex-col justify-start bg-transparent m-0 px-[clamp(1.5rem,8vw,7rem)] pt-[clamp(0.75rem,2vh,1.5rem)] pb-[clamp(2rem,5vh,4rem)] text-white pointer-events-auto"
+      className="relative z-10 box-border flex min-h-[50svh] w-full flex-col justify-start bg-transparent m-0 px-[max(16px,env(safe-area-inset-left))] pt-0 pb-[clamp(2rem,5vh,4rem)] text-white pointer-events-auto sm:px-[clamp(20px,2.5vw,40px)]"
     >
-      <div className="mx-auto w-full max-w-[1360px]">
+      <div className="w-full">
         <div className="max-w-[880px]">
           <div className="flex items-center overflow-hidden py-1">
             <h2

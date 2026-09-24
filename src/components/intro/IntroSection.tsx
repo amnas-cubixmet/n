@@ -130,14 +130,14 @@ export default function IntroSection() {
   return (
     <div
       ref={containerRef}
-      className="relative z-10 box-border flex min-h-[60svh] w-full flex-col justify-center bg-white m-0 px-[clamp(1.5rem,8vw,7rem)] py-[clamp(2rem,5vh,4rem)] text-black pointer-events-auto sm:min-h-[50svh]"
+      className="relative z-10 box-border flex min-h-[60svh] w-full flex-col justify-center bg-transparent m-0 px-[clamp(1.5rem,8vw,7rem)] py-[clamp(2rem,5vh,4rem)] text-white pointer-events-auto sm:min-h-[50svh]"
     >
       <div className="mx-auto w-full max-w-[1360px]">
         <div className="max-w-[880px]">
           <div className="flex items-center overflow-hidden py-1">
             <h2
               ref={headingRef}
-              className="font-montserrat text-[11px] font-semibold tracking-[0.06em] text-black uppercase leading-none sm:text-[13px]"
+              className="w-fit bg-white px-1 font-montserrat text-[11px] font-semibold tracking-[0.06em] text-black uppercase leading-none sm:text-[13px]"
               style={
                 isReducedMotion
                   ? { opacity: 1, transform: "none" }
@@ -151,7 +151,7 @@ export default function IntroSection() {
           <div className="mt-3 overflow-hidden sm:mt-4">
             <p
               ref={paragraphRef}
-              className="m-0 max-w-[850px] text-left font-poppins text-black text-[clamp(18px,4.5vw,23px)] sm:text-[clamp(20px,2vw,26px)] leading-[1.25] font-normal tracking-[-0.02em]"
+              className="m-0 max-w-[850px] text-left font-poppins text-white text-[clamp(18px,4.5vw,23px)] sm:text-[clamp(20px,2vw,26px)] leading-[1.25] font-normal tracking-[-0.02em]"
               style={
                 isReducedMotion
                   ? { opacity: 1, transform: "none" }

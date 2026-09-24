@@ -10,7 +10,6 @@ import WatWeDoen from "@/components/home/WatWeDoen";
 import OurExpertise from "@/components/home/OurExpertise";
 import SelectedWork from "@/components/home/SelectedWork";
 import DeliverablesSection from "@/components/home/DeliverablesSection";
-import StatementSection from "@/components/home/StatementSection";
 import OurVision from "@/components/home/OurVision";
 import OurUSPs from "@/components/home/OurUSPs";
 import FoundedOnAVision from "@/components/home/FoundedOnAVision";
@@ -65,9 +64,6 @@ export default function Home() {
 
         {/* DELIVERABLES */}
         <DeliverablesSection />
-
-        {/* WOOOW STATEMENT */}
-        <StatementSection />
 
         {/* OUR VISION SECTION */}
         <OurVision />

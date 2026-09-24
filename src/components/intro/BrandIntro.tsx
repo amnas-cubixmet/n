@@ -22,7 +22,8 @@ interface SavedBodyStyles {
 export default function BrandIntro({ onComplete }: BrandIntroProps) {
   const [isVisible, setIsVisible] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
-  const logoRef = useRef<HTMLDivElement>(null);
+  const markRef = useRef<HTMLDivElement>(null);
+  const coverRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const finishedRef = useRef(false);
   const savedBodyStylesRef = useRef<SavedBodyStyles | null>(null);
@@ -56,7 +57,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
 
   useEffect(() => {
     if (!isVisible || finishedRef.current) return;
-    const timeoutId = window.setTimeout(finishIntro, 3500);
+    const timeoutId = window.setTimeout(finishIntro, 4000);
     return () => window.clearTimeout(timeoutId);
   }, [finishIntro, isVisible]);
 
@@ -69,7 +70,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
         return;
       }
     } catch {
-      // Continue with the logo when storage cannot be read.
+      // Continue with the animation when storage cannot be read.
     }
 
     savedBodyStylesRef.current = {
@@ -82,30 +83,42 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     document.body.style.overscrollBehavior = "none";
 
     const container = containerRef.current;
-    const logo = logoRef.current;
-    if (!container || !logo) {
+    const mark = markRef.current;
+    const cover = coverRef.current;
+    if (!container || !mark || !cover) {
       finishIntro();
       return;
     }
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const markSize = mark.getBoundingClientRect().width || 80;
+    const screenDiagonal = Math.hypot(window.innerWidth, window.innerHeight);
+    const coverScale = (screenDiagonal / markSize) * 2.5;
     const timeline = gsap.timeline({ onComplete: finishIntro });
     timelineRef.current = timeline;
 
     if (reducedMotion) {
-      timeline.to({}, { duration: 0.25 });
+      gsap.set(mark, { autoAlpha: 1, scale: 1 });
+      timeline.to({}, { duration: 0.3 });
     } else {
       timeline.fromTo(
-        logo,
-        { scale: 0.96 },
-        { scale: 1, duration: 0.45, ease: "power2.out" }
+        mark,
+        { autoAlpha: 0, scale: 0.72 },
+        { autoAlpha: 1, scale: 1, duration: 0.55, ease: "power3.out" }
       );
-      timeline.to({}, { duration: 0.38 });
+      timeline.to({}, { duration: 0.3 });
+      timeline.to(mark, {
+        scale: coverScale,
+        duration: 0.68,
+        ease: "power3.in",
+        force3D: true,
+      });
+      timeline.to(cover, { autoAlpha: 1, duration: 0.12 }, "-=0.17");
     }
 
     timeline.to(container, {
       autoAlpha: 0,
-      duration: reducedMotion ? 0.15 : 0.28,
+      duration: reducedMotion ? 0.15 : 0.3,
       ease: "power2.out",
     });
 
@@ -122,19 +135,20 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     <div
       ref={containerRef}
       aria-hidden="true"
-      className="fixed inset-0 z-[200] flex h-[100svh] w-full items-center justify-center bg-[#070B14] select-none touch-none"
+      className="fixed inset-0 z-[200] flex h-[100svh] w-full items-center justify-center overflow-hidden bg-[#070B14] select-none touch-none"
     >
-      <div ref={logoRef} className="w-[72vw] max-w-[300px] sm:max-w-[480px]">
+      <div ref={markRef} className="relative z-10 h-[72px] w-[72px] sm:h-[92px] sm:w-[92px]">
         <Image
-          src="/images/brand/northframe-logo.webp"
+          src="/images/brand/northframe-icon.webp"
           alt=""
-          width={822}
-          height={100}
+          width={1254}
+          height={1254}
           priority
-          sizes="(max-width: 640px) 72vw, 480px"
-          className="block h-auto w-full object-contain"
+          sizes="(max-width: 640px) 72px, 92px"
+          className="block h-full w-full object-contain"
         />
       </div>
+      <div ref={coverRef} aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 bg-[#1677FF] opacity-0" />
     </div>
   );
 }

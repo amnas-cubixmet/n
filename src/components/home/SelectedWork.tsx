@@ -33,12 +33,12 @@ export default function SelectedWork() {
             element,
             {
               autoAlpha: 0,
-              y: 20,
+              y: 14,
             },
             {
               autoAlpha: 1,
               y: 0,
-              duration: 0.48,
+              duration: 0.44,
               ease: "power3.out",
               scrollTrigger: {
                 trigger: element,
@@ -50,26 +50,8 @@ export default function SelectedWork() {
           );
         });
 
-        if (shapeRef.current) {
-          gsap.fromTo(
-            shapeRef.current,
-            {
-              yPercent: -4,
-            },
-            {
-              yPercent: 12,
-              ease: "none",
-              force3D: true,
-              scrollTrigger: {
-                trigger: containerRef.current,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 0.75,
-                invalidateOnRefresh: true,
-              },
-            }
-          );
-        }
+        // The backdrop stays still on touch devices while cards enter with
+        // the natural document scroll.
       });
 
       mm.add("(min-width: 1024px)", () => {

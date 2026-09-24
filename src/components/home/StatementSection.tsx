@@ -15,7 +15,6 @@ export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const blackFillRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLHeadingElement>(null);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useGSAP(
@@ -24,15 +23,13 @@ export default function StatementSection() {
         !sectionRef.current ||
         !stageRef.current ||
         !blackFillRef.current ||
-        !trackRef.current ||
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ) return;
 
       const compact = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
       gsap.set(blackFillRef.current, { scaleY: 0, transformOrigin: "bottom center" });
-      gsap.set(trackRef.current, { yPercent: compact ? 32 : 22 });
       wordRefs.current.forEach((word, index) => {
-        if (word) gsap.set(word, { yPercent: 55, autoAlpha: 0 });
+        if (word && index > 0) gsap.set(word, { yPercent: 45, autoAlpha: 0 });
       });
 
       const timeline = gsap.timeline({
@@ -48,16 +45,14 @@ export default function StatementSection() {
         },
       });
 
-      timeline.to(trackRef.current, { yPercent: compact ? -7 : -12, duration: 0.62, ease: "none" }, 0);
-      [0.02, 0.14, 0.26, 0.38, 0.5].forEach((position, index) => {
-        const word = wordRefs.current[index];
+      [0.08, 0.22, 0.36, 0.5].forEach((position, index) => {
+        const word = wordRefs.current[index + 1];
         if (word) timeline.to(word, { yPercent: 0, autoAlpha: 1, duration: 0.18, ease: "power2.out" }, position);
       });
 
       // The blue statement covers the preceding showcase; after the whole
       // message is visible, black rises to meet the following dark section.
-      timeline.to(blackFillRef.current, { scaleY: 1, duration: 0.38, ease: "none" }, 0.66);
-      timeline.to({}, { duration: 0.08 });
+      timeline.to(blackFillRef.current, { scaleY: 1, duration: 0.32, ease: "none" }, 0.78);
     },
     { scope: sectionRef }
   );
@@ -86,8 +81,7 @@ export default function StatementSection() {
           className="pointer-events-none absolute inset-0 z-20 origin-bottom scale-y-0 bg-black"
         />
         <h2
-          ref={trackRef}
-          className="relative z-10 m-0 flex w-full flex-col items-center justify-center gap-1 text-center font-pixel font-bold uppercase leading-[0.9] tracking-[-0.035em] sm:gap-2"
+          className="relative z-10 m-0 flex w-full flex-col items-center justify-center gap-[clamp(6px,1.5svh,16px)] text-center font-pixel font-bold uppercase leading-[0.9] tracking-[-0.035em]"
         >
           {words.map((word, index) => (
             <span key={word} className="block w-full overflow-hidden py-[0.04em]">
@@ -95,12 +89,12 @@ export default function StatementSection() {
                 ref={(element) => { wordRefs.current[index] = element; }}
                 className={`relative inline-block whitespace-nowrap px-[0.06em] ${
                   index === 0
-                    ? "bg-black text-[clamp(52px,13vw,132px)] text-white"
+                    ? "bg-black text-[clamp(48px,min(12vw,11svh),116px)] text-white"
                     : index === 4
-                      ? "bg-black text-[clamp(35px,7.7vw,110px)] text-white"
+                      ? "bg-black text-[clamp(32px,min(7vw,7.5svh),82px)] text-white"
                       : index === 2
-                        ? "bg-black text-[clamp(56px,16vw,155px)] text-white"
-                        : "text-[clamp(62px,17vw,160px)] text-black"
+                        ? "bg-black text-[clamp(48px,min(12vw,11svh),116px)] text-white"
+                        : "text-[clamp(48px,min(12vw,11svh),116px)] text-black"
                 }`}
               >
                 {word}

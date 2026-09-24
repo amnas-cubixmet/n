@@ -230,7 +230,13 @@ export default function Header() {
   };
 
   const handleLinkClick = () => {
-    if (menuOpen) animateMenu(false);
+    if (!menuOpen) return;
+    // A selected route must not sit behind the menu-close animation.
+    timelineRef.current?.kill();
+    gsap.set(navPanelRef.current, { autoAlpha: 0, pointerEvents: "none" });
+    gsap.set(navSurfaceRef.current, { autoAlpha: 0, scale: getCompactScale() });
+    gsap.set(navContentRef.current, { autoAlpha: 0 });
+    setMenuOpen(false);
   };
 
   return (

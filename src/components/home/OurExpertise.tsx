@@ -12,8 +12,7 @@ if (typeof window !== "undefined") {
 export default function OurExpertise() {
   const containerRef = useRef<HTMLElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
-  const paragraphOneRef = useRef<HTMLParagraphElement>(null);
-  const paragraphTwoRef = useRef<HTMLParagraphElement>(null);
+  const paragraphRef = useRef<HTMLParagraphElement>(null);
 
   useGSAP(
     () => {
@@ -22,13 +21,12 @@ export default function OurExpertise() {
       const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
       const label = labelRef.current;
-      const paragraphOne = paragraphOneRef.current;
-      const paragraphTwo = paragraphTwoRef.current;
+      const paragraph = paragraphRef.current;
 
-      if (!label || !paragraphOne || !paragraphTwo) return;
+      if (!label || !paragraph) return;
 
       if (motionQuery.matches) {
-        gsap.set([label, paragraphOne, paragraphTwo], {
+        gsap.set([label, paragraph], {
           autoAlpha: 1,
           y: 0,
           clearProps: "transform",
@@ -46,7 +44,7 @@ export default function OurExpertise() {
           willChange: "transform, opacity",
         });
 
-        gsap.set([paragraphOne, paragraphTwo], {
+        gsap.set(paragraph, {
           autoAlpha: 0,
           y: mobile ? 16 : 22,
           force3D: true,
@@ -65,7 +63,7 @@ export default function OurExpertise() {
             invalidateOnRefresh: true,
           },
           onComplete: () => {
-            gsap.set([label, paragraphOne, paragraphTwo], {
+            gsap.set([label, paragraph], {
               clearProps: "will-change",
             });
           },
@@ -78,22 +76,13 @@ export default function OurExpertise() {
             duration: mobile ? 0.28 : 0.34,
           })
           .to(
-            paragraphOne,
+            paragraph,
             {
               autoAlpha: 1,
               y: 0,
               duration: mobile ? 0.46 : 0.56,
             },
             mobile ? "-=0.12" : "-=0.14"
-          )
-          .to(
-            paragraphTwo,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: mobile ? 0.46 : 0.56,
-            },
-            mobile ? "-=0.28" : "-=0.34"
           );
 
         return () => {
@@ -117,8 +106,8 @@ export default function OurExpertise() {
       ref={containerRef}
       className="relative z-20 w-full bg-white text-black pointer-events-auto overflow-hidden"
     >
-      <div className="mx-auto flex min-h-[58svh] w-full max-w-[1600px] flex-col justify-center px-[max(1.1rem,env(safe-area-inset-left))] py-[clamp(3.5rem,8vh,7rem)] pr-[max(1.1rem,env(safe-area-inset-right))] sm:min-h-[62svh] sm:px-8 lg:min-h-[68svh] lg:px-12 xl:px-16">
-        <div className="w-full max-w-[950px]">
+      <div className="mx-auto flex min-h-[62svh] w-full max-w-[1600px] flex-col justify-start px-[max(1.1rem,env(safe-area-inset-left))] pb-[clamp(5rem,12vh,10rem)] pt-[clamp(5rem,12vh,10rem)] pr-[max(1.1rem,env(safe-area-inset-right))] sm:min-h-[68svh] sm:px-8 lg:min-h-[75svh] lg:px-12 xl:px-16">
+        <div className="w-full max-w-[1050px]">
           <div
             ref={labelRef}
             className="flex items-center"
@@ -128,23 +117,16 @@ export default function OurExpertise() {
             </span>
           </div>
 
-          <div className="mt-6 max-w-[900px] space-y-4 sm:mt-9 sm:space-y-6 lg:mt-11 lg:space-y-7">
+          <div className="mt-7 max-w-[950px] sm:mt-10 lg:mt-14">
             <p
-              ref={paragraphOneRef}
-              className="m-0 font-sans text-[clamp(17px,4.4vw,21px)] font-normal leading-[1.28] tracking-[-0.02em] text-black sm:text-[clamp(22px,2.7vw,34px)] sm:leading-[1.2] lg:text-[clamp(30px,2.35vw,40px)]"
+              ref={paragraphRef}
+              className="m-0 font-sans text-[clamp(21px,5.8vw,27px)] font-normal leading-[1.23] tracking-[-0.025em] text-black sm:text-[clamp(27px,3vw,38px)] sm:leading-[1.19] lg:text-[clamp(38px,3.15vw,52px)]"
             >
-              What do we do best? Branding, design, and digital experiences. Yes,
-              you’ve heard that before. But expertise isn’t just about what you
-              do, it’s about how exceptionally you do it.
-            </p>
-
-            <p
-              ref={paragraphTwoRef}
-              className="m-0 font-sans text-[clamp(17px,4.4vw,21px)] font-normal leading-[1.28] tracking-[-0.02em] text-black sm:text-[clamp(22px,2.7vw,34px)] sm:leading-[1.2] lg:text-[clamp(30px,2.35vw,40px)]"
-            >
-              We push every detail further, challenge the expected, and strive for
-              work that feels considered, distinctive, and precise. Because good
-              is never the finish line. There’s always a way to make it better.
+              What do we do best? Branding, design, and digital experiences.
+              Expertise isn’t just about what we do, but how exceptionally we do
+              it. We push every detail further and make work that feels
+              considered, distinctive, and precise. There’s always a way to make
+              it better.
             </p>
           </div>
         </div>

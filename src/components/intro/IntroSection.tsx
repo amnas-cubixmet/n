@@ -89,7 +89,7 @@ export default function IntroSection() {
           scrollTrigger: {
             trigger: container,
             start: mobile ? "top 88%" : "top 85%",
-            end: mobile ? "top 28%" : "top 32%",
+            end: mobile ? "top 45%" : "top 48%",
             scrub: mobile ? 0.32 : 0.45,
             invalidateOnRefresh: true,
           },
@@ -101,7 +101,7 @@ export default function IntroSection() {
             {
               autoAlpha: 1,
               y: 0,
-              duration: 0.45,
+              duration: 0.38,
               force3D: true,
             },
             0
@@ -111,20 +111,20 @@ export default function IntroSection() {
             {
               autoAlpha: 1,
               yPercent: 0,
-              duration: 0.45,
+              duration: 0.38,
               force3D: true,
             },
-            0.25
+            0.08
           )
           .to(
             paragraph,
             {
               autoAlpha: 1,
               y: 0,
-              duration: 0.72,
+              duration: 0.5,
               force3D: true,
             },
-            0.34
+            0.1
           );
 
         return () => {
@@ -149,16 +149,16 @@ export default function IntroSection() {
   return (
     <div
       ref={containerRef}
-      className="relative z-10 box-border flex min-h-[100svh] w-full flex-col justify-center bg-transparent m-0 px-[clamp(1.5rem,8vw,7rem)] py-[clamp(4rem,8vh,7rem)] text-white pointer-events-auto"
+      className="relative z-10 box-border flex min-h-[70svh] w-full flex-col justify-center bg-transparent m-0 px-[clamp(1.5rem,8vw,7rem)] py-[clamp(2rem,5vh,4rem)] text-white pointer-events-auto sm:min-h-[60svh]"
     >
       <div className="mx-auto w-full max-w-[1360px]">
-        <div ref={logoRef} className="mb-[clamp(4rem,12svh,9rem)] w-full max-w-[min(88vw,680px)] sm:mb-[clamp(3rem,8vh,6rem)]" style={isReducedMotion ? undefined : { willChange: "transform, opacity" }}>
+        <div ref={logoRef} className="mb-[clamp(1.5rem,5svh,3rem)] w-full max-w-[min(76vw,520px)] sm:mb-[clamp(1.5rem,4vh,2.5rem)]" style={isReducedMotion ? undefined : { willChange: "transform, opacity" }}>
           <Image
             src="/images/brand/northframe-logo.webp"
             alt="NORTHFRAME"
             width={700}
             height={116}
-            sizes="(max-width: 768px) 88vw, 680px"
+            sizes="(max-width: 768px) 76vw, 520px"
             className="block h-auto w-full"
           />
         </div>
@@ -178,10 +178,10 @@ export default function IntroSection() {
             </h2>
           </div>
 
-          <div className="mt-4 overflow-hidden sm:mt-5">
+          <div className="mt-3 overflow-hidden sm:mt-4">
             <p
               ref={paragraphRef}
-              className="m-0 max-w-[850px] text-left font-poppins text-white text-[clamp(20px,5vw,28px)] sm:text-[clamp(22px,2.3vw,30px)] leading-[1.25] font-normal tracking-[-0.02em]"
+              className="m-0 max-w-[850px] text-left font-poppins text-white text-[clamp(18px,4.5vw,23px)] sm:text-[clamp(20px,2vw,26px)] leading-[1.25] font-normal tracking-[-0.02em]"
               style={
                 isReducedMotion
                   ? { opacity: 1, transform: "none" }

@@ -312,7 +312,7 @@ export default function Hero({ introCompleted }: HeroProps) {
 
         // Let the logo scroll naturally so it stays directly above the
         // introduction instead of rising away from it.
-        timeline.to(handoff, { autoAlpha: 0, duration: 0.18 }, 0.82);
+        timeline.to(handoff, { autoAlpha: 0, duration: 0.06 }, 0.94);
 
         if (indicator) {
           timeline.to(

@@ -7,6 +7,7 @@ import Shared3DBackground from "@/components/hero/Shared3DBackground";
 import Hero from "@/components/hero/Hero";
 import IntroSection from "@/components/intro/IntroSection";
 import WatWeDoen from "@/components/home/WatWeDoen";
+import OurExpertise from "@/components/home/OurExpertise";
 import SelectedWork from "@/components/home/SelectedWork";
 import DeliverablesSection from "@/components/home/DeliverablesSection";
 import StatementSection from "@/components/home/StatementSection";
@@ -59,6 +60,9 @@ export default function Home() {
         <div className="relative w-full pointer-events-auto bg-[#030508]">
           <WatWeDoen />
         </div>
+
+        {/* OUR EXPERTISE */}
+        <OurExpertise />
 
         {/* A SELECTION OF OUR WORK */}
         <SelectedWork />

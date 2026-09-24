@@ -9,13 +9,12 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-const words = ["WE", "MAKE", "BRANDS", "GO", "WOOOOOOOOW!"];
+const words = ["WE LOVE", "MAKE", "IT", "WOOOOOOOOW!"];
 
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLHeadingElement>(null);
-  const blockRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useGSAP(
@@ -28,12 +27,9 @@ export default function StatementSection() {
       ) return;
 
       const compact = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
-      gsap.set(trackRef.current, { yPercent: 12 });
-      blockRefs.current.forEach((block) => {
-        if (block) gsap.set(block, { scaleX: 0, transformOrigin: "left center" });
-      });
-      wordRefs.current.forEach((word) => {
-        if (word) gsap.set(word, { color: "#000000" });
+      gsap.set(trackRef.current, { yPercent: 18 });
+      wordRefs.current.forEach((word, index) => {
+        if (word && index > 0) gsap.set(word, { yPercent: 45, autoAlpha: 0 });
       });
 
       const timeline = gsap.timeline({
@@ -49,19 +45,10 @@ export default function StatementSection() {
         },
       });
 
-      timeline.to(trackRef.current, { yPercent: -10, duration: 0.8, ease: "none" }, 0.05);
-      [0.1, 0.26, 0.42, 0.58, 0.74].forEach((position, index) => {
-        const block = blockRefs.current[index];
-        const word = wordRefs.current[index];
-        if (!block || !word) return;
-
-        timeline.to(block, { scaleX: 1, duration: 0.06, ease: "none" }, position);
-        timeline.to(word, { color: "#FFFFFF", duration: 0.03 }, position + 0.03);
-
-        if (index < words.length - 1) {
-          timeline.to(block, { scaleX: 0, transformOrigin: "right center", duration: 0.06 }, position + 0.11);
-          timeline.to(word, { color: "#000000", duration: 0.03 }, position + 0.11);
-        }
+      timeline.to(trackRef.current, { yPercent: -12, duration: 0.78, ease: "none" }, 0.08);
+      [0.17, 0.35, 0.54].forEach((position, index) => {
+        const word = wordRefs.current[index + 1];
+        if (word) timeline.to(word, { yPercent: 0, autoAlpha: 1, duration: 0.18, ease: "power2.out" }, position);
       });
 
       timeline.to({}, { duration: 1 });
@@ -87,20 +74,16 @@ export default function StatementSection() {
           {words.map((word, index) => (
             <span key={word} className="block w-full">
               <span
-                className={`relative inline-block max-w-full px-[0.04em] ${
-                  index === 4
-                    ? "whitespace-nowrap text-[clamp(27px,7.7vw,100px)]"
-                    : "text-[clamp(43px,10svh,105px)]"
+                ref={(element) => { wordRefs.current[index] = element; }}
+                className={`relative inline-block whitespace-nowrap px-[0.06em] ${
+                  index === 0
+                    ? "text-[clamp(52px,13vw,132px)] text-black"
+                    : index === 3
+                      ? "max-w-none bg-black text-[clamp(72px,22vw,240px)] text-white md:text-[clamp(110px,15vw,220px)]"
+                      : "bg-black text-[clamp(76px,18vw,175px)] text-white"
                 }`}
               >
-                <span
-                  ref={(element) => { blockRefs.current[index] = element; }}
-                  aria-hidden="true"
-                  className="absolute inset-0 origin-left scale-x-0 bg-black"
-                />
-                <span ref={(element) => { wordRefs.current[index] = element; }} className="relative z-10">
-                  {word}
-                </span>
+                {word}
               </span>
             </span>
           ))}

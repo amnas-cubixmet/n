@@ -17,13 +17,9 @@ import FoundedOnAVision from "@/components/home/FoundedOnAVision";
 import ContactSection from "@/components/home/ContactSection";
 
 export default function Home() {
-  const [introCompleted, setIntroCompleted] = useState(() => {
-    try {
-      return typeof window !== "undefined" && sessionStorage.getItem("northframe_intro_seen") === "true";
-    } catch {
-      return false;
-    }
-  });
+  // Keep the first server and client renders identical. BrandIntro checks
+  // sessionStorage after hydration and calls onComplete when it is done.
+  const [introCompleted, setIntroCompleted] = useState(false);
 
   const handleIntroComplete = () => {
     setIntroCompleted(true);

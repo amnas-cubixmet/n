@@ -16,7 +16,6 @@ export default function IntroSection() {
 
   const containerRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const paragraphRef = useRef<HTMLParagraphElement>(null);
 
   const [isReducedMotion, setIsReducedMotion] = useState(() =>
     typeof window !== "undefined"
@@ -43,12 +42,10 @@ export default function IntroSection() {
   useGSAP(
     () => {
       const heading = headingRef.current;
-      const paragraph = paragraphRef.current;
-
-      if (!heading || !paragraph) return;
+      if (!heading) return;
 
       if (isReducedMotion) {
-        gsap.set([heading, paragraph], {
+        gsap.set(heading, {
           autoAlpha: 1,
           y: 0,
           clearProps: "transform",
@@ -60,44 +57,23 @@ export default function IntroSection() {
 
       const buildReveal = (mobile: boolean) => {
         gsap.set(heading, { autoAlpha: 0, y: mobile ? 12 : 16 });
-        gsap.set(paragraph, { autoAlpha: 0, y: mobile ? 20 : 26 });
 
-        const timeline = gsap.timeline({
-          defaults: {
-            ease: "none",
-            overwrite: "auto",
-          },
+        gsap.to(heading, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 1,
+          ease: "none",
           scrollTrigger: {
             trigger: containerRef.current,
             start: "top 92%",
-            end: "top 62%",
+            end: "top 72%",
             scrub: mobile ? 0.18 : 0.3,
             invalidateOnRefresh: true,
           },
         });
 
-        timeline
-          .to(
-            heading,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.32,
-            },
-            0
-          )
-          .to(
-            paragraph,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.68,
-            },
-            0.12
-          );
-
         return () => {
-          gsap.set([heading, paragraph], {
+          gsap.set(heading, {
             clearProps: "willChange",
           });
         };
@@ -118,7 +94,7 @@ export default function IntroSection() {
   return (
     <div
       ref={containerRef}
-      className="relative z-10 box-border flex min-h-[50svh] w-full flex-col justify-start bg-transparent m-0 px-[max(20px,env(safe-area-inset-left))] pt-[clamp(3rem,8svh,7rem)] pb-[clamp(4rem,11svh,9rem)] text-white pointer-events-auto sm:px-[clamp(32px,5vw,96px)]"
+      className="relative z-10 box-border flex min-h-[50svh] w-full flex-col items-start justify-start bg-transparent m-0 px-[max(20px,env(safe-area-inset-left))] pt-[clamp(3rem,8svh,7rem)] pb-[clamp(4rem,11svh,9rem)] text-left text-white pointer-events-auto sm:px-[clamp(32px,5vw,96px)]"
     >
       <div className="w-full">
         <div className="max-w-[1000px]">
@@ -138,13 +114,7 @@ export default function IntroSection() {
 
           <div className="mt-5 sm:mt-7">
             <p
-              ref={paragraphRef}
               className="m-0 max-w-[950px] text-left font-poppins text-white text-[clamp(21px,5.6vw,27px)] sm:text-[clamp(26px,2.5vw,36px)] leading-[1.28] font-normal tracking-[-0.035em]"
-              style={
-                isReducedMotion
-                  ? { opacity: 1, transform: "none" }
-                  : { willChange: "transform, opacity" }
-              }
             >
               {paragraphText}
             </p>

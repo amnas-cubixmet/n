@@ -1,223 +1,110 @@
 "use client";
 
-import React, { useRef } from "react";
+import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
+
+const words = ["WE", "MAKE", "BRANDS", "GO", "WOOOOOOOOW!"];
 
 export default function StatementSection() {
-  const containerRef = useRef<HTMLElement>(null);
-  const stickyRef = useRef<HTMLDivElement>(null);
-  const textGroupRef = useRef<HTMLDivElement>(null);
-
-  // 5 Separate Lines
-  const line1Ref = useRef<HTMLDivElement>(null);
-  const wordWeRef = useRef<HTMLSpanElement>(null);
-
-  const line2Ref = useRef<HTMLDivElement>(null);
-  const wordMakeRef = useRef<HTMLSpanElement>(null);
-
-  const line3Ref = useRef<HTMLDivElement>(null);
-  const wordBrandsRef = useRef<HTMLSpanElement>(null);
-
-  const line4Ref = useRef<HTMLDivElement>(null);
-  const wordGoRef = useRef<HTMLSpanElement>(null);
-
-  const line5Ref = useRef<HTMLDivElement>(null);
-  const wooooowTextRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLHeadingElement>(null);
+  const blockRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const wordRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useGSAP(
     () => {
-      if (typeof window === "undefined") return;
+      if (
+        !sectionRef.current ||
+        !stageRef.current ||
+        !trackRef.current ||
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) return;
 
-      const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-      if (motionQuery.matches) return;
+      const compact = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
+      gsap.set(trackRef.current, { yPercent: 12 });
+      blockRefs.current.forEach((block) => {
+        if (block) gsap.set(block, { scaleX: 0, transformOrigin: "left center" });
+      });
+      wordRefs.current.forEach((word) => {
+        if (word) gsap.set(word, { color: "#000000" });
+      });
 
-      if (!containerRef.current || !stickyRef.current) return;
-
-      const compactMotion = window.matchMedia(
-        "(max-width: 768px), (pointer: coarse)"
-      ).matches;
-
-      const masterTL = gsap.timeline({
+      const timeline = gsap.timeline({
         scrollTrigger: {
-          trigger: containerRef.current,
+          trigger: sectionRef.current,
           start: "top top",
-          end: compactMotion ? "+=400%" : "+=550%",
-          pin: stickyRef.current,
+          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 2.7 : 3.2))}`,
+          pin: stageRef.current,
           pinSpacing: true,
-          scrub: compactMotion ? 0.45 : 0.6,
+          scrub: compact ? 0.3 : 0.45,
           anticipatePin: 1,
           invalidateOnRefresh: true,
         },
       });
 
-      // Initial state: hide each line below wrapper
-      gsap.set(
-        [
-          wordWeRef.current,
-          wordMakeRef.current,
-          wordBrandsRef.current,
-          wordGoRef.current,
-          wooooowTextRef.current,
-        ],
-        { yPercent: 110, opacity: 0 }
-      );
+      timeline.to(trackRef.current, { yPercent: -10, duration: 0.8, ease: "none" }, 0.05);
+      [0.1, 0.26, 0.42, 0.58, 0.74].forEach((position, index) => {
+        const block = blockRefs.current[index];
+        const word = wordRefs.current[index];
+        if (!block || !word) return;
 
-      // STAGE 01: Reveal Line 1 "WE"
-      masterTL.to(
-        wordWeRef.current,
-        { yPercent: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-        0.2
-      );
+        timeline.to(block, { scaleX: 1, duration: 0.06, ease: "none" }, position);
+        timeline.to(word, { color: "#FFFFFF", duration: 0.03 }, position + 0.03);
 
-      // STAGE 02: Reveal Line 2 "MAKE" & slightly adjust group upward for vertical balance
-      masterTL
-        .to(
-          textGroupRef.current,
-          { y: compactMotion ? "-3vh" : "-4vh", duration: compactMotion ? 0.6 : 0.8, ease: "power2.out" },
-          1.0
-        )
-        .to(
-          wordMakeRef.current,
-          { yPercent: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-          1.0
-        );
+        if (index < words.length - 1) {
+          timeline.to(block, { scaleX: 0, transformOrigin: "right center", duration: 0.06 }, position + 0.11);
+          timeline.to(word, { color: "#000000", duration: 0.03 }, position + 0.11);
+        }
+      });
 
-      // STAGE 03: Reveal Line 3 "BRANDS" & re-center group
-      masterTL
-        .to(
-          textGroupRef.current,
-          { y: compactMotion ? "-6vh" : "-8vh", duration: compactMotion ? 0.6 : 0.8, ease: "power2.out" },
-          1.8
-        )
-        .to(
-          wordBrandsRef.current,
-          { yPercent: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-          1.8
-        );
-
-      // STAGE 04: Reveal Line 4 "GO" & re-center group
-      masterTL
-        .to(
-          textGroupRef.current,
-          { y: compactMotion ? "-9vh" : "-12vh", duration: compactMotion ? 0.6 : 0.8, ease: "power2.out" },
-          2.6
-        )
-        .to(
-          wordGoRef.current,
-          { yPercent: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-          2.6
-        );
-
-      // STAGE 05: Reveal Line 5 "WOOOOOOOW!" climax & extend O scale
-      masterTL
-        .to(
-          textGroupRef.current,
-          { y: compactMotion ? "-12vh" : "-16vh", duration: compactMotion ? 0.68 : 0.9, ease: "power2.out" },
-          3.5
-        )
-        .to(
-          wooooowTextRef.current,
-          { yPercent: 0, opacity: 1, duration: 0.9, ease: "power3.out" },
-          3.5
-        )
-        .to(
-          wooooowTextRef.current,
-          {
-            scaleX: compactMotion ? 1.14 : 1.35,
-            duration: 1.5,
-            ease: "none",
-          },
-          4.4
-        );
+      timeline.to({}, { duration: 1 });
     },
-    { scope: containerRef }
+    { scope: sectionRef }
   );
 
   return (
     <section
       id="statement"
-      ref={containerRef}
-      className="relative w-full bg-[#1677FF] text-black pointer-events-auto z-30 m-0 p-0 overflow-visible select-none"
+      ref={sectionRef}
+      className="relative z-20 m-0 w-full bg-[#F000E8] p-0 text-black pointer-events-auto"
+      aria-label="We make brands go wow"
     >
-      {/* STICKY FULL VIEWPORT CONTAINER */}
       <div
-        ref={stickyRef}
-        className="relative w-full h-[100svh] min-h-[100svh] md:h-[100dvh] md:min-h-[100dvh] flex flex-col justify-center items-center px-3 sm:px-6 md:px-12 bg-[#1677FF] overflow-hidden"
+        ref={stageRef}
+        className="relative flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#F000E8] px-3 select-none md:h-[100dvh] md:min-h-[100dvh]"
       >
-        {/* CENTERED GRAPHIC TYPOGRAPHY GROUP */}
-        <div
-          ref={textGroupRef}
-          className="relative z-10 w-full max-w-[1500px] mx-auto flex flex-col items-center justify-center text-center will-change-transform"
+        <h2
+          ref={trackRef}
+          className="m-0 flex w-full flex-col items-center justify-center gap-1 text-center font-pixel font-bold uppercase leading-[0.9] tracking-[-0.035em] sm:gap-2"
         >
-          {/* LINE 1: WE */}
-          <div
-            ref={line1Ref}
-            className="overflow-hidden py-0.5 leading-[0.82] flex justify-center w-full"
-          >
-            <span
-              ref={wordWeRef}
-              className="inline-block font-mono font-bold text-white bg-black px-[0.14em] py-[0.02em] text-[clamp(48px,14vw,140px)] uppercase tracking-[0.02em] leading-[0.82]"
-            >
-              WE
+          {words.map((word, index) => (
+            <span key={word} className="block w-full">
+              <span
+                className={`relative inline-block max-w-full px-[0.04em] ${
+                  index === 4
+                    ? "whitespace-nowrap text-[clamp(27px,7.7vw,100px)]"
+                    : "text-[clamp(43px,10svh,105px)]"
+                }`}
+              >
+                <span
+                  ref={(element) => { blockRefs.current[index] = element; }}
+                  aria-hidden="true"
+                  className="absolute inset-0 origin-left scale-x-0 bg-black"
+                />
+                <span ref={(element) => { wordRefs.current[index] = element; }} className="relative z-10">
+                  {word}
+                </span>
+              </span>
             </span>
-          </div>
-
-          {/* LINE 2: MAKE */}
-          <div
-            ref={line2Ref}
-            className="overflow-hidden py-0.5 leading-[0.82] mt-1 sm:mt-2 flex justify-center w-full"
-          >
-            <span
-              ref={wordMakeRef}
-              className="inline-block font-mono font-bold text-black text-[clamp(48px,14vw,140px)] uppercase tracking-[0.02em] leading-[0.82]"
-            >
-              MAKE
-            </span>
-          </div>
-
-          {/* LINE 3: BRANDS */}
-          <div
-            ref={line3Ref}
-            className="overflow-hidden py-0.5 leading-[0.82] mt-1 sm:mt-2 flex justify-center w-full"
-          >
-            <span
-              ref={wordBrandsRef}
-              className="inline-block font-mono font-bold text-black text-[clamp(48px,14vw,140px)] uppercase tracking-[0.02em] leading-[0.82]"
-            >
-              BRANDS
-            </span>
-          </div>
-
-          {/* LINE 4: GO */}
-          <div
-            ref={line4Ref}
-            className="overflow-hidden py-0.5 leading-[0.82] mt-1 sm:mt-2 flex justify-center w-full"
-          >
-            <span
-              ref={wordGoRef}
-              className="inline-block font-mono font-bold text-white bg-black px-[0.14em] py-[0.02em] text-[clamp(48px,14vw,140px)] uppercase tracking-[0.02em] leading-[0.82]"
-            >
-              GO
-            </span>
-          </div>
-
-          {/* LINE 5: WOOOOOOOOW! */}
-          <div
-            ref={line5Ref}
-            className="w-full overflow-visible py-1 leading-[0.82] mt-2 sm:mt-4 flex justify-center"
-          >
-            <div
-              ref={wooooowTextRef}
-              className="font-mono font-bold text-black text-[clamp(54px,18vw,200px)] uppercase tracking-tight leading-[0.82] whitespace-nowrap origin-center will-change-transform"
-            >
-              WOOOOOOOOW!
-            </div>
-          </div>
-        </div>
+          ))}
+        </h2>
       </div>
     </section>
   );

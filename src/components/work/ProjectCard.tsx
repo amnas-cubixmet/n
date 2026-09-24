@@ -66,7 +66,7 @@ export function ProjectCard({
   return (
     <article
       ref={cardRef}
-      className={`work-project-item col-span-full w-[94%] sm:w-[96%] lg:w-full ${
+      className={`work-project-item col-span-full w-[88%] sm:w-[92%] lg:w-full ${
         isEvenMobile ? "ml-auto lg:ml-0" : "mr-auto lg:mr-0"
       } ${gridClass}`}
     >
@@ -87,7 +87,7 @@ export function ProjectCard({
               fill
               src={project.image}
               alt={project.title}
-              sizes="(max-width: 767px) 94vw, (max-width: 1023px) 50vw, 30vw"
+              sizes="(max-width: 767px) 88vw, (max-width: 1023px) 92vw, 30vw"
               className="object-cover scale-[1.035] transition-transform duration-700 ease-out lg:group-hover:scale-[1.055]"
             />
           </div>

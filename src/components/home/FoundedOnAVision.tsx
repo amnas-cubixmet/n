@@ -191,6 +191,7 @@ export default function FoundedOnAVision() {
 
         <div
           ref={imageRef}
+          data-cursor-theme="image"
           className="relative aspect-[4/5] w-full max-w-[430px] self-center overflow-hidden bg-transparent shadow-2xl will-change-transform sm:w-[80%] lg:w-[36%] lg:self-auto xl:w-[35%]"
           style={{
             clipPath: "polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 8%)",

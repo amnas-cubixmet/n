@@ -47,6 +47,7 @@ export default function IntroSection() {
       const paragraph = paragraphRef.current;
 
       if (!container || !heading || !paragraph) return;
+      const letters = heading.querySelectorAll<HTMLElement>(".intro-heading-letter");
 
       if (isReducedMotion) {
         gsap.set([heading, paragraph], {
@@ -54,17 +55,14 @@ export default function IntroSection() {
           y: 0,
           clearProps: "transform",
         });
+        gsap.set(letters, { autoAlpha: 1, yPercent: 0 });
         return;
       }
 
       const mm = gsap.matchMedia();
 
       const buildReveal = (mobile: boolean) => {
-        gsap.set(heading, {
-          autoAlpha: 0,
-          yPercent: 110,
-          force3D: true,
-        });
+        gsap.set(letters, { autoAlpha: 0, yPercent: 110, force3D: true });
 
         gsap.set(paragraph, {
           autoAlpha: 0,
@@ -80,7 +78,7 @@ export default function IntroSection() {
           scrollTrigger: {
             trigger: container,
             start: "top 100%",
-            end: "top 70%",
+            end: "top 65%",
             scrub: mobile ? 0.32 : 0.45,
             invalidateOnRefresh: true,
           },
@@ -88,11 +86,12 @@ export default function IntroSection() {
 
         timeline
           .to(
-            heading,
+            letters,
             {
               autoAlpha: 1,
               yPercent: 0,
-              duration: 0.38,
+              duration: 0.22,
+              stagger: 0.035,
               force3D: true,
             },
             0
@@ -105,7 +104,7 @@ export default function IntroSection() {
               duration: 0.5,
               force3D: true,
             },
-            0.05
+            0.12
           );
 
         return () => {
@@ -137,14 +136,23 @@ export default function IntroSection() {
           <div className="flex items-center overflow-hidden py-1">
             <h2
               ref={headingRef}
-              className="w-fit bg-white px-1 font-montserrat text-[11px] font-semibold tracking-[0.06em] text-black uppercase leading-none sm:text-[13px]"
+              aria-label={headingText}
+              className="w-fit overflow-hidden bg-white px-1 font-montserrat text-[11px] font-semibold tracking-[0.06em] text-black uppercase leading-none sm:text-[13px]"
               style={
                 isReducedMotion
                   ? { opacity: 1, transform: "none" }
                   : { willChange: "transform, opacity" }
               }
             >
-              {headingText}
+              {Array.from(headingText, (letter, index) => (
+                <span
+                  key={index}
+                  aria-hidden="true"
+                  className="intro-heading-letter inline-block"
+                >
+                  {letter}
+                </span>
+              ))}
             </h2>
           </div>
 

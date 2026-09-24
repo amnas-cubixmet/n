@@ -310,18 +310,8 @@ export default function Hero({ introCompleted }: HeroProps) {
           },
         });
 
-        timeline.to(
-          handoff,
-          {
-            // Keep the wordmark in view until the introduction copy arrives.
-            y: () => -containerRef.current!.clientHeight * (mobile ? 0.14 : 0.12),
-            scale: mobile ? 0.84 : 0.88,
-            force3D: true,
-            duration: 0.82,
-          },
-          0
-        );
-
+        // Let the logo scroll naturally so it stays directly above the
+        // introduction instead of rising away from it.
         timeline.to(handoff, { autoAlpha: 0, duration: 0.18 }, 0.82);
 
         if (indicator) {

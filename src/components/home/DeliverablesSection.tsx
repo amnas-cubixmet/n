@@ -15,11 +15,6 @@ export default function DeliverablesSection() {
   const masterRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
 
-  const wowOverlayRef = useRef<HTMLDivElement>(null);
-  const wowTrackRef = useRef<HTMLDivElement>(null);
-  const wowWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const wowBlockRefs = useRef<(HTMLSpanElement | null)[]>([]);
-
   const mobileTrackRef = useRef<HTMLDivElement>(null);
   const mobileItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -235,9 +230,7 @@ export default function DeliverablesSection() {
       if (
         typeof window === "undefined" ||
         !masterRef.current ||
-        !stickyRef.current ||
-        !wowOverlayRef.current ||
-        !wowTrackRef.current
+        !stickyRef.current
       ) {
         return;
       }
@@ -250,41 +243,14 @@ export default function DeliverablesSection() {
         "(max-width: 1023px), (pointer: coarse)"
       ).matches;
 
-      const servicePhaseEnd = compact ? 0.62 : 0.6;
       // The pinned element uses 100svh on phones, so browser chrome does not
       // change its height during scrolling. Orientation refreshes can still
       // measure its new size and update the travel distance.
       const getPinDistance = () =>
         Math.round(
           Math.max(320, stickyRef.current?.clientHeight ?? window.innerHeight) *
-            (compact ? total * 0.72 + 2.8 : total * 0.84 + 3.1)
+            total * (compact ? 0.75 : 0.88)
         );
-
-      gsap.set(wowOverlayRef.current, {
-        yPercent: 108,
-        autoAlpha: 1,
-        force3D: true,
-      });
-
-      gsap.set(wowTrackRef.current, {
-        yPercent: compact ? 38 : 34,
-        force3D: true,
-      });
-
-      wowBlockRefs.current.forEach((block) => {
-        if (!block) return;
-        gsap.set(block, {
-          scaleX: 0,
-          transformOrigin: "left center",
-        });
-      });
-
-      wowWordRefs.current.forEach((word) => {
-        if (!word) return;
-        gsap.set(word, {
-          color: "#000000",
-        });
-      });
 
       activeIndexRef.current = activeIndex;
 
@@ -300,10 +266,7 @@ export default function DeliverablesSection() {
           invalidateOnRefresh: false,
           fastScrollEnd: false,
           onUpdate: (self) => {
-            const serviceProgress = Math.min(
-              1,
-              Math.max(0, self.progress / servicePhaseEnd)
-            );
+            const serviceProgress = Math.min(1, Math.max(0, self.progress));
 
             const continuousScale = Math.max(
               1 / total,
@@ -322,16 +285,10 @@ export default function DeliverablesSection() {
               });
             }
 
-            if (self.progress <= servicePhaseEnd) {
-              const calculatedIndex = Math.min(
-                total - 1,
-                Math.floor(serviceProgress * total)
-              );
-
-              if (calculatedIndex !== activeIndexRef.current) {
-                activeIndexRef.current = calculatedIndex;
-                setActiveIndex(calculatedIndex);
-              }
+            const calculatedIndex = Math.min(total - 1, Math.floor(serviceProgress * total));
+            if (calculatedIndex !== activeIndexRef.current) {
+              activeIndexRef.current = calculatedIndex;
+              setActiveIndex(calculatedIndex);
             }
           },
           onLeave: () => {
@@ -347,86 +304,7 @@ export default function DeliverablesSection() {
 
       scrollTriggerRef.current = timeline.scrollTrigger ?? null;
 
-      // Signature WOW takeover: stepped magenta block rises over the
-      // Deliverables stage, then the stacked statement travels upward.
-      timeline.to(
-        wowOverlayRef.current,
-        {
-          yPercent: 0,
-          duration: compact ? 0.12 : 0.115,
-          ease: "none",
-          force3D: true,
-        },
-        compact ? 0.61 : 0.595
-      );
-
-      timeline.to(
-        wowTrackRef.current,
-        {
-          yPercent: compact ? -31 : -27,
-          duration: compact ? 0.235 : 0.245,
-          ease: "none",
-          force3D: true,
-        },
-        compact ? 0.665 : 0.65
-      );
-
-      const highlightStarts = compact
-        ? [0.69, 0.73, 0.77, 0.81, 0.85]
-        : [0.68, 0.72, 0.76, 0.8, 0.84];
-
-      highlightStarts.forEach((position, index) => {
-        const block = wowBlockRefs.current[index];
-        const word = wowWordRefs.current[index];
-        if (!block || !word) return;
-
-        timeline.to(
-          block,
-          {
-            scaleX: 1,
-            duration: 0.028,
-            ease: "none",
-            transformOrigin: "left center",
-          },
-          position
-        );
-
-        timeline.to(
-          word,
-          {
-            color: "#FFFFFF",
-            duration: 0.012,
-            ease: "none",
-          },
-          position + 0.01
-        );
-
-        if (index < highlightStarts.length - 1) {
-          timeline.to(
-            block,
-            {
-              scaleX: 0,
-              duration: 0.026,
-              ease: "none",
-              transformOrigin: "right center",
-            },
-            position + 0.055
-          );
-
-          timeline.to(
-            word,
-            {
-              color: "#000000",
-              duration: 0.012,
-              ease: "none",
-            },
-            position + 0.055
-          );
-        }
-      });
-
-      // Hold the final WOOOW frame until the next section scrolls in.
-      timeline.to({}, { duration: 0.14 }, compact ? 0.87 : 0.86);
+      timeline.to({}, { duration: 1 });
 
       return () => {
         scrollTriggerRef.current = null;
@@ -446,13 +324,7 @@ export default function DeliverablesSection() {
       return;
     }
 
-    const compact = window.matchMedia(
-      "(max-width: 1023px), (pointer: coarse)"
-    ).matches;
-    const servicePhaseEnd = compact ? 0.62 : 0.6;
-
-    const targetProgress =
-      ((index + 0.5) / deliverables.length) * servicePhaseEnd;
+    const targetProgress = (index + 0.5) / deliverables.length;
 
     const targetScroll =
       scrollTrigger.start +
@@ -727,66 +599,6 @@ export default function DeliverablesSection() {
               <p className="text-left font-sans text-[clamp(12px,3.2vw,14px)] font-normal leading-[1.45] text-black/80">
                 {currentDeliverable.description}
               </p>
-            </div>
-          </div>
-        </div>
-
-        <div
-          ref={wowOverlayRef}
-          className="absolute inset-0 z-20 h-[100svh] min-h-[100svh] w-full translate-y-full overflow-hidden bg-[#F000E8] select-none lg:h-[100dvh] lg:min-h-[100dvh]"
-        >
-          <div className="pointer-events-none absolute bottom-full left-0 z-10 -mb-[1px] h-[30svh] w-full overflow-hidden sm:h-[40svh]">
-            <div
-              className="h-full w-full bg-[#F000E8]"
-              style={{
-                clipPath:
-                  "polygon(0% 100%, 0% 24%, 14.28% 24%, 14.28% 42%, 28.56% 42%, 28.56% 26%, 42.84% 26%, 42.84% 31%, 57.12% 31%, 57.12% 35%, 71.4% 35%, 71.4% 23%, 85.68% 23%, 85.68% 48%, 100% 48%, 100% 100%)",
-              }}
-            />
-          </div>
-
-          <span className="sr-only">We make brands go wooooooooow!</span>
-
-          <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center overflow-hidden">
-            <div
-              ref={wowTrackRef}
-              className="wow-track relative flex w-full max-w-full flex-col items-center justify-center gap-[0.02em] text-center will-change-transform select-none"
-            >
-              {["WE", "MAKE", "BRANDS", "GO", "WOOOOOOOOW!"].map(
-                (word, index) => (
-                  <div
-                    key={word}
-                    className="flex w-full items-center justify-center overflow-visible"
-                  >
-                    <span
-                      className={`relative inline-block max-w-[98vw] px-[0.035em] font-pixel font-bold uppercase leading-[0.82] tracking-[-0.045em] text-black ${
-                        index === 4
-                          ? "whitespace-nowrap text-[clamp(2.7rem,11.5vw,11rem)]"
-                          : word === "BRANDS"
-                            ? "text-[clamp(4rem,12vw,12.5rem)]"
-                            : "text-[clamp(4.8rem,14vw,14rem)]"
-                      }`}
-                    >
-                      <span
-                        ref={(element) => {
-                          wowBlockRefs.current[index] = element;
-                        }}
-                        aria-hidden="true"
-                        className="absolute inset-0 z-0 origin-left scale-x-0 bg-black"
-                      />
-
-                      <span
-                        ref={(element) => {
-                          wowWordRefs.current[index] = element;
-                        }}
-                        className="relative z-10"
-                      >
-                        {word}
-                      </span>
-                    </span>
-                  </div>
-                )
-              )}
             </div>
           </div>
         </div>

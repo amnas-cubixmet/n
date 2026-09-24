@@ -35,7 +35,7 @@ export default function HeroContent({
           height={116}
           priority
           sizes="(max-width: 768px) 76vw, (max-width: 1200px) 38vw, 520px"
-          className="block h-auto w-full object-contain drop-shadow-[0_4px_24px_rgba(0,0,0,0.8)]"
+          className="block h-auto w-full object-contain"
         />
       </div>
 

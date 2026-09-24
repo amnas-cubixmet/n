@@ -307,7 +307,6 @@ export default function ContactSection() {
         )}
 
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,5,7,0.76)_0%,rgba(4,5,7,0.91)_48%,#040507_100%)]" />
-        <div className="absolute left-[8%] top-[14%] h-[34%] w-[44%] border-l border-t border-white/[0.06]" />
         <div className="absolute bottom-[12%] right-[6%] h-[22%] w-[30%] bg-white/[0.025]" />
       </div>
 

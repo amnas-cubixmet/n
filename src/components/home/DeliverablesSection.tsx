@@ -17,7 +17,6 @@ export default function DeliverablesSection() {
 
   const wowOverlayRef = useRef<HTMLDivElement>(null);
   const wowTrackRef = useRef<HTMLDivElement>(null);
-  const wowExitRef = useRef<HTMLDivElement>(null);
   const wowWordRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const wowBlockRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
@@ -238,8 +237,7 @@ export default function DeliverablesSection() {
         !masterRef.current ||
         !stickyRef.current ||
         !wowOverlayRef.current ||
-        !wowTrackRef.current ||
-        !wowExitRef.current
+        !wowTrackRef.current
       ) {
         return;
       }
@@ -252,7 +250,7 @@ export default function DeliverablesSection() {
         "(max-width: 1023px), (pointer: coarse)"
       ).matches;
 
-      const servicePhaseEnd = compact ? 0.7 : 0.68;
+      const servicePhaseEnd = compact ? 0.62 : 0.6;
       // The pinned element uses 100svh on phones, so browser chrome does not
       // change its height during scrolling. Orientation refreshes can still
       // measure its new size and update the travel distance.
@@ -270,12 +268,6 @@ export default function DeliverablesSection() {
 
       gsap.set(wowTrackRef.current, {
         yPercent: compact ? 38 : 34,
-        force3D: true,
-      });
-
-      gsap.set(wowExitRef.current, {
-        yPercent: 112,
-        autoAlpha: 1,
         force3D: true,
       });
 
@@ -365,7 +357,7 @@ export default function DeliverablesSection() {
           ease: "none",
           force3D: true,
         },
-        compact ? 0.69 : 0.685
+        compact ? 0.61 : 0.595
       );
 
       timeline.to(
@@ -376,12 +368,12 @@ export default function DeliverablesSection() {
           ease: "none",
           force3D: true,
         },
-        compact ? 0.735 : 0.73
+        compact ? 0.665 : 0.65
       );
 
       const highlightStarts = compact
-        ? [0.755, 0.79, 0.825, 0.86, 0.895]
-        : [0.75, 0.785, 0.82, 0.855, 0.89];
+        ? [0.69, 0.73, 0.77, 0.81, 0.85]
+        : [0.68, 0.72, 0.76, 0.8, 0.84];
 
       highlightStarts.forEach((position, index) => {
         const block = wowBlockRefs.current[index];
@@ -433,18 +425,8 @@ export default function DeliverablesSection() {
         }
       });
 
-      // Black stepped block takes over at the end so the pinned sequence
-      // hands off seamlessly into the black Our Vision section.
-      timeline.to(
-        wowExitRef.current,
-        {
-          yPercent: 0,
-          duration: compact ? 0.085 : 0.08,
-          ease: "none",
-          force3D: true,
-        },
-        compact ? 0.925 : 0.92
-      );
+      // Hold the final WOOOW frame until the next section scrolls in.
+      timeline.to({}, { duration: 0.14 }, compact ? 0.87 : 0.86);
 
       return () => {
         scrollTriggerRef.current = null;
@@ -467,7 +449,7 @@ export default function DeliverablesSection() {
     const compact = window.matchMedia(
       "(max-width: 1023px), (pointer: coarse)"
     ).matches;
-    const servicePhaseEnd = compact ? 0.7 : 0.68;
+    const servicePhaseEnd = compact ? 0.62 : 0.6;
 
     const targetProgress =
       ((index + 0.5) / deliverables.length) * servicePhaseEnd;
@@ -809,21 +791,6 @@ export default function DeliverablesSection() {
           </div>
         </div>
 
-        <div
-          ref={wowExitRef}
-          aria-hidden="true"
-          className="absolute inset-0 z-[60] h-[100svh] min-h-[100svh] w-full translate-y-full bg-black lg:h-[100dvh] lg:min-h-[100dvh]"
-        >
-          <div className="pointer-events-none absolute bottom-full left-0 -mb-[1px] h-[22svh] w-full overflow-hidden sm:h-[28svh]">
-            <div
-              className="h-full w-full bg-black"
-              style={{
-                clipPath:
-                  "polygon(0% 100%, 0% 62%, 13% 62%, 13% 36%, 30% 36%, 30% 72%, 47% 72%, 47% 48%, 64% 48%, 64% 78%, 80% 78%, 80% 44%, 100% 44%, 100% 100%)",
-              }}
-            />
-          </div>
-        </div>
       </div>
     </section>
   );

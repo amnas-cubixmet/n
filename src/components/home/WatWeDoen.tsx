@@ -263,7 +263,7 @@ export default function WatWeDoen() {
           <div className="grid grid-cols-1 gap-8 px-5 py-20 sm:px-8 md:grid-cols-2">
             {services.map((service, index) => (
               <article key={service.id} className="overflow-hidden bg-[#080E18]">
-                <div className="relative h-72 w-full sm:h-96">
+                <div data-cursor-theme="image" className="relative h-72 w-full sm:h-96">
                   <Image
                     src={service.image}
                     alt={service.imageAlt || service.title}
@@ -339,6 +339,7 @@ export default function WatWeDoen() {
               ref={(element) => {
                 panelsRef.current[index] = element;
               }}
+              data-cursor-theme="image"
               className="service-panel absolute inset-0 overflow-hidden select-none"
               style={{
                 clipPath: index === 0 ? "inset(0)" : CLOSED_STEPS,

@@ -146,14 +146,14 @@ export default function WatWeDoen() {
           }
 
           gsap.set(panel.querySelectorAll(".title-inner"), {
-            yPercent: index === 0 ? 0 : 112,
-            autoAlpha: index === 0 ? 1 : 0,
+            yPercent: 112,
+            autoAlpha: 0,
             force3D: true,
           });
 
           gsap.set(panel.querySelectorAll(".service-counter"), {
-            y: index === 0 ? 0 : mobile ? 8 : 12,
-            autoAlpha: index === 0 ? 1 : 0,
+            y: mobile ? 8 : 12,
+            autoAlpha: 0,
           });
         });
 
@@ -210,7 +210,19 @@ export default function WatWeDoen() {
           const segmentStart = index;
 
           if (index === 0) {
-            timeline.to({}, { duration: 1 }, segmentStart);
+            // The image arrives with the section; its title follows as the
+            // first pinned scroll begins, then holds before panel two rises.
+            timeline.to(
+              panel.querySelectorAll(".title-inner"),
+              { yPercent: 0, autoAlpha: 1, duration: 0.24, stagger: 0.02, ease: "power2.out" },
+              0
+            );
+            timeline.to(
+              panel.querySelectorAll(".service-counter"),
+              { y: 0, autoAlpha: 1, duration: 0.16, ease: "power2.out" },
+              0.12
+            );
+            timeline.to({}, { duration: 0.7 }, 0.3);
             return;
           }
 

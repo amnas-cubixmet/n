@@ -10,7 +10,7 @@ if (typeof window !== "undefined") {
 }
 
 const words = ["WE", "MAKE", "BRANDS", "GO", "WOW"];
-const extraOs = [0, 1, 2];
+const extraOs = Array.from({ length: 20 }, (_, index) => index);
 
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -46,16 +46,16 @@ export default function StatementSection() {
       const blackOs = blackORefs.current as HTMLSpanElement[];
       const whiteOs = whiteORefs.current as HTMLSpanElement[];
       const letterWidths = blackOs.map((letter) => letter.firstElementChild!.getBoundingClientRect().width);
-      blackOs.forEach((letter, index) => { letter.style.width = `${letterWidths[index]}px`; });
-      const finalWordWidth = wow.getBoundingClientRect().width;
-      blackOs.forEach((letter) => { letter.style.width = ""; });
-      const fillWidth = (stage.clientWidth * 0.94) / finalWordWidth;
+      const extraCount = Math.min(
+        extraOs.length,
+        Math.max(3, Math.ceil((stage.clientWidth * 1.04 - wowBox.width) / letterWidths[0])),
+      );
 
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 4.2 : 4.8))}`,
+          end: () => `+=${Math.round(stageRef.current!.clientHeight * (3.2 + extraCount * (compact ? 0.28 : 0.35)))}`,
           pin: stageRef.current,
           pinSpacing: true,
           scrub: compact ? 0.15 : 0.22,
@@ -74,34 +74,27 @@ export default function StatementSection() {
         }, index * 0.39);
       });
 
-      // Three additional O glyphs expand one at a time. Both colour layers
-      // share the same widths, so the completed black backing grows with them.
-      extraOs.forEach((index) => {
-        timeline.to([blackOs[index], whiteOs[index]], {
-          width: letterWidths[index],
-          autoAlpha: 1,
-          duration: 0.24,
-          ease: "none",
-        }, 2.0 + index * 0.23);
-      });
-
-      // Then zoom the finished WOOOOW while the other lines clear away.
+      // Bring WOW to the centre, then let more O glyphs extend it across the
+      // viewport. The font never scales; its own black backing grows with it.
       timeline.to(trackRef.current, {
         y: centerWow,
         duration: 0.55,
         ease: "none",
-      }, 2.73);
-      timeline.to(wowRef.current, {
-        scale: fillWidth,
-        transformOrigin: "center center",
-        duration: 0.45,
-        ease: "none",
-      }, 3.28);
+      }, 2.03);
       timeline.to(lineRefs.current.slice(0, 4).filter(Boolean), {
         autoAlpha: 0,
         duration: 0.35,
         ease: "none",
-      }, 2.73);
+      }, 2.03);
+
+      extraOs.slice(0, extraCount).forEach((index) => {
+        timeline.to([blackOs[index], whiteOs[index]], {
+          width: letterWidths[index],
+          autoAlpha: 1,
+          duration: 0.23,
+          ease: "none",
+        }, 2.64 + index * 0.2);
+      });
     },
     { scope: sectionRef }
   );

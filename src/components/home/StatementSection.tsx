@@ -19,7 +19,7 @@ export default function StatementSection() {
   const wowRef = useRef<HTMLSpanElement>(null);
   const blackWordRef = useRef<HTMLSpanElement>(null);
   const whiteWordRef = useRef<HTMLSpanElement>(null);
-  const blackFillRef = useRef<HTMLSpanElement>(null);
+  const blackFillRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const leadLineRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useGSAP(
@@ -31,7 +31,8 @@ export default function StatementSection() {
         !wowRef.current ||
         !blackWordRef.current ||
         !whiteWordRef.current ||
-        !blackFillRef.current ||
+        blackFillRefs.current.length !== words.length ||
+        blackFillRefs.current.some((fill) => !fill) ||
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ) return;
 
@@ -50,7 +51,7 @@ export default function StatementSection() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 1.8 : 2.1))}`,
+          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 3.1 : 3.6))}`,
           pin: stageRef.current,
           pinSpacing: true,
           scrub: compact ? 0.15 : 0.22,
@@ -62,9 +63,9 @@ export default function StatementSection() {
       let currentWord = wowSequence[0];
       timeline.eventCallback("onUpdate", () => {
         const time = timeline.time();
-        const nextWord = time >= 0.78 ? wowSequence[3]
-          : time >= 0.71 ? wowSequence[2]
-          : time >= 0.64 ? wowSequence[1]
+        const nextWord = time >= 1.61 ? wowSequence[3]
+          : time >= 1.54 ? wowSequence[2]
+          : time >= 1.46 ? wowSequence[1]
           : wowSequence[0];
         if (nextWord !== currentWord) {
           blackWordRef.current!.textContent = nextWord;
@@ -73,30 +74,38 @@ export default function StatementSection() {
         }
       });
 
-      // The text is fully rendered with the blue panel. Scrolling moves the
-      // complete stack until WOW is centered, then expands only that word.
+      // Every word starts black on blue. Its own black backplate fills from
+      // left to right, revealing matching white lettering as it passes.
+      blackFillRefs.current.slice(0, 4).forEach((fill, index) => {
+        timeline.to(fill, {
+          clipPath: "inset(0 0% 0 0)",
+          duration: 0.22,
+          ease: "none",
+        }, index * 0.18);
+      });
+
+      // After the first four words fill, center and grow the final word.
       timeline.to(trackRef.current, {
         y: centerWow,
         duration: 0.55,
         ease: "none",
-      }, 0);
+      }, 0.82);
       timeline.to(wowRef.current, {
         scale: fillWidth,
         transformOrigin: "center center",
         duration: 0.3,
         ease: "none",
-      }, 0.55);
+      }, 1.37);
       timeline.to(leadLineRefs.current.filter(Boolean), {
         autoAlpha: 0,
         duration: 0.2,
         ease: "none",
-      }, 0.55);
-      // Reveal only the word's own black backplate. The section stays blue.
-      timeline.to(blackFillRef.current, {
+      }, 1.37);
+      timeline.to(blackFillRefs.current[4], {
         clipPath: "inset(0 0% 0 0)",
         duration: 0.36,
         ease: "none",
-      }, 0.85);
+      }, 1.67);
     },
     { scope: sectionRef }
   );
@@ -119,19 +128,18 @@ export default function StatementSection() {
             : "text-[clamp(68px,14vw,205px)]"
         } motion-reduce:!text-[clamp(36px,8vw,90px)] text-black`}
       >
-        {index === 4 ? (
-          <>
-            <span ref={blackWordRef}>{word}</span>
-            <span
-              ref={blackFillRef}
-              aria-hidden="true"
-              className="pointer-events-none absolute inset-0 block overflow-hidden bg-black text-white"
-              style={{ clipPath: "inset(0 100% 0 0)" }}
-            >
-              <span ref={whiteWordRef} className="inline-block whitespace-nowrap px-[0.06em]">{word}</span>
-            </span>
-          </>
-        ) : word}
+        <span ref={index === 4 ? blackWordRef : undefined}>{word}</span>
+        <span
+          ref={(element) => { blackFillRefs.current[index] = element; }}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 block overflow-hidden bg-black text-white"
+          style={{ clipPath: "inset(0 100% 0 0)" }}
+        >
+          <span
+            ref={index === 4 ? whiteWordRef : undefined}
+            className="inline-block whitespace-nowrap px-[0.06em]"
+          >{word}</span>
+        </span>
       </span>
     </span>
   ));

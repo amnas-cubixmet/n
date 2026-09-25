@@ -15,23 +15,19 @@ const extraOs = Array.from({ length: 20 }, (_, index) => index);
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const trackRef = useRef<HTMLHeadingElement>(null);
   const wowRef = useRef<HTMLSpanElement>(null);
   const blackORefs = useRef<(HTMLSpanElement | null)[]>([]);
   const whiteORefs = useRef<(HTMLSpanElement | null)[]>([]);
   const blackFillRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const lineRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useGSAP(
     () => {
       if (
         !sectionRef.current ||
         !stageRef.current ||
-        !trackRef.current ||
         !wowRef.current ||
         blackORefs.current.length !== extraOs.length ||
         whiteORefs.current.length !== extraOs.length ||
-        lineRefs.current.length !== words.length ||
         blackFillRefs.current.length !== words.length ||
         blackFillRefs.current.some((fill) => !fill) ||
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -40,9 +36,7 @@ export default function StatementSection() {
       const compact = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
       const stage = stageRef.current;
       const wow = wowRef.current;
-      const stageBox = stage.getBoundingClientRect();
       const wowBox = wow.getBoundingClientRect();
-      const centerWow = stage.clientHeight / 2 - (wowBox.top - stageBox.top + wowBox.height / 2);
       const blackOs = blackORefs.current as HTMLSpanElement[];
       const whiteOs = whiteORefs.current as HTMLSpanElement[];
       const letterWidths = blackOs.map((letter) => letter.firstElementChild!.getBoundingClientRect().width);
@@ -55,7 +49,7 @@ export default function StatementSection() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: () => `+=${Math.round(stageRef.current!.clientHeight * (3.2 + extraCount * (compact ? 0.28 : 0.35)))}`,
+          end: () => `+=${Math.round(stageRef.current!.clientHeight * (1.55 + extraCount * (compact ? 0.15 : 0.17)))}`,
           pin: stageRef.current,
           pinSpacing: true,
           scrub: compact ? 0.15 : 0.22,
@@ -74,26 +68,15 @@ export default function StatementSection() {
         }, index * 0.39);
       });
 
-      // Bring WOW to the centre, then let more O glyphs extend it across the
-      // viewport. The font never scales; its own black backing grows with it.
-      timeline.to(trackRef.current, {
-        y: centerWow,
-        duration: 0.55,
-        ease: "none",
-      }, 2.03);
-      timeline.to(lineRefs.current.slice(0, 4).filter(Boolean), {
-        autoAlpha: 0,
-        duration: 0.35,
-        ease: "none",
-      }, 2.03);
-
+      // Continue the WOW line inside the same five-line statement. The other
+      // words remain visible, and the black backing grows with each O.
       extraOs.slice(0, extraCount).forEach((index) => {
         timeline.to([blackOs[index], whiteOs[index]], {
           width: letterWidths[index],
           autoAlpha: 1,
-          duration: 0.23,
+          duration: 0.2,
           ease: "none",
-        }, 2.64 + index * 0.2);
+        }, 2.04 + index * 0.16);
       });
     },
     { scope: sectionRef }
@@ -120,7 +103,6 @@ export default function StatementSection() {
   const renderWords = () => words.map((word, index) => (
     <span
       key={word}
-      ref={(element) => { lineRefs.current[index] = element; }}
       className="block w-full py-[0.025em]"
     >
       <span
@@ -167,7 +149,7 @@ export default function StatementSection() {
         ref={stageRef}
         className="relative flex h-[100svh] min-h-[100svh] w-full items-end justify-center overflow-hidden bg-[#1677FF] px-3 pb-[clamp(2rem,8svh,5rem)] select-none motion-reduce:h-auto motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
       >
-        <h2 ref={trackRef} aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
+        <h2 aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
       </div>
     </section>
   );

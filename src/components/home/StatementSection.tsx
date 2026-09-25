@@ -10,15 +10,15 @@ if (typeof window !== "undefined") {
 }
 
 const words = ["WE", "MAKE", "BRANDS", "GO", "WOW"];
-const wowSequence = ["WOW", "WOOW", "WOOOW", "WOOOOW"];
+const extraOs = [0, 1, 2];
 
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLHeadingElement>(null);
   const wowRef = useRef<HTMLSpanElement>(null);
-  const blackWordRef = useRef<HTMLSpanElement>(null);
-  const whiteWordRef = useRef<HTMLSpanElement>(null);
+  const blackORefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const whiteORefs = useRef<(HTMLSpanElement | null)[]>([]);
   const blackFillRefs = useRef<(HTMLSpanElement | null)[]>([]);
   const lineRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
@@ -29,8 +29,8 @@ export default function StatementSection() {
         !stageRef.current ||
         !trackRef.current ||
         !wowRef.current ||
-        !blackWordRef.current ||
-        !whiteWordRef.current ||
+        blackORefs.current.length !== extraOs.length ||
+        whiteORefs.current.length !== extraOs.length ||
         lineRefs.current.length !== words.length ||
         blackFillRefs.current.length !== words.length ||
         blackFillRefs.current.some((fill) => !fill) ||
@@ -43,16 +43,19 @@ export default function StatementSection() {
       const stageBox = stage.getBoundingClientRect();
       const wowBox = wow.getBoundingClientRect();
       const centerWow = stage.clientHeight / 2 - (wowBox.top - stageBox.top + wowBox.height / 2);
-      blackWordRef.current.textContent = wowSequence[wowSequence.length - 1];
+      const blackOs = blackORefs.current as HTMLSpanElement[];
+      const whiteOs = whiteORefs.current as HTMLSpanElement[];
+      const letterWidths = blackOs.map((letter) => letter.firstElementChild!.getBoundingClientRect().width);
+      blackOs.forEach((letter, index) => { letter.style.width = `${letterWidths[index]}px`; });
       const finalWordWidth = wow.getBoundingClientRect().width;
-      blackWordRef.current.textContent = wowSequence[0];
+      blackOs.forEach((letter) => { letter.style.width = ""; });
       const fillWidth = (stage.clientWidth * 0.94) / finalWordWidth;
 
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 3.6 : 4.2))}`,
+          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 4.2 : 4.8))}`,
           pin: stageRef.current,
           pinSpacing: true,
           scrub: compact ? 0.15 : 0.22,
@@ -61,77 +64,71 @@ export default function StatementSection() {
         },
       });
 
-      let currentWord = wowSequence[0];
-      timeline.eventCallback("onUpdate", () => {
-        const time = timeline.time();
-        const nextWord = time >= 2.46 ? wowSequence[3]
-          : time >= 2.38 ? wowSequence[2]
-          : time >= 2.3 ? wowSequence[1]
-          : wowSequence[0];
-        if (nextWord !== currentWord) {
-          blackWordRef.current!.textContent = nextWord;
-          whiteWordRef.current!.textContent = nextWord;
-          currentWord = nextWord;
-        }
-      });
-
-      // WE is visible when the blue panel arrives. Each later line enters
-      // with scrolling; its own black backplate then crosses the letters.
-      const revealAt = [0, 0.38, 0.78, 1.18];
-      blackFillRefs.current.slice(0, 4).forEach((fill, index) => {
-        if (index > 0) {
-          timeline.fromTo(lineRefs.current[index],
-            { autoAlpha: 0, y: 20 },
-            { autoAlpha: 1, y: 0, duration: 0.18, ease: "none", immediateRender: false },
-            revealAt[index] - 0.16,
-          );
-        }
+      // The entire phrase is present as black text when the panel arrives.
+      // Each word's own background then fills continuously with the scroll.
+      blackFillRefs.current.forEach((fill, index) => {
         timeline.to(fill, {
           clipPath: "inset(0 0% 0 0)",
-          duration: 0.25,
+          duration: 0.42,
           ease: "none",
-        }, revealAt[index]);
+        }, index * 0.39);
       });
 
-      timeline.fromTo(lineRefs.current[4],
-        { autoAlpha: 0, y: 20 },
-        { autoAlpha: 1, y: 0, duration: 0.2, ease: "none", immediateRender: false },
-        1.58,
-      );
+      // Three additional O glyphs expand one at a time. Both colour layers
+      // share the same widths, so the completed black backing grows with them.
+      extraOs.forEach((index) => {
+        timeline.to([blackOs[index], whiteOs[index]], {
+          width: letterWidths[index],
+          autoAlpha: 1,
+          duration: 0.24,
+          ease: "none",
+        }, 2.0 + index * 0.23);
+      });
 
-      // After the phrase has arrived, center and grow its final word.
+      // Then zoom the finished WOOOOW while the other lines clear away.
       timeline.to(trackRef.current, {
         y: centerWow,
         duration: 0.55,
         ease: "none",
-      }, 1.67);
+      }, 2.73);
       timeline.to(wowRef.current, {
         scale: fillWidth,
         transformOrigin: "center center",
-        duration: 0.3,
+        duration: 0.45,
         ease: "none",
-      }, 2.22);
+      }, 3.28);
       timeline.to(lineRefs.current.slice(0, 4).filter(Boolean), {
         autoAlpha: 0,
-        duration: 0.2,
+        duration: 0.35,
         ease: "none",
-      }, 2.22);
-      timeline.to(blackFillRefs.current[4], {
-        clipPath: "inset(0 0% 0 0)",
-        duration: 0.4,
-        ease: "none",
-      }, 2.52);
+      }, 2.73);
     },
     { scope: sectionRef }
   );
 
   const headingClass = "m-0 flex w-full flex-col items-center justify-center gap-[clamp(6px,1.4svh,14px)] text-center font-pixel font-bold uppercase leading-[0.86] tracking-[-0.035em]";
 
+  const renderWowLetters = (onBlack: boolean) => (
+    <>
+      WO
+      {extraOs.map((index) => (
+        <span
+          key={index}
+          ref={(element) => {
+            (onBlack ? whiteORefs : blackORefs).current[index] = element;
+          }}
+          className="inline-block w-0 overflow-hidden align-baseline opacity-0"
+        ><span className="inline-block">O</span></span>
+      ))}
+      W
+    </>
+  );
+
   const renderWords = () => words.map((word, index) => (
     <span
       key={word}
       ref={(element) => { lineRefs.current[index] = element; }}
-      className={`block w-full py-[0.025em] ${index > 0 ? "motion-safe:opacity-0" : ""}`}
+      className="block w-full py-[0.025em]"
     >
       <span
         ref={index === 4 ? wowRef : undefined}
@@ -141,17 +138,16 @@ export default function StatementSection() {
             : "text-[clamp(68px,14vw,205px)]"
         } motion-reduce:!text-[clamp(36px,8vw,90px)] text-black`}
       >
-        <span ref={index === 4 ? blackWordRef : undefined}>{word}</span>
+        <span>{index === 4 ? renderWowLetters(false) : word}</span>
         <span
           ref={(element) => { blackFillRefs.current[index] = element; }}
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 block overflow-hidden bg-black text-white"
           style={{ clipPath: "inset(0 100% 0 0)" }}
         >
-          <span
-            ref={index === 4 ? whiteWordRef : undefined}
-            className="inline-block whitespace-nowrap px-[0.06em]"
-          >{word}</span>
+          <span className="inline-block whitespace-nowrap px-[0.06em]">
+            {index === 4 ? renderWowLetters(true) : word}
+          </span>
         </span>
       </span>
     </span>
@@ -175,7 +171,7 @@ export default function StatementSection() {
         ref={stageRef}
         className="relative flex h-[100svh] min-h-[100svh] w-full items-start justify-center overflow-hidden bg-[#1677FF] px-3 pt-[clamp(5rem,10svh,7rem)] select-none motion-reduce:h-auto motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
       >
-        <h2 ref={trackRef} className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
+        <h2 ref={trackRef} aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
       </div>
     </section>
   );

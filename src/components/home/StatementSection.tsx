@@ -127,8 +127,8 @@ export default function StatementSection() {
         ref={index === 4 ? wowRef : undefined}
         className={`relative inline-block whitespace-nowrap px-[0.06em] ${
           index === 4
-            ? "text-[clamp(42px,11vw,84px)] md:text-[clamp(84px,16vw,220px)]"
-            : "text-[clamp(34px,9vw,68px)] md:text-[clamp(68px,14vw,205px)]"
+            ? "text-[clamp(42px,min(11vw,15svh),84px)] md:text-[clamp(68px,min(16vw,20svh),220px)]"
+            : "text-[clamp(34px,min(9vw,13svh),68px)] md:text-[clamp(60px,min(14vw,18svh),205px)]"
         } motion-reduce:!text-[clamp(36px,8vw,90px)] text-black`}
       >
         <span>{index === 4 ? renderWowLetters(false) : word}</span>
@@ -165,7 +165,7 @@ export default function StatementSection() {
       />
       <div
         ref={stageRef}
-        className="relative flex h-[100svh] min-h-[100svh] w-full items-start justify-center overflow-hidden bg-[#1677FF] px-3 pt-[clamp(5rem,10svh,7rem)] select-none motion-reduce:h-auto motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
+        className="relative flex h-[100svh] min-h-[100svh] w-full items-end justify-center overflow-hidden bg-[#1677FF] px-3 pb-[clamp(2rem,8svh,5rem)] select-none motion-reduce:h-auto motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
       >
         <h2 ref={trackRef} aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
       </div>

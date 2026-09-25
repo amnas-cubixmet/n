@@ -20,7 +20,7 @@ export default function StatementSection() {
   const blackWordRef = useRef<HTMLSpanElement>(null);
   const whiteWordRef = useRef<HTMLSpanElement>(null);
   const blackFillRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const leadLineRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const lineRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useGSAP(
     () => {
@@ -31,6 +31,7 @@ export default function StatementSection() {
         !wowRef.current ||
         !blackWordRef.current ||
         !whiteWordRef.current ||
+        lineRefs.current.length !== words.length ||
         blackFillRefs.current.length !== words.length ||
         blackFillRefs.current.some((fill) => !fill) ||
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -51,7 +52,7 @@ export default function StatementSection() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 3.1 : 3.6))}`,
+          end: () => `+=${Math.round(stageRef.current!.clientHeight * (compact ? 3.6 : 4.2))}`,
           pin: stageRef.current,
           pinSpacing: true,
           scrub: compact ? 0.15 : 0.22,
@@ -63,9 +64,9 @@ export default function StatementSection() {
       let currentWord = wowSequence[0];
       timeline.eventCallback("onUpdate", () => {
         const time = timeline.time();
-        const nextWord = time >= 1.61 ? wowSequence[3]
-          : time >= 1.54 ? wowSequence[2]
-          : time >= 1.46 ? wowSequence[1]
+        const nextWord = time >= 2.46 ? wowSequence[3]
+          : time >= 2.38 ? wowSequence[2]
+          : time >= 2.3 ? wowSequence[1]
           : wowSequence[0];
         if (nextWord !== currentWord) {
           blackWordRef.current!.textContent = nextWord;
@@ -74,38 +75,52 @@ export default function StatementSection() {
         }
       });
 
-      // Every word starts black on blue. Its own black backplate fills from
-      // left to right, revealing matching white lettering as it passes.
+      // WE is visible when the blue panel arrives. Each later line enters
+      // with scrolling; its own black backplate then crosses the letters.
+      const revealAt = [0, 0.38, 0.78, 1.18];
       blackFillRefs.current.slice(0, 4).forEach((fill, index) => {
+        if (index > 0) {
+          timeline.fromTo(lineRefs.current[index],
+            { autoAlpha: 0, y: 20 },
+            { autoAlpha: 1, y: 0, duration: 0.18, ease: "none", immediateRender: false },
+            revealAt[index] - 0.16,
+          );
+        }
         timeline.to(fill, {
           clipPath: "inset(0 0% 0 0)",
-          duration: 0.22,
+          duration: 0.25,
           ease: "none",
-        }, index * 0.18);
+        }, revealAt[index]);
       });
 
-      // After the first four words fill, center and grow the final word.
+      timeline.fromTo(lineRefs.current[4],
+        { autoAlpha: 0, y: 20 },
+        { autoAlpha: 1, y: 0, duration: 0.2, ease: "none", immediateRender: false },
+        1.58,
+      );
+
+      // After the phrase has arrived, center and grow its final word.
       timeline.to(trackRef.current, {
         y: centerWow,
         duration: 0.55,
         ease: "none",
-      }, 0.82);
+      }, 1.67);
       timeline.to(wowRef.current, {
         scale: fillWidth,
         transformOrigin: "center center",
         duration: 0.3,
         ease: "none",
-      }, 1.37);
-      timeline.to(leadLineRefs.current.filter(Boolean), {
+      }, 2.22);
+      timeline.to(lineRefs.current.slice(0, 4).filter(Boolean), {
         autoAlpha: 0,
         duration: 0.2,
         ease: "none",
-      }, 1.37);
+      }, 2.22);
       timeline.to(blackFillRefs.current[4], {
         clipPath: "inset(0 0% 0 0)",
-        duration: 0.36,
+        duration: 0.4,
         ease: "none",
-      }, 1.67);
+      }, 2.52);
     },
     { scope: sectionRef }
   );
@@ -115,10 +130,8 @@ export default function StatementSection() {
   const renderWords = () => words.map((word, index) => (
     <span
       key={word}
-      ref={index < 4 ? (element) => {
-        leadLineRefs.current[index] = element;
-      } : undefined}
-      className="block w-full py-[0.025em]"
+      ref={(element) => { lineRefs.current[index] = element; }}
+      className={`block w-full py-[0.025em] ${index > 0 ? "motion-safe:opacity-0" : ""}`}
     >
       <span
         ref={index === 4 ? wowRef : undefined}

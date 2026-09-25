@@ -10,6 +10,7 @@ if (typeof window !== "undefined") {
 }
 
 const words = ["WE", "MAKE", "BRANDS", "GO", "WOW"];
+const wowSequence = ["WOW", "WOOW", "WOOOW", "WOOOOW"];
 
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -41,7 +42,12 @@ export default function StatementSection() {
       const stageBox = stage.getBoundingClientRect();
       const wowBox = wow.getBoundingClientRect();
       const centerWow = stage.clientHeight / 2 - (wowBox.top - stageBox.top + wowBox.height / 2);
-      const fillWidth = Math.max(1, (stage.clientWidth * 0.94) / wowBox.width);
+      // Size the last, longest word to fill the viewport. Both copies must
+      // change together so the white reveal matches the black lettering.
+      wow.textContent = wowSequence[wowSequence.length - 1];
+      const finalWordWidth = wow.getBoundingClientRect().width;
+      wow.textContent = wowSequence[0];
+      const fillWidth = Math.max(1, (stage.clientWidth * 0.94) / finalWordWidth);
       const bandHeight = wowBox.height * fillWidth + Math.max(16, stage.clientHeight * 0.025);
       const bandTop = (stage.clientHeight - bandHeight) / 2;
       const bandBottom = bandTop + bandHeight;
@@ -66,8 +72,22 @@ export default function StatementSection() {
         },
       });
 
+      let currentWord = wowSequence[0];
+      timeline.eventCallback("onUpdate", () => {
+        const time = timeline.time();
+        const nextWord = time >= 0.78 ? wowSequence[3]
+          : time >= 0.71 ? wowSequence[2]
+          : time >= 0.64 ? wowSequence[1]
+          : wowSequence[0];
+        if (nextWord !== currentWord) {
+          wow.textContent = nextWord;
+          whiteWowRef.current!.textContent = nextWord;
+          currentWord = nextWord;
+        }
+      });
+
       // The text is fully rendered with the blue panel. Scrolling moves the
-      // complete stack until WOW is centered, then expands only that word.
+      // complete stack until WOW is centered, then grows the word on scroll.
       timeline.to([trackRef.current, whiteTrackRef.current], {
         y: centerWow,
         duration: 0.55,
@@ -76,7 +96,7 @@ export default function StatementSection() {
       timeline.to([wowRef.current, whiteWowRef.current], {
         scale: fillWidth,
         transformOrigin: "center center",
-        duration: 0.25,
+        duration: 0.3,
         ease: "none",
       }, 0.55);
       timeline.to([...leadLineRefs.current, ...whiteLeadLineRefs.current].filter(Boolean), {
@@ -84,7 +104,7 @@ export default function StatementSection() {
         duration: 0.2,
         ease: "none",
       }, 0.55);
-      timeline.to(exitRef.current, { clipPath: endClip, duration: 0.3, ease: "none" }, 0.8);
+      timeline.to(exitRef.current, { clipPath: endClip, duration: 0.3, ease: "none" }, 0.85);
     },
     { scope: sectionRef }
   );

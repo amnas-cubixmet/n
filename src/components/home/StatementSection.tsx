@@ -127,8 +127,8 @@ export default function StatementSection() {
         ref={index === 4 ? wowRef : undefined}
         className={`relative inline-block whitespace-nowrap px-[0.06em] ${
           index === 4
-            ? "text-[clamp(84px,16vw,220px)]"
-            : "text-[clamp(68px,14vw,205px)]"
+            ? "text-[clamp(42px,11vw,84px)] md:text-[clamp(84px,16vw,220px)]"
+            : "text-[clamp(34px,9vw,68px)] md:text-[clamp(68px,14vw,205px)]"
         } motion-reduce:!text-[clamp(36px,8vw,90px)] text-black`}
       >
         <span>{index === 4 ? renderWowLetters(false) : word}</span>
@@ -150,7 +150,7 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-30 w-full bg-[#1677FF] p-0 text-black pointer-events-auto motion-safe:-mt-[100svh] lg:motion-safe:-mt-[100dvh]"
+      className="relative z-40 w-full bg-[#1677FF] p-0 text-black pointer-events-auto motion-safe:-mt-[100svh] lg:motion-safe:-mt-[100dvh]"
       aria-label="We make brands go wow"
     >
       <div
@@ -169,6 +169,13 @@ export default function StatementSection() {
       >
         <h2 ref={trackRef} aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
       </div>
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-0 top-[calc(100%-2px)] h-[10svh] w-full bg-[#1677FF]"
+        style={{
+          clipPath: "polygon(0% 0%, 100% 0%, 100% 42%, 86% 42%, 86% 72%, 72% 72%, 72% 30%, 57% 30%, 57% 58%, 43% 58%, 43% 38%, 28% 38%, 28% 68%, 14% 68%, 14% 26%, 0% 26%)",
+        }}
+      />
     </section>
   );
 }

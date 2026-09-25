@@ -162,8 +162,11 @@ export default function StatementSection() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-full left-0 h-[18svh] w-full bg-[#1677FF]"
+        className="pointer-events-none absolute left-0 h-[18svh] w-full bg-[#1677FF]"
         style={{
+          // Overlap the blue stage slightly so a one-pixel seam cannot show
+          // the previous white section through the two adjoining layers.
+          bottom: "calc(100% - 2px)",
           clipPath: "polygon(0% 100%, 0% 42%, 14% 42%, 14% 72%, 28% 72%, 28% 30%, 43% 30%, 43% 58%, 57% 58%, 57% 38%, 72% 38%, 72% 68%, 86% 68%, 86% 26%, 100% 26%, 100% 100%)",
         }}
       />

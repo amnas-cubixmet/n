@@ -15,24 +15,23 @@ const wowSequence = ["WOW", "WOOW", "WOOOW", "WOOOOW"];
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const exitRef = useRef<HTMLDivElement>(null);
   const trackRef = useRef<HTMLHeadingElement>(null);
-  const whiteTrackRef = useRef<HTMLDivElement>(null);
   const wowRef = useRef<HTMLSpanElement>(null);
-  const whiteWowRef = useRef<HTMLSpanElement>(null);
+  const blackWordRef = useRef<HTMLSpanElement>(null);
+  const whiteWordRef = useRef<HTMLSpanElement>(null);
+  const blackFillRef = useRef<HTMLSpanElement>(null);
   const leadLineRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const whiteLeadLineRefs = useRef<(HTMLSpanElement | null)[]>([]);
 
   useGSAP(
     () => {
       if (
         !sectionRef.current ||
         !stageRef.current ||
-        !exitRef.current ||
         !trackRef.current ||
-        !whiteTrackRef.current ||
         !wowRef.current ||
-        !whiteWowRef.current ||
+        !blackWordRef.current ||
+        !whiteWordRef.current ||
+        !blackFillRef.current ||
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ) return;
 
@@ -42,22 +41,10 @@ export default function StatementSection() {
       const stageBox = stage.getBoundingClientRect();
       const wowBox = wow.getBoundingClientRect();
       const centerWow = stage.clientHeight / 2 - (wowBox.top - stageBox.top + wowBox.height / 2);
-      // Size the last, longest word to fill the viewport. Both copies must
-      // change together so the white reveal matches the black lettering.
-      wow.textContent = wowSequence[wowSequence.length - 1];
+      blackWordRef.current.textContent = wowSequence[wowSequence.length - 1];
       const finalWordWidth = wow.getBoundingClientRect().width;
-      wow.textContent = wowSequence[0];
-      const fillWidth = Math.max(1, (stage.clientWidth * 0.94) / finalWordWidth);
-      const bandHeight = wowBox.height * fillWidth + Math.max(16, stage.clientHeight * 0.025);
-      const bandTop = (stage.clientHeight - bandHeight) / 2;
-      const bandBottom = bandTop + bandHeight;
-      const startClip = `polygon(0px ${bandTop}px, 0px ${bandTop}px, 0px ${bandBottom}px, 0px ${bandBottom}px)`;
-      const endClip = `polygon(0px ${bandTop}px, ${stage.clientWidth}px ${bandTop}px, ${stage.clientWidth}px ${bandBottom}px, 0px ${bandBottom}px)`;
-
-      // The duplicate white lettering sits in a black strip. Keep that strip
-      // invisible until WOW has filled the screen, then reveal it from left
-      // to right so the letters change colour exactly at its leading edge.
-      gsap.set(exitRef.current, { clipPath: startClip });
+      blackWordRef.current.textContent = wowSequence[0];
+      const fillWidth = (stage.clientWidth * 0.94) / finalWordWidth;
 
       const timeline = gsap.timeline({
         scrollTrigger: {
@@ -80,56 +67,71 @@ export default function StatementSection() {
           : time >= 0.64 ? wowSequence[1]
           : wowSequence[0];
         if (nextWord !== currentWord) {
-          wow.textContent = nextWord;
-          whiteWowRef.current!.textContent = nextWord;
+          blackWordRef.current!.textContent = nextWord;
+          whiteWordRef.current!.textContent = nextWord;
           currentWord = nextWord;
         }
       });
 
       // The text is fully rendered with the blue panel. Scrolling moves the
-      // complete stack until WOW is centered, then grows the word on scroll.
-      timeline.to([trackRef.current, whiteTrackRef.current], {
+      // complete stack until WOW is centered, then expands only that word.
+      timeline.to(trackRef.current, {
         y: centerWow,
         duration: 0.55,
         ease: "none",
       }, 0);
-      timeline.to([wowRef.current, whiteWowRef.current], {
+      timeline.to(wowRef.current, {
         scale: fillWidth,
         transformOrigin: "center center",
         duration: 0.3,
         ease: "none",
       }, 0.55);
-      timeline.to([...leadLineRefs.current, ...whiteLeadLineRefs.current].filter(Boolean), {
+      timeline.to(leadLineRefs.current.filter(Boolean), {
         autoAlpha: 0,
         duration: 0.2,
         ease: "none",
       }, 0.55);
-      timeline.to(exitRef.current, { clipPath: endClip, duration: 0.3, ease: "none" }, 0.85);
+      // Reveal only the word's own black backplate. The section stays blue.
+      timeline.to(blackFillRef.current, {
+        clipPath: "inset(0 0% 0 0)",
+        duration: 0.36,
+        ease: "none",
+      }, 0.85);
     },
     { scope: sectionRef }
   );
 
   const headingClass = "m-0 flex w-full flex-col items-center justify-center gap-[clamp(6px,1.4svh,14px)] text-center font-pixel font-bold uppercase leading-[0.86] tracking-[-0.035em]";
 
-  const renderWords = (onBlack: boolean) => words.map((word, index) => (
+  const renderWords = () => words.map((word, index) => (
     <span
       key={word}
       ref={index < 4 ? (element) => {
-        (onBlack ? whiteLeadLineRefs : leadLineRefs).current[index] = element;
+        leadLineRefs.current[index] = element;
       } : undefined}
       className="block w-full py-[0.025em]"
     >
       <span
-        ref={index === 4 ? (onBlack ? whiteWowRef : wowRef) : undefined}
+        ref={index === 4 ? wowRef : undefined}
         className={`relative inline-block whitespace-nowrap px-[0.06em] ${
           index === 4
             ? "text-[clamp(84px,16vw,220px)]"
             : "text-[clamp(68px,14vw,205px)]"
-        } motion-reduce:!text-[clamp(36px,8vw,90px)] ${
-          onBlack ? "text-white" : "text-black"
-        }`}
+        } motion-reduce:!text-[clamp(36px,8vw,90px)] text-black`}
       >
-        {word}
+        {index === 4 ? (
+          <>
+            <span ref={blackWordRef}>{word}</span>
+            <span
+              ref={blackFillRef}
+              aria-hidden="true"
+              className="pointer-events-none absolute inset-0 block overflow-hidden bg-black text-white"
+              style={{ clipPath: "inset(0 100% 0 0)" }}
+            >
+              <span ref={whiteWordRef} className="inline-block whitespace-nowrap px-[0.06em]">{word}</span>
+            </span>
+          </>
+        ) : word}
       </span>
     </span>
   ));
@@ -152,15 +154,7 @@ export default function StatementSection() {
         ref={stageRef}
         className="relative flex h-[100svh] min-h-[100svh] w-full items-start justify-center overflow-hidden bg-[#1677FF] px-3 pt-[clamp(5rem,10svh,7rem)] select-none motion-reduce:h-auto motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
       >
-        <h2 ref={trackRef} className={`relative z-10 ${headingClass}`}>{renderWords(false)}</h2>
-        <div
-          ref={exitRef}
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-20 flex items-start justify-center bg-black px-3 pt-[clamp(5rem,10svh,7rem)]"
-          style={{ clipPath: "inset(100% 0 0 0)" }}
-        >
-          <div ref={whiteTrackRef} className={headingClass}>{renderWords(true)}</div>
-        </div>
+        <h2 ref={trackRef} className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
       </div>
     </section>
   );

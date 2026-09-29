@@ -49,12 +49,16 @@ export default function StatementSection() {
         scrollTrigger: {
           trigger: sectionRef.current,
           start: "top top",
-          end: () => `+=${Math.round(stageRef.current!.clientHeight * (1.55 + extraCount * (compact ? 0.15 : 0.17)))}`,
+          end: () =>
+            `+=${Math.round(
+              stageRef.current!.clientHeight *
+                (1.35 + extraCount * (compact ? 0.13 : 0.15))
+            )}`,
           pin: stageRef.current,
           pinSpacing: true,
-          scrub: compact ? 0.15 : 0.22,
+          scrub: compact ? 0.2 : 0.28,
           anticipatePin: 1,
-          invalidateOnRefresh: false,
+          invalidateOnRefresh: true,
         },
       });
 
@@ -132,22 +136,22 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-30 w-full bg-[#1677FF] p-0 text-black pointer-events-auto motion-safe:-mt-[100svh] lg:motion-safe:-mt-[100dvh]"
+      className="relative z-30 m-0 w-full bg-[#1677FF] p-0 text-black pointer-events-auto"
       aria-label="We make brands go wow"
     >
       <div
         aria-hidden="true"
         className="pointer-events-none absolute left-0 h-[18svh] w-full bg-[#1677FF]"
         style={{
-          // Overlap the blue stage slightly so a one-pixel seam cannot show
-          // the previous white section through the two adjoining layers.
-          bottom: "calc(100% - 2px)",
+          // A stepped cap previews the blue statement before the full stage
+          // enters, without overlapping an entire viewport or disturbing pin spacing.
+          bottom: "calc(100% - 1px)",
           clipPath: "polygon(0% 100%, 0% 42%, 14% 42%, 14% 72%, 28% 72%, 28% 30%, 43% 30%, 43% 58%, 57% 58%, 57% 38%, 72% 38%, 72% 68%, 86% 68%, 86% 26%, 100% 26%, 100% 100%)",
         }}
       />
       <div
         ref={stageRef}
-        className="relative flex h-[100svh] min-h-[100svh] w-full items-end justify-center overflow-hidden bg-[#1677FF] px-3 pb-[clamp(2rem,8svh,5rem)] select-none motion-reduce:h-auto motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
+        className="relative flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:h-auto motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
       >
         <h2 aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
       </div>

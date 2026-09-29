@@ -273,7 +273,7 @@ export default function Header() {
           aria-expanded={menuOpen}
           aria-controls="northframe-menu-panel"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="header-menu-button pointer-events-auto relative z-[110] inline-flex min-w-[44px] min-h-[44px] items-center justify-center gap-2.5 bg-[#1677FF] px-3.5 py-2.5 text-white rounded-none select-none touch-action-manipulation cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+          className="header-menu-button pointer-events-auto relative z-[110] inline-flex h-5 w-6 min-h-0 min-w-0 items-center justify-center bg-transparent p-0 text-[#1677FF] rounded-none select-none touch-action-manipulation cursor-pointer focus:outline-none md:h-auto md:w-auto md:min-h-[44px] md:min-w-[44px] md:gap-2.5 md:bg-[#1677FF] md:px-3.5 md:py-2.5 md:text-white md:focus-visible:ring-2 md:focus-visible:ring-white/70"
         >
           <span className="hidden md:inline font-mono text-[10px] font-semibold uppercase tracking-[0.12em] leading-none">
             {menuOpen ? "CLOSE" : "MENU"}
@@ -282,14 +282,18 @@ export default function Header() {
           <span className="relative block w-4 h-3 pointer-events-none">
             <span
               className={
-                "absolute left-0 top-[2px] block w-4 h-[1.5px] bg-white origin-center transition-transform duration-300 " +
-                (menuOpen ? "translate-y-[3.5px] rotate-45" : "")
+                "absolute left-0 top-[2px] block w-4 h-[1.5px] origin-center transition-[transform,background-color] duration-300 " +
+                (menuOpen
+                  ? "translate-y-[3.5px] rotate-45 bg-white"
+                  : "bg-[#1677FF] md:bg-white")
               }
             />
             <span
               className={
-                "absolute left-0 bottom-[2px] block w-4 h-[1.5px] bg-white origin-center transition-transform duration-300 " +
-                (menuOpen ? "-translate-y-[3.5px] -rotate-45" : "")
+                "absolute left-0 bottom-[2px] block w-4 h-[1.5px] origin-center transition-[transform,background-color] duration-300 " +
+                (menuOpen
+                  ? "-translate-y-[3.5px] -rotate-45 bg-white"
+                  : "bg-[#1677FF] md:bg-white")
               }
             />
           </span>
@@ -299,12 +303,10 @@ export default function Header() {
           id="northframe-menu-panel"
           ref={navPanelRef}
           aria-hidden={!menuOpen}
-          className="fixed z-[100] max-h-[calc(100dvh-2rem)] overflow-y-auto overflow-x-hidden text-white pointer-events-none opacity-0"
+          className="fixed z-[100] w-[min(252px,calc(100vw-24px))] min-h-[min(292px,calc(100svh-24px))] max-h-[calc(100svh-24px)] overflow-y-auto overflow-x-hidden text-white pointer-events-none opacity-0 md:w-[min(460px,calc(100vw-28px))] md:min-h-[min(460px,calc(100dvh-2rem))] md:max-h-[calc(100dvh-2rem)]"
           style={{
             top: "max(1rem, env(safe-area-inset-top))",
             right: "max(1rem, env(safe-area-inset-right))",
-            width: "min(460px, calc(100vw - 28px))",
-            minHeight: "min(460px, calc(100dvh - 2rem))",
             WebkitBackfaceVisibility: "hidden",
             backfaceVisibility: "hidden",
           }}
@@ -317,16 +319,15 @@ export default function Header() {
 
           <div
             ref={navContentRef}
-            className="relative z-10 flex min-h-[min(460px,calc(100dvh-2rem))] flex-col px-6 pt-5 pb-7 sm:px-9 sm:pt-8 sm:pb-9"
+            className="relative z-10 flex min-h-[min(292px,calc(100svh-24px))] flex-col px-5 pb-5 pt-4 md:min-h-[min(460px,calc(100dvh-2rem))] md:px-9 md:pb-9 md:pt-8"
           >
-            <div className="flex items-center justify-between pr-12 font-mono text-[10px] uppercase tracking-[0.08em] leading-none text-white/90">
+            <div className="flex items-center pr-8 font-mono text-[9px] uppercase tracking-[0.08em] leading-none text-white/90 md:pr-12 md:text-[10px]">
               <span>NORTHFRAME</span>
-              <span>MENU</span>
             </div>
 
             <nav
               aria-label="Primary navigation"
-              className="mt-8 flex flex-1 flex-col items-start justify-center gap-2 sm:gap-3"
+              className="mt-5 flex flex-1 flex-col items-start justify-center gap-1.5 md:mt-8 md:gap-3"
             >
               {NAV_ITEMS.map((item, index) => (
                 <TransitionLink
@@ -343,12 +344,12 @@ export default function Header() {
                       : undefined
                   }
                   className={
-                    "group block w-fit font-montserrat text-[clamp(1.7rem,7vw,2.7rem)] font-semibold uppercase tracking-[-0.065em] leading-[1.02] text-white transition-colors duration-200 hover:text-[#061321] focus-visible:text-[#061321] focus-visible:outline-2 focus-visible:outline-white aria-[current=page]:bg-white aria-[current=page]:px-1 aria-[current=page]:text-[#061321] " +
-                    (item.isAccent ? "mt-3" : "")
+                    "group block w-fit font-montserrat text-[1.32rem] font-semibold uppercase tracking-[-0.055em] leading-[1.02] text-white transition-colors duration-200 hover:text-[#061321] focus-visible:text-[#061321] focus-visible:outline-2 focus-visible:outline-white aria-[current=page]:bg-white aria-[current=page]:px-1 aria-[current=page]:text-[#061321] sm:text-[1.45rem] md:text-[clamp(1.7rem,7vw,2.7rem)] md:tracking-[-0.065em] " +
+                    (item.isAccent ? "mt-2 md:mt-3" : "")
                   }
                 >
                   {item.label}
-                  <sup className="ml-1 align-top font-mono text-[10px] tracking-normal text-current opacity-75">
+                  <sup className="ml-1 align-top font-mono text-[8px] tracking-normal text-current opacity-75 md:text-[10px]">
                     {String(index + 1).padStart(2, "0")}
                   </sup>
                 </TransitionLink>

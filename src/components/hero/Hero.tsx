@@ -153,7 +153,8 @@ export default function Hero({ introCompleted }: HeroProps) {
           }
 
           const tl = gsap.timeline({
-            delay: mobile ? 0.16 : 0.16,
+            paused: mobile,
+            delay: mobile ? 0.08 : 0.16,
             defaults: { overwrite: "auto" },
           });
 
@@ -268,6 +269,29 @@ export default function Hero({ introCompleted }: HeroProps) {
               item.style.willChange = "auto";
             });
           });
+
+          if (!mobile) {
+            return () => tl.kill();
+          }
+
+          // iOS Safari can finish the intro overlay and paint the hero in the
+          // same frame. Starting after two RAFs guarantees the hidden start
+          // state has actually been painted before the reveal timeline runs.
+          let firstFrame = 0;
+          let secondFrame = 0;
+
+          firstFrame = window.requestAnimationFrame(() => {
+            secondFrame = window.requestAnimationFrame(() => {
+              ScrollTrigger.refresh();
+              tl.play(0);
+            });
+          });
+
+          return () => {
+            window.cancelAnimationFrame(firstFrame);
+            window.cancelAnimationFrame(secondFrame);
+            tl.kill();
+          };
         }
       );
 

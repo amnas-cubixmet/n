@@ -173,27 +173,48 @@ body::-webkit-scrollbar {
   .heroBottom {
     left: max(16px, env(safe-area-inset-left));
     right: max(16px, env(safe-area-inset-right));
-    bottom: max(16px, env(safe-area-inset-bottom));
+    bottom: max(18px, calc(env(safe-area-inset-bottom) + 8px));
     max-width: none;
     flex-direction: column;
     align-items: flex-start;
-    gap: clamp(10px, 2.2vh, 16px);
+    gap: clamp(10px, 1.8vh, 14px);
+  }
+
+  /* Mobile-only visual order: service labels sit cleanly above the logo.
+     Desktop keeps the original side-by-side composition. */
+  .service-list {
+    order: 1;
+    width: 100%;
   }
 
   .hero-logo-wrapper {
-    width: min(78vw, 320px);
+    order: 2;
+    width: min(80vw, 320px);
     max-width: calc(100vw - 32px);
   }
 
   .service-item {
-    font-size: clamp(10px, 3vw, 12px);
-    line-height: 1.02;
+    font-size: clamp(10px, 2.85vw, 11.5px);
+    line-height: 1.1;
+    padding: 1px 2px;
   }
 
-  .service-list,
   .service-list nav,
   .service-list ul {
+    width: fit-content;
     max-width: calc(100vw - 32px);
+  }
+
+  .service-list ul {
+    gap: 4px;
+  }
+
+  .service-item,
+  .service-item-text,
+  .hero-logo-wrapper {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    transform: translateZ(0);
   }
 
   .hero-side-light {
@@ -203,30 +224,37 @@ body::-webkit-scrollbar {
 
 @media (max-width: 380px) {
   .heroBottom {
+    left: max(14px, env(safe-area-inset-left));
+    right: max(14px, env(safe-area-inset-right));
     gap: 9px;
   }
 
   .hero-logo-wrapper {
-    width: min(72vw, 250px);
+    width: min(76vw, 260px);
   }
 
   .service-item {
-    font-size: 10px;
+    font-size: 9.5px;
+  }
+
+  .service-list ul {
+    gap: 3px;
   }
 }
 
 @media (max-height: 640px) and (max-width: 768px) {
   .heroBottom {
-    bottom: max(10px, env(safe-area-inset-bottom));
-    gap: 8px;
+    bottom: max(12px, calc(env(safe-area-inset-bottom) + 4px));
+    gap: 7px;
   }
 
   .hero-logo-wrapper {
-    width: min(64vw, 230px);
+    width: min(68vw, 235px);
   }
 
   .service-item {
-    font-size: 9px;
+    font-size: 8.75px;
+    line-height: 1.08;
   }
 
   .service-list ul {

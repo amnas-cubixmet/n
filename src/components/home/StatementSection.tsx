@@ -210,13 +210,7 @@ export default function StatementSection() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 z-20 translate-y-full bg-black will-change-transform"
         >
-          <div
-            className="absolute bottom-full left-0 h-[16svh] w-full bg-black md:h-[18dvh]"
-            style={{
-              clipPath:
-                "polygon(0% 100%, 0% 58%, 14% 58%, 14% 30%, 28% 30%, 28% 70%, 43% 70%, 43% 42%, 57% 42%, 57% 64%, 72% 64%, 72% 34%, 86% 34%, 86% 72%, 100% 72%, 100% 100%)",
-            }}
-          />
+
         </div>
       </div>
     </section>

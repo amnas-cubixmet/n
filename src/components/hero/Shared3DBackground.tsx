@@ -20,11 +20,14 @@ function LivingStudioLighting({
   const leftRimRef = useRef<THREE.DirectionalLight>(null);
   const rightRimRef = useRef<THREE.DirectionalLight>(null);
 
-  useFrame((state) => {
+  const elapsedTimeRef = useRef(0);
+
+  useFrame((state, delta) => {
     if (isHidden) return;
 
+    elapsedTimeRef.current += delta;
     const pointerX = !isMobile && canHover ? state.pointer.x : 0;
-    const sweep = reducedMotion ? 0 : Math.sin(state.clock.elapsedTime * 0.48);
+    const sweep = reducedMotion ? 0 : Math.sin(elapsedTimeRef.current * 0.48);
     const rightBoost = Math.max(0, -pointerX) * 0.05;
     const leftBoost = Math.max(0, pointerX) * 0.05;
 
@@ -166,9 +169,13 @@ function AnimatedModel({
   const baseRotY = THREE.MathUtils.degToRad(4.5);
   const baseY = isMobile ? 0.26 : isTablet ? 0.1 : 0;
 
+  const elapsedTimeRef = useRef(0);
+
   useFrame((state, delta) => {
     const group = groupRef.current;
     if (!group || isHidden) return;
+
+    elapsedTimeRef.current += delta;
 
     if (reducedMotion) {
       group.rotation.x += (baseRotX - group.rotation.x) * 0.08;
@@ -182,7 +189,7 @@ function AnimatedModel({
 
     // A slow, automatic orbit and float make the sculpture feel alive even on
     // touch screens. The limited angles preserve the original A silhouette.
-    const time = state.clock.elapsedTime;
+    const time = elapsedTimeRef.current;
     const orbit = Math.sin(time * 0.48);
     const float = Math.sin(time * 0.72);
     const scrollProgress = Math.min(1, Math.max(0, window.scrollY / heroHeightRef.current));

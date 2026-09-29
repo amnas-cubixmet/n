@@ -188,18 +188,6 @@ export default function StatementSection() {
       />
 
       <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-0 z-[50] h-[18svh] w-full bg-[#1677FF] md:h-[20dvh]"
-        style={{
-          top: "calc(100% - 1px)",
-          clipPath:
-            "polygon(0% 0%, 100% 0%, 100% 26%, 87.5% 26%, 87.5% 58%, 75% 58%, 75% 34%, 62.5% 34%, 62.5% 74%, 50% 74%, 50% 46%, 37.5% 46%, 37.5% 82%, 25% 82%, 25% 54%, 12.5% 54%, 12.5% 88%, 0% 88%)",
-        }}
-      >
-        <div className="absolute inset-x-0 top-0 h-px bg-[#1677FF]" />
-      </div>
-
-      <div
         ref={stageRef}
         className="relative flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
       >

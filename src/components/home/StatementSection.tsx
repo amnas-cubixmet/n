@@ -189,13 +189,15 @@ export default function StatementSection() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-0 z-[5] h-[16svh] w-full bg-[#1677FF]"
+        className="pointer-events-none absolute left-0 z-[50] h-[18svh] w-full bg-[#1677FF] md:h-[20dvh]"
         style={{
           top: "calc(100% - 1px)",
           clipPath:
-            "polygon(0% 0%, 100% 0%, 100% 56%, 86% 56%, 86% 28%, 72% 28%, 72% 72%, 57% 72%, 57% 44%, 43% 44%, 43% 64%, 28% 64%, 28% 34%, 14% 34%, 14% 76%, 0% 76%)",
+            "polygon(0% 0%, 100% 0%, 100% 26%, 87.5% 26%, 87.5% 58%, 75% 58%, 75% 34%, 62.5% 34%, 62.5% 74%, 50% 74%, 50% 46%, 37.5% 46%, 37.5% 82%, 25% 82%, 25% 54%, 12.5% 54%, 12.5% 88%, 0% 88%)",
         }}
-      />
+      >
+        <div className="absolute inset-x-0 top-0 h-px bg-[#1677FF]" />
+      </div>
 
       <div
         ref={stageRef}

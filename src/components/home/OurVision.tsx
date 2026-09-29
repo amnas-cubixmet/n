@@ -73,8 +73,9 @@ export default function OurVision() {
     <div className="relative z-30 w-full overflow-visible">
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-0 z-0 h-[18svh] w-full -translate-y-[calc(100%-1px)] bg-[#1677FF] md:h-[20dvh]"
+        className="pointer-events-none absolute left-0 top-0 z-0 h-[18svh] w-full bg-[#1677FF] md:h-[20dvh]"
         style={{
+          transform: "translateY(calc(-100% + 1px))",
           clipPath:
             "polygon(0% 0%, 100% 0%, 100% 26%, 87.5% 26%, 87.5% 58%, 75% 58%, 75% 34%, 62.5% 34%, 62.5% 74%, 50% 74%, 50% 46%, 37.5% 46%, 37.5% 82%, 25% 82%, 25% 54%, 12.5% 54%, 12.5% 88%, 0% 88%)",
         }}

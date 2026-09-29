@@ -24,13 +24,7 @@ export default function WatWeDoen() {
   const panelsRef = useRef<(HTMLElement | null)[]>([]);
   const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
   const viewportWidthRef = useRef(0);
-
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isReducedMotion, setIsReducedMotion] = useState(() =>
-    typeof window !== "undefined"
-      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      : false
-  );
 
   useEffect(() => {
     services.forEach((service) => {
@@ -38,16 +32,6 @@ export default function WatWeDoen() {
       const image = new window.Image();
       image.src = service.image;
     });
-
-    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const handleMotionChange = (event: MediaQueryListEvent) =>
-      setIsReducedMotion(event.matches);
-
-    if (typeof motionQuery.addEventListener === "function") {
-      motionQuery.addEventListener("change", handleMotionChange);
-    } else {
-      motionQuery.addListener(handleMotionChange);
-    }
 
     viewportWidthRef.current = window.innerWidth;
     let resizeFrame = 0;
@@ -59,7 +43,9 @@ export default function WatWeDoen() {
 
       viewportWidthRef.current = nextWidth;
       cancelAnimationFrame(resizeFrame);
-      resizeFrame = requestAnimationFrame(() => ScrollTrigger.refresh());
+      resizeFrame = requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+      });
     };
 
     const refreshForOrientation = () => {
@@ -67,7 +53,7 @@ export default function WatWeDoen() {
       orientationTimer = window.setTimeout(() => {
         viewportWidthRef.current = window.innerWidth;
         ScrollTrigger.refresh();
-      }, 240);
+      }, 280);
     };
 
     window.addEventListener("resize", refreshForWidthChange, { passive: true });
@@ -76,13 +62,6 @@ export default function WatWeDoen() {
     return () => {
       cancelAnimationFrame(resizeFrame);
       window.clearTimeout(orientationTimer);
-
-      if (typeof motionQuery.removeEventListener === "function") {
-        motionQuery.removeEventListener("change", handleMotionChange);
-      } else {
-        motionQuery.removeListener(handleMotionChange);
-      }
-
       window.removeEventListener("resize", refreshForWidthChange);
       window.removeEventListener("orientationchange", refreshForOrientation);
     };
@@ -90,215 +69,287 @@ export default function WatWeDoen() {
 
   useGSAP(
     () => {
-      if (isReducedMotion || !wrapperRef.current || !stickyRef.current) return;
+      const wrapper = wrapperRef.current;
+      const sticky = stickyRef.current;
+      if (!wrapper || !sticky) return;
 
       const mm = gsap.matchMedia();
 
-      const buildShowcase = (mobile: boolean) => {
-        const panelCount = services.length;
-        const revealDuration = mobile ? 0.82 : 0.86;
+      mm.add(
+        {
+          mobile: "(max-width: 767px)",
+          desktop: "(min-width: 768px)",
+          reduced: "(prefers-reduced-motion: reduce)",
+        },
+        (context) => {
+          const conditions = context.conditions as {
+            mobile: boolean;
+            desktop: boolean;
+            reduced: boolean;
+          };
 
-        panelsRef.current.forEach((panel, index) => {
-          if (!panel) return;
+          const mobile = Boolean(conditions.mobile);
+          const reduced = Boolean(conditions.reduced);
+          const panelCount = services.length;
+          const revealDuration = mobile ? 0.76 : 0.86;
 
-          gsap.set(panel, {
-            inset: 0,
-            // The first image is full-bleed as soon as this section enters.
-            clipPath: index === 0 ? "inset(0)" : CLOSED_STEPS,
-            WebkitClipPath: index === 0 ? "inset(0)" : CLOSED_STEPS,
-            autoAlpha: 1,
-            zIndex: 10 + index,
-            force3D: true,
-            willChange: "clip-path",
-          });
-
-          const image = imagesRef.current[index];
-          if (image) {
-            gsap.set(image, {
-              scale: 1,
-              transformOrigin: "center center",
-              force3D: true,
-              willChange: "transform",
-            });
-          }
-
-          gsap.set(panel.querySelectorAll(".title-inner"), {
-            yPercent: 0,
-            autoAlpha: 1,
-            force3D: true,
-          });
-
-          gsap.set(panel.querySelectorAll(".service-counter"), {
-            y: index === 0 ? (mobile ? 8 : 12) : 0,
-            autoAlpha: index === 0 ? 0 : 1,
-          });
-        });
-
-        const timeline = gsap.timeline({
-          defaults: {
-            overwrite: "auto",
-          },
-          scrollTrigger: {
-            trigger: wrapperRef.current,
-            start: "top top",
-            // A fixed distance based on the stable pinned stage avoids
-            // mobile address-bar changes shifting the scroll boundaries.
-            end: () => `+=${Math.round(stickyRef.current!.clientHeight * panelCount * (mobile ? 1.08 : 1.22))}`,
-            pin: stickyRef.current,
-            pinSpacing: true,
-            scrub: mobile ? 0.32 : 0.5,
-            anticipatePin: 1,
-            invalidateOnRefresh: true,
-            fastScrollEnd: false,
-            onUpdate: (self) => {
-              const raw = Math.min(
-                self.progress * panelCount,
-                panelCount - 0.0001
-              );
-              const segment = Math.floor(raw);
-              const localProgress = raw - segment;
-
-              const nextIndex =
-                segment === 0
-                  ? 0
-                  : localProgress >= 0.52
-                    ? segment
-                    : segment - 1;
-
-              const clamped = Math.min(
-                panelCount - 1,
-                Math.max(0, nextIndex)
-              );
-
-              setActiveIndex((previous) =>
-                previous === clamped ? previous : clamped
-              );
-            },
-            onLeave: () => setActiveIndex(panelCount - 1),
-            onLeaveBack: () => setActiveIndex(0),
-          },
-        });
-
-        services.forEach((_, index) => {
-          const panel = panelsRef.current[index];
-          const image = imagesRef.current[index];
-          if (!panel) return;
-
-          const segmentStart = index;
-
-          if (index === 0) {
-            // Keep the first title visible as soon as its image enters.
-            timeline.to(
-              panel.querySelectorAll(".service-counter"),
-              { y: 0, autoAlpha: 1, duration: 0.16, ease: "power2.out" },
-              0.12
-            );
-            timeline.to({}, { duration: 0.7 }, 0.3);
-            return;
-          }
-
-          timeline.to(
-            panel,
-            {
-              clipPath: OPEN_STEPS,
-              WebkitClipPath: OPEN_STEPS,
-              duration: revealDuration,
-              ease: "none",
-              force3D: true,
-            },
-            segmentStart
-          );
-
-          if (image) {
-            timeline.to(
-              image,
-              {
-                scale: mobile ? 1.075 : 1.095,
-                duration: 1,
-                ease: "none",
-                force3D: true,
-              },
-              segmentStart
-            );
-          }
-
-          timeline.to({}, { duration: 1 - revealDuration }, segmentStart + revealDuration);
-        });
-
-        return () => {
           panelsRef.current.forEach((panel, index) => {
-            if (panel) {
-              gsap.set(panel, { clearProps: "will-change" });
+            if (!panel) return;
+
+            if (reduced) {
+              gsap.set(panel, {
+                inset: 0,
+                clipPath: "inset(0)",
+                WebkitClipPath: "inset(0)",
+                yPercent: 0,
+                autoAlpha: index === 0 ? 1 : 0,
+                zIndex: 10 + index,
+                force3D: true,
+                willChange: "opacity",
+              });
+            } else if (mobile) {
+              // iOS Safari / in-app browsers are much more reliable with a
+              // transform-based cover than an animated polygon clip-path.
+              gsap.set(panel, {
+                inset: 0,
+                clipPath: "inset(0)",
+                WebkitClipPath: "inset(0)",
+                yPercent: index === 0 ? 0 : 100,
+                autoAlpha: 1,
+                zIndex: 10 + index,
+                force3D: true,
+                willChange: "transform",
+              });
+            } else {
+              gsap.set(panel, {
+                inset: 0,
+                clipPath: index === 0 ? "inset(0)" : CLOSED_STEPS,
+                WebkitClipPath: index === 0 ? "inset(0)" : CLOSED_STEPS,
+                yPercent: 0,
+                autoAlpha: 1,
+                zIndex: 10 + index,
+                force3D: true,
+                willChange: "clip-path",
+              });
             }
+
+            const titleParts = panel.querySelectorAll(".title-inner");
+            const counters = panel.querySelectorAll(".service-counter");
+
+            gsap.set(titleParts, {
+              yPercent: reduced || index === 0 ? 0 : 110,
+              autoAlpha: reduced || index === 0 ? 1 : 0,
+              force3D: true,
+            });
+
+            gsap.set(counters, {
+              y: index === 0 ? (mobile ? 8 : 12) : mobile ? 6 : 8,
+              autoAlpha: index === 0 ? 0 : reduced ? 1 : 0,
+            });
 
             const image = imagesRef.current[index];
             if (image) {
-              gsap.set(image, { clearProps: "will-change" });
+              gsap.set(image, {
+                scale: 1,
+                transformOrigin: "center center",
+                force3D: true,
+                willChange: reduced ? "auto" : "transform",
+              });
             }
           });
-        };
-      };
 
-      mm.add("(max-width: 767px)", () => buildShowcase(true));
-      mm.add("(min-width: 768px)", () => buildShowcase(false));
+          const timeline = gsap.timeline({
+            defaults: {
+              overwrite: "auto",
+            },
+            scrollTrigger: {
+              trigger: wrapper,
+              start: "top top",
+              end: () =>
+                `+=${Math.round(
+                  sticky.clientHeight *
+                    panelCount *
+                    (reduced ? 0.72 : mobile ? 0.98 : 1.22)
+                )}`,
+              pin: sticky,
+              pinSpacing: true,
+              scrub: reduced ? 0.12 : mobile ? 0.24 : 0.5,
+              anticipatePin: 1,
+              invalidateOnRefresh: true,
+              fastScrollEnd: false,
+              refreshPriority: 1,
+              onUpdate: (self) => {
+                const raw = Math.min(
+                  self.progress * panelCount,
+                  panelCount - 0.0001
+                );
+                const segment = Math.floor(raw);
+                const localProgress = raw - segment;
+
+                const nextIndex =
+                  segment === 0
+                    ? 0
+                    : localProgress >= 0.5
+                      ? segment
+                      : segment - 1;
+
+                const clamped = Math.min(
+                  panelCount - 1,
+                  Math.max(0, nextIndex)
+                );
+
+                setActiveIndex((previous) =>
+                  previous === clamped ? previous : clamped
+                );
+              },
+              onLeave: () => setActiveIndex(panelCount - 1),
+              onLeaveBack: () => setActiveIndex(0),
+            },
+          });
+
+          services.forEach((_, index) => {
+            const panel = panelsRef.current[index];
+            const image = imagesRef.current[index];
+            if (!panel) return;
+
+            const segmentStart = index;
+
+            if (index === 0) {
+              timeline.to(
+                panel.querySelectorAll(".service-counter"),
+                {
+                  y: 0,
+                  autoAlpha: 1,
+                  duration: reduced ? 0.08 : 0.16,
+                  ease: "power2.out",
+                },
+                0.12
+              );
+              timeline.to({}, { duration: 0.72 }, 0.28);
+              return;
+            }
+
+            if (reduced) {
+              // Respect Reduce Motion without falling back to the old stacked
+              // card layout: keep the pinned showcase and use a tiny crossfade.
+              timeline.to(
+                panel,
+                {
+                  autoAlpha: 1,
+                  duration: 0.12,
+                  ease: "none",
+                },
+                segmentStart
+              );
+            } else if (mobile) {
+              timeline.to(
+                panel,
+                {
+                  yPercent: 0,
+                  duration: revealDuration,
+                  ease: "none",
+                  force3D: true,
+                },
+                segmentStart
+              );
+            } else {
+              timeline.to(
+                panel,
+                {
+                  clipPath: OPEN_STEPS,
+                  WebkitClipPath: OPEN_STEPS,
+                  duration: revealDuration,
+                  ease: "none",
+                  force3D: true,
+                },
+                segmentStart
+              );
+            }
+
+            if (!reduced && image) {
+              timeline.to(
+                image,
+                {
+                  scale: mobile ? 1.035 : 1.095,
+                  duration: 1,
+                  ease: "none",
+                  force3D: true,
+                },
+                segmentStart
+              );
+            }
+
+            if (!reduced) {
+              const revealAt = segmentStart + revealDuration * 0.55;
+
+              timeline.to(
+                panel.querySelectorAll(".title-inner"),
+                {
+                  yPercent: 0,
+                  autoAlpha: 1,
+                  duration: mobile ? 0.22 : 0.26,
+                  ease: "power3.out",
+                  force3D: true,
+                },
+                revealAt
+              );
+
+              timeline.to(
+                panel.querySelectorAll(".service-counter"),
+                {
+                  y: 0,
+                  autoAlpha: 1,
+                  duration: mobile ? 0.18 : 0.22,
+                  ease: "power2.out",
+                },
+                revealAt + 0.04
+              );
+            }
+
+            timeline.to(
+              {},
+              {
+                duration: reduced
+                  ? 0.88
+                  : Math.max(0.12, 1 - revealDuration),
+              },
+              segmentStart + (reduced ? 0.12 : revealDuration)
+            );
+          });
+
+          requestAnimationFrame(() => {
+            ScrollTrigger.refresh();
+          });
+
+          return () => {
+            timeline.scrollTrigger?.kill();
+            timeline.kill();
+
+            panelsRef.current.forEach((panel, index) => {
+              if (panel) {
+                gsap.set(panel, {
+                  clearProps:
+                    "will-change,transform,opacity,visibility,clip-path,-webkit-clip-path",
+                });
+              }
+
+              const image = imagesRef.current[index];
+              if (image) {
+                gsap.set(image, {
+                  clearProps: "will-change,transform",
+                });
+              }
+            });
+          };
+        }
+      );
 
       return () => mm.revert();
     },
     {
       scope: wrapperRef,
-      dependencies: [isReducedMotion],
-      revertOnUpdate: true,
     }
   );
-
-  if (isReducedMotion) {
-    return (
-      <section id="wat-we-doen" className="relative w-full bg-white text-black">
-        <div className="mx-auto max-w-7xl space-y-14">
-          <div className="px-5 pt-16 sm:px-8">
-            <span className="bg-black px-1.5 py-0.5 font-pixel text-xs font-bold uppercase text-white">
-              WHAT WE DO
-            </span>
-          </div>
-          <div className="grid grid-cols-1 gap-8 px-5 py-20 sm:px-8 md:grid-cols-2">
-            {services.map((service, index) => (
-              <article key={service.id} className="overflow-hidden bg-[#080E18]">
-                <div data-cursor-theme="image" className="relative h-72 w-full sm:h-96">
-                  <Image
-                    src={service.image}
-                    alt={service.imageAlt || service.title}
-                    fill
-                    sizes="(max-width: 767px) 100vw, 50vw"
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/15" />
-                </div>
-
-                <div className="p-6 text-white">
-                  <TransitionLink
-                    href={`/services/${service.slug}`}
-                    className="flex flex-col items-start font-pixel text-[clamp(24px,7vw,38px)] font-bold uppercase leading-[0.94]"
-                  >
-                    {service.displayLines.map((line) => (
-                      <span key={line} className="bg-black px-[0.06em]">
-                        {line}
-                      </span>
-                    ))}
-                  </TransitionLink>
-
-                  <div className="mt-3 inline-flex items-center gap-2 bg-black px-2 py-1 font-pixel text-[11px]">
-                    <span>{String(index + 1).padStart(2, "0")}</span>
-                    <span className="h-[2px] w-6 bg-[#1677FF]" />
-                    <span>{String(services.length).padStart(2, "0")}</span>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-    );
-  }
 
   const activeService = services[activeIndex];
 

@@ -136,12 +136,12 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-40 m-0 w-full bg-[#1677FF] p-0 text-black pointer-events-auto"
+      className="relative z-40 -mt-[24svh] w-full bg-[#1677FF] p-0 text-black pointer-events-auto md:-mt-[28dvh]"
       aria-label="We make brands go wow"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-0 z-[5] h-[18svh] w-full bg-[#1677FF]"
+        className="pointer-events-none absolute left-0 z-[5] h-[20svh] w-full bg-[#1677FF] md:h-[22dvh]"
         style={{
           // A stepped cap previews the blue statement before the full stage
           // enters, without overlapping an entire viewport or disturbing pin spacing.

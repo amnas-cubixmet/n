@@ -273,19 +273,19 @@ export default function Header() {
           aria-expanded={menuOpen}
           aria-controls="northframe-menu-panel"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="header-menu-button pointer-events-auto relative z-[110] inline-flex h-5 w-6 min-h-0 min-w-0 items-center justify-center bg-transparent p-0 text-[#1677FF] rounded-none select-none touch-action-manipulation cursor-pointer focus:outline-none md:h-auto md:w-auto md:min-h-[44px] md:min-w-[44px] md:gap-2.5 md:bg-[#1677FF] md:px-3.5 md:py-2.5 md:text-white md:focus-visible:ring-2 md:focus-visible:ring-white/70"
+          className="header-menu-button pointer-events-auto relative z-[110] inline-flex h-3 w-4 min-h-0 min-w-0 items-center justify-center bg-[#1677FF] p-0 text-white rounded-none select-none touch-action-manipulation cursor-pointer focus:outline-none before:absolute before:-inset-4 before:content-[''] md:h-auto md:w-auto md:min-h-[44px] md:min-w-[44px] md:gap-2.5 md:px-3.5 md:py-2.5 md:before:content-none md:focus-visible:ring-2 md:focus-visible:ring-white/70"
         >
           <span className="hidden md:inline font-mono text-[10px] font-semibold uppercase tracking-[0.12em] leading-none">
             {menuOpen ? "CLOSE" : "MENU"}
           </span>
 
-          <span className="relative block w-4 h-3 pointer-events-none">
+          <span className="relative block h-3 w-4 pointer-events-none">
             <span
               className={
                 "absolute left-0 top-[2px] block w-4 h-[1.5px] origin-center transition-[transform,background-color] duration-300 " +
                 (menuOpen
                   ? "translate-y-[3.5px] rotate-45 bg-white"
-                  : "bg-[#1677FF] md:bg-white")
+                  : "bg-white")
               }
             />
             <span
@@ -293,7 +293,7 @@ export default function Header() {
                 "absolute left-0 bottom-[2px] block w-4 h-[1.5px] origin-center transition-[transform,background-color] duration-300 " +
                 (menuOpen
                   ? "-translate-y-[3.5px] -rotate-45 bg-white"
-                  : "bg-[#1677FF] md:bg-white")
+                  : "bg-white")
               }
             />
           </span>

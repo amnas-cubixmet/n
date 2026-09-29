@@ -58,7 +58,7 @@ export default function StatementSection() {
       const getScrollDistance = () =>
         Math.round(
           stage.clientHeight *
-            (1.72 + extraCount * (compact ? 0.13 : 0.15))
+            (1.56 + extraCount * (compact ? 0.13 : 0.15))
         );
 
       const syncSectionHeight = () => {
@@ -113,13 +113,6 @@ export default function StatementSection() {
         },
         ">"
       );
-
-      // Keep the full-screen stage locked after the black takeover has
-      // completely settled. The next section is allowed to enter only after
-      // this hold, so there is never a premature release during scrub catch-up.
-      timeline.to({}, {
-        duration: compact ? 0.36 : 0.42,
-      });
 
       return () => {
         section.style.height = "";

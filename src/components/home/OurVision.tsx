@@ -70,12 +70,23 @@ export default function OurVision() {
   );
 
   return (
-    <section
-      id="our-vision"
-      ref={containerRef}
-      className="relative w-full bg-[#000000] text-white pointer-events-auto z-30 m-0 px-6 sm:px-10 md:px-16 lg:px-20 py-20 md:py-28 lg:py-36 overflow-hidden select-none"
-    >
-      <div className="relative w-full max-w-[1300px] mx-auto flex flex-col items-start text-left">
+    <div className="relative z-30 w-full overflow-visible">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-0 top-0 z-0 h-[18svh] w-full bg-[#1677FF] md:h-[20dvh]"
+        style={{
+          transform: "translateY(calc(-100% + 1px))",
+          clipPath:
+            "polygon(0% 0%, 100% 0%, 100% 26%, 87.5% 26%, 87.5% 58%, 75% 58%, 75% 34%, 62.5% 34%, 62.5% 74%, 50% 74%, 50% 46%, 37.5% 46%, 37.5% 82%, 25% 82%, 25% 54%, 12.5% 54%, 12.5% 88%, 0% 88%)",
+        }}
+      />
+
+      <section
+        id="our-vision"
+        ref={containerRef}
+        className="relative z-10 w-full overflow-hidden bg-[#000000] px-6 py-20 text-white pointer-events-auto m-0 select-none sm:px-10 md:px-16 md:py-28 lg:px-20 lg:py-36"
+      >
+        <div className="relative w-full max-w-[1300px] mx-auto flex flex-col items-start text-left">
         {/* SMALL EDITORIAL LABEL IN UPPER-LEFT: WHITE BG, BLACK TEXT */}
         <div ref={labelRef} className="flex items-center mb-8 md:mb-12">
           <span className="font-pixel inline-block bg-[#FFFFFF] text-[#000000] px-2 py-1 text-xs sm:text-sm font-bold uppercase tracking-wider leading-none">
@@ -96,7 +107,8 @@ export default function OurVision() {
             and deliver work that truly stands apart.
           </p>
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
+    </div>
   );
 }

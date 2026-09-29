@@ -45,20 +45,28 @@ export default function StatementSection() {
         Math.max(3, Math.ceil((stage.clientWidth * 1.04 - wowBox.width) / letterWidths[0])),
       );
 
+      const section = sectionRef.current;
+      const getScrollDistance = () =>
+        Math.round(
+          stage.clientHeight *
+            (1.35 + extraCount * (compact ? 0.13 : 0.15))
+        );
+
+      const syncSectionHeight = () => {
+        const scrollDistance = getScrollDistance();
+        section.style.height = `${stage.clientHeight + scrollDistance}px`;
+      };
+
+      syncSectionHeight();
+
       const timeline = gsap.timeline({
         scrollTrigger: {
-          trigger: sectionRef.current,
+          trigger: section,
           start: "top top",
-          end: () =>
-            `+=${Math.round(
-              stageRef.current!.clientHeight *
-                (1.35 + extraCount * (compact ? 0.13 : 0.15))
-            )}`,
-          pin: stageRef.current,
-          pinSpacing: true,
+          end: () => `+=${getScrollDistance()}`,
           scrub: compact ? 0.2 : 0.28,
-          anticipatePin: 1,
           invalidateOnRefresh: true,
+          onRefreshInit: syncSectionHeight,
         },
       });
 
@@ -82,6 +90,10 @@ export default function StatementSection() {
           ease: "none",
         }, 2.04 + index * 0.16);
       });
+
+      return () => {
+        section.style.height = "";
+      };
     },
     { scope: sectionRef }
   );
@@ -136,7 +148,7 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-40 -mt-[24svh] w-full bg-[#1677FF] p-0 text-black pointer-events-auto md:-mt-[28dvh]"
+      className="relative z-40 -mt-[100svh] w-full bg-[#1677FF] p-0 text-black pointer-events-auto md:-mt-[100dvh]"
       aria-label="We make brands go wow"
     >
       <div
@@ -162,7 +174,7 @@ export default function StatementSection() {
 
       <div
         ref={stageRef}
-        className="relative flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:h-auto motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
+        className="sticky top-0 flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
       >
         <h2 aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
       </div>

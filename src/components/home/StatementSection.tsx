@@ -19,6 +19,7 @@ export default function StatementSection() {
   const blackORefs = useRef<(HTMLSpanElement | null)[]>([]);
   const whiteORefs = useRef<(HTMLSpanElement | null)[]>([]);
   const blackFillRefs = useRef<(HTMLSpanElement | null)[]>([]);
+  const exitOverlayRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -26,6 +27,7 @@ export default function StatementSection() {
         !sectionRef.current ||
         !stageRef.current ||
         !wowRef.current ||
+        !exitOverlayRef.current ||
         blackORefs.current.length !== extraOs.length ||
         whiteORefs.current.length !== extraOs.length ||
         blackFillRefs.current.length !== words.length ||
@@ -46,6 +48,13 @@ export default function StatementSection() {
       );
 
       const section = sectionRef.current;
+      const exitOverlay = exitOverlayRef.current;
+
+      gsap.set(exitOverlay, {
+        yPercent: 100,
+        force3D: true,
+      });
+
       const getScrollDistance = () =>
         Math.round(
           stage.clientHeight *
@@ -90,6 +99,17 @@ export default function StatementSection() {
           ease: "none",
         }, 2.04 + index * 0.16);
       });
+
+      timeline.to(
+        exitOverlay,
+        {
+          yPercent: 0,
+          duration: compact ? 0.42 : 0.46,
+          ease: "none",
+          force3D: true,
+        },
+        ">"
+      );
 
       return () => {
         section.style.height = "";
@@ -148,7 +168,7 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-40 -mt-[100svh] w-full bg-[#1677FF] p-0 text-black pointer-events-auto md:-mt-[100dvh]"
+      className="relative z-40 -mt-[100svh] w-full bg-black p-0 text-black pointer-events-auto md:-mt-[100dvh]"
       aria-label="We make brands go wow"
     >
       <div
@@ -177,6 +197,20 @@ export default function StatementSection() {
         className="sticky top-0 flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
       >
         <h2 aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
+
+        <div
+          ref={exitOverlayRef}
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-20 translate-y-full bg-black will-change-transform"
+        >
+          <div
+            className="absolute bottom-full left-0 h-[16svh] w-full bg-black md:h-[18dvh]"
+            style={{
+              clipPath:
+                "polygon(0% 100%, 0% 58%, 14% 58%, 14% 30%, 28% 30%, 28% 70%, 43% 70%, 43% 42%, 57% 42%, 57% 64%, 72% 64%, 72% 34%, 86% 34%, 86% 72%, 100% 72%, 100% 100%)",
+            }}
+          />
+        </div>
       </div>
     </section>
   );

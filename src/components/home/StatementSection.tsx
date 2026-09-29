@@ -136,12 +136,12 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-30 m-0 w-full bg-[#1677FF] p-0 text-black pointer-events-auto"
+      className="relative z-40 m-0 w-full bg-[#1677FF] p-0 text-black pointer-events-auto"
       aria-label="We make brands go wow"
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute left-0 h-[18svh] w-full bg-[#1677FF]"
+        className="pointer-events-none absolute left-0 z-[5] h-[18svh] w-full bg-[#1677FF]"
         style={{
           // A stepped cap previews the blue statement before the full stage
           // enters, without overlapping an entire viewport or disturbing pin spacing.
@@ -149,6 +149,17 @@ export default function StatementSection() {
           clipPath: "polygon(0% 100%, 0% 42%, 14% 42%, 14% 72%, 28% 72%, 28% 30%, 43% 30%, 43% 58%, 57% 58%, 57% 38%, 72% 38%, 72% 68%, 86% 68%, 86% 26%, 100% 26%, 100% 100%)",
         }}
       />
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-0 z-[5] h-[16svh] w-full bg-[#1677FF]"
+        style={{
+          top: "calc(100% - 1px)",
+          clipPath:
+            "polygon(0% 0%, 100% 0%, 100% 56%, 86% 56%, 86% 28%, 72% 28%, 72% 72%, 57% 72%, 57% 44%, 43% 44%, 43% 64%, 28% 64%, 28% 34%, 14% 34%, 14% 76%, 0% 76%)",
+        }}
+      />
+
       <div
         ref={stageRef}
         className="relative flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:h-auto motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"

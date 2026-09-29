@@ -177,7 +177,7 @@ body::-webkit-scrollbar {
     max-width: none;
     flex-direction: column;
     align-items: flex-start;
-    gap: clamp(10px, 1.8vh, 14px);
+    gap: clamp(20px, 3.2vh, 30px);
   }
 
   /* Mobile-only visual order: service labels sit cleanly above the logo.
@@ -185,6 +185,7 @@ body::-webkit-scrollbar {
   .service-list {
     order: 1;
     width: 100%;
+    margin-bottom: clamp(4px, 0.8vh, 8px);
   }
 
   .hero-logo-wrapper {
@@ -226,7 +227,11 @@ body::-webkit-scrollbar {
   .heroBottom {
     left: max(14px, env(safe-area-inset-left));
     right: max(14px, env(safe-area-inset-right));
-    gap: 9px;
+    gap: 16px;
+  }
+
+  .service-list {
+    margin-bottom: 2px;
   }
 
   .hero-logo-wrapper {
@@ -245,7 +250,11 @@ body::-webkit-scrollbar {
 @media (max-height: 640px) and (max-width: 768px) {
   .heroBottom {
     bottom: max(12px, calc(env(safe-area-inset-bottom) + 4px));
-    gap: 7px;
+    gap: 13px;
+  }
+
+  .service-list {
+    margin-bottom: 0;
   }
 
   .hero-logo-wrapper {

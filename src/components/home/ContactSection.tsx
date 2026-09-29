@@ -519,9 +519,17 @@ export default function ContactSection() {
                 </span>
                 <a
                   href={`mailto:${CONTACT_CONFIG.email}`}
-                  className="block break-all font-sans text-lg font-medium text-white transition-colors sm:text-xl lg:hover:text-[#1677FF]"
+                  className="flex w-fit max-w-full items-center gap-2.5 break-all font-sans text-lg font-medium text-white transition-colors sm:text-xl lg:hover:text-[#1677FF]"
                 >
-                  {CONTACT_CONFIG.email}
+                  <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    className="h-4 w-4 shrink-0 fill-none stroke-current stroke-[1.7] sm:h-[18px] sm:w-[18px]"
+                  >
+                    <path d="M3.5 6.5h17v11h-17z" />
+                    <path d="m4.5 7.5 7.5 6 7.5-6" />
+                  </svg>
+                  <span>{CONTACT_CONFIG.email}</span>
                 </a>
               </div>
 
@@ -529,12 +537,37 @@ export default function ContactSection() {
                 <span className="mb-1 block font-mono text-xs font-semibold uppercase tracking-wider text-[#1677FF]">
                   PHONE / WHATSAPP
                 </span>
-                <a
-                  href={`tel:${CONTACT_CONFIG.phoneRaw}`}
-                  className="mb-2 block font-sans text-xl font-medium text-white transition-colors sm:text-2xl lg:hover:text-[#1677FF]"
-                >
-                  {CONTACT_CONFIG.phone}
-                </a>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <a
+                    href={`tel:${CONTACT_CONFIG.phoneRaw}`}
+                    className="flex w-fit items-center gap-2.5 font-sans text-xl font-medium text-white transition-colors sm:text-2xl lg:hover:text-[#1677FF]"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      className="h-[18px] w-[18px] shrink-0 fill-none stroke-current stroke-[1.7] sm:h-5 sm:w-5"
+                    >
+                      <path d="M6.5 3.5h3l1.4 4.1-2 1.7a15.2 15.2 0 0 0 5.8 5.8l1.7-2 4.1 1.4v3c0 1.1-.9 2-2 2C10.8 19.5 4.5 13.2 4.5 5.5c0-1.1.9-2 2-2Z" />
+                    </svg>
+                    <span>{CONTACT_CONFIG.phone}</span>
+                  </a>
+
+                  <a
+                    href={CONTACT_CONFIG.whatsappUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="Open WhatsApp chat"
+                    className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-[#1677FF] text-white transition-transform lg:hover:scale-105"
+                  >
+                    <svg
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                      className="h-4 w-4 fill-current"
+                    >
+                      <path d="M12.04 2a9.74 9.74 0 0 0-8.3 14.83L2.4 21.76l5.06-1.32A9.76 9.76 0 1 0 12.04 2Zm0 17.73a7.94 7.94 0 0 1-4.05-1.11l-.29-.17-3 .78.8-2.92-.19-.3a7.96 7.96 0 1 1 6.73 3.72Zm4.37-5.96c-.24-.12-1.41-.7-1.63-.77-.22-.08-.38-.12-.54.12-.16.24-.62.77-.76.93-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.92-1.18-.71-.63-1.19-1.41-1.33-1.65-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.69 2.58 4.1 3.62.57.25 1.02.4 1.37.51.58.18 1.1.16 1.52.1.46-.07 1.41-.58 1.61-1.13.2-.56.2-1.03.14-1.13-.06-.1-.22-.16-.46-.28Z" />
+                    </svg>
+                  </a>
+                </div>
               </div>
             </div>
 
@@ -571,14 +604,45 @@ export default function ContactSection() {
           >
             <div
               aria-label="NORTHFRAME"
-              className="whitespace-nowrap font-sans text-[clamp(3.1rem,14vw,12.5rem)] font-bold uppercase leading-[0.78] tracking-[-0.07em] text-white"
+              className="relative h-[clamp(3.4rem,12vw,10.5rem)] w-full max-w-[1320px]"
             >
-              NORTHFRAME
+              <Image
+                src="/images/brand/northframe-logo.webp"
+                alt="NORTHFRAME"
+                fill
+                sizes="(max-width: 768px) 92vw, 96vw"
+                className="object-contain object-left"
+              />
             </div>
           </div>
 
-          <div className="flex flex-col gap-3 py-6 font-mono text-[10px] uppercase tracking-[0.08em] text-white/40 sm:flex-row sm:items-center sm:justify-between sm:text-xs">
+          <div className="flex flex-col gap-4 py-6 font-mono text-[10px] uppercase tracking-[0.08em] text-white/40 sm:flex-row sm:items-center sm:justify-between sm:text-xs">
             <span>Creative · Digital · Technology</span>
+
+            <button
+              type="button"
+              onClick={() => {
+                const reduced = window.matchMedia(
+                  "(prefers-reduced-motion: reduce)"
+                ).matches;
+
+                window.scrollTo({
+                  top: 0,
+                  behavior: reduced ? "auto" : "smooth",
+                });
+              }}
+              aria-label="Back to top"
+              className="group inline-flex w-fit min-h-[40px] items-center gap-2 text-white/60 transition-colors lg:hover:text-white"
+            >
+              <span>Back to top</span>
+              <span
+                aria-hidden="true"
+                className="text-base leading-none transition-transform duration-200 lg:group-hover:-translate-y-1"
+              >
+                ↑
+              </span>
+            </button>
+
             <span>
               © {new Date().getFullYear()} NORTHFRAME. All rights reserved.
             </span>

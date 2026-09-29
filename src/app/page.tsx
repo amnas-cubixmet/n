@@ -15,6 +15,7 @@ import OurVision from "@/components/home/OurVision";
 import OurUSPs from "@/components/home/OurUSPs";
 import FoundedOnAVision from "@/components/home/FoundedOnAVision";
 import ContactSection from "@/components/home/ContactSection";
+import FloatingContactActions from "@/components/navigation/FloatingContactActions";
 
 export default function Home() {
   // Keep the first server and client renders identical. BrandIntro checks
@@ -32,6 +33,9 @@ export default function Home() {
 
       {/* Global Fixed Header Navigation */}
       <Header />
+
+      {/* Floating contact action appears only after the Introduction is passed */}
+      <FloatingContactActions />
 
       {/* LAYER 1 — GLOBAL FIXED BACKGROUND */}
       <div className="global-visual-background fixed inset-0 w-full h-[100svh] lg:h-[100dvh] z-0 overflow-hidden pointer-events-none bg-[#05080B]">

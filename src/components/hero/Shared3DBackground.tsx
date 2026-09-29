@@ -6,6 +6,19 @@ import { ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import { createNorthframeGeometry } from "@/components/three/NorthframeGeometry";
 
+if (typeof window !== "undefined") {
+  const _warn = console.warn;
+  console.warn = (...args: unknown[]) => {
+    if (
+      typeof args[0] === "string" &&
+      args[0].includes("Clock: This module has been deprecated")
+    ) {
+      return;
+    }
+    _warn.apply(console, args);
+  };
+}
+
 function LivingStudioLighting({
   isHidden,
   isMobile,

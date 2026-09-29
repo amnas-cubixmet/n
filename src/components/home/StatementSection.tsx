@@ -62,8 +62,7 @@ export default function StatementSection() {
         );
 
       const syncSectionHeight = () => {
-        const scrollDistance = getScrollDistance();
-        section.style.height = `${stage.clientHeight + scrollDistance}px`;
+        section.style.height = `${getScrollDistance()}px`;
       };
 
       syncSectionHeight();
@@ -72,8 +71,11 @@ export default function StatementSection() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: () => `+=${getScrollDistance()}`,
+          end: "bottom top",
+          pin: stage,
+          pinSpacing: false,
           scrub: compact ? 0.14 : 0.18,
+          anticipatePin: 1,
           invalidateOnRefresh: true,
           onRefreshInit: syncSectionHeight,
           onLeave: () => {
@@ -197,7 +199,7 @@ export default function StatementSection() {
 
       <div
         ref={stageRef}
-        className="sticky top-0 flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
+        className="relative flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
       >
         <h2 aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
 

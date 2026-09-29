@@ -104,10 +104,10 @@ export default function Hero({ introCompleted }: HeroProps) {
             return;
           }
 
-          const duration = mobile ? 0.66 : 0.86;
-          const logoY = mobile ? 12 : 16;
-          const labelY = mobile ? 7 : 9;
-          const serviceY = mobile ? 6 : 8;
+          const duration = mobile ? 0.78 : 0.86;
+          const logoY = mobile ? 18 : 16;
+          const labelY = mobile ? 9 : 9;
+          const serviceY = mobile ? 10 : 8;
 
           if (bgVisual) gsap.set(bgVisual, { opacity: 0 });
           if (heroVisual) gsap.set(heroVisual, { opacity: 0 });
@@ -153,7 +153,7 @@ export default function Hero({ introCompleted }: HeroProps) {
           }
 
           const tl = gsap.timeline({
-            delay: mobile ? 0.12 : 0.16,
+            delay: mobile ? 0.16 : 0.16,
             defaults: { overwrite: "auto" },
           });
 
@@ -223,8 +223,8 @@ export default function Hero({ introCompleted }: HeroProps) {
               {
                 opacity: 1,
                 y: 0,
-                duration: mobile ? 0.28 : 0.34,
-                stagger: mobile ? 0.045 : 0.06,
+                duration: mobile ? 0.34 : 0.34,
+                stagger: mobile ? 0.055 : 0.06,
                 ease: "power2.out",
                 force3D: true,
               },
@@ -237,8 +237,8 @@ export default function Hero({ introCompleted }: HeroProps) {
               serviceTextItems,
               {
                 yPercent: 0,
-                duration: mobile ? 0.42 : 0.5,
-                stagger: mobile ? 0.045 : 0.06,
+                duration: mobile ? 0.46 : 0.5,
+                stagger: mobile ? 0.055 : 0.06,
                 ease: "power3.out",
                 force3D: true,
               },

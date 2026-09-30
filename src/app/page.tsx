@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import BrandIntro from "@/components/intro/BrandIntro";
 import Header from "@/components/navigation/Header";
 import Shared3DBackground from "@/components/hero/Shared3DBackground";
@@ -22,9 +22,9 @@ export default function Home() {
   // sessionStorage after hydration and calls onComplete when it is done.
   const [introCompleted, setIntroCompleted] = useState(false);
 
-  const handleIntroComplete = useCallback(() => {
+  const handleIntroComplete = () => {
     setIntroCompleted(true);
-  }, []);
+  };
 
   return (
     <main className="page relative min-h-screen text-white flex flex-col font-sans bg-transparent">

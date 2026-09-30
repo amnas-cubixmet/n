@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -112,7 +112,7 @@ export default function DeliverablesSection() {
     };
   }, [updateMobileNavigation]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const previousIndex = prevIndexRef.current;
     const compact =
       typeof window !== "undefined" &&

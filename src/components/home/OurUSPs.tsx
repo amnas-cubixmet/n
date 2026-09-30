@@ -82,7 +82,7 @@ export default function OurUSPs() {
             element,
             {
               autoAlpha: 0,
-              y: mobile ? 18 : 28,
+              y: mobile ? 14 : 28,
             },
             {
               autoAlpha: 1,
@@ -92,7 +92,7 @@ export default function OurUSPs() {
               force3D: true,
               scrollTrigger: {
                 trigger: element,
-                start: mobile ? "top 89%" : "top 86%",
+                start: mobile ? "top 92%" : "top 86%",
                 once: true,
                 invalidateOnRefresh: true,
               },
@@ -101,21 +101,21 @@ export default function OurUSPs() {
           );
         });
 
-        if (shapeRef.current) {
+        if (!mobile && shapeRef.current) {
           gsap.fromTo(
             shapeRef.current,
             {
-              yPercent: mobile ? -4 : -9,
+              yPercent: -9,
             },
             {
-              yPercent: mobile ? 12 : 22,
+              yPercent: 22,
               ease: "none",
               force3D: true,
               scrollTrigger: {
                 trigger: containerRef.current,
                 start: "top bottom",
                 end: "bottom top",
-                scrub: mobile ? 0.7 : 0.9,
+                scrub: 0.9,
                 invalidateOnRefresh: true,
               },
             }

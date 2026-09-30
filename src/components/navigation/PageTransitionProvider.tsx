@@ -95,7 +95,7 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
       const headerOffset = window.innerWidth <= 768 ? 56 : 70;
       window.scrollTo({
         top: Math.max(0, target.getBoundingClientRect().top + window.scrollY - headerOffset),
-        behavior: "instant",
+        behavior: "auto",
       });
     };
 
@@ -175,7 +175,7 @@ export function PageTransitionProvider({ children }: { children: React.ReactNode
       if (hash) scrollToSection(hash, true);
       else {
         cancelWipe();
-        window.scrollTo({ top: 0, behavior: "instant" });
+        window.scrollTo({ top: 0, behavior: "auto" });
       }
       return;
     }

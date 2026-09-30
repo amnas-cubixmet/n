@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -15,85 +15,115 @@ if (typeof window !== "undefined") {
 export default function WorkPageClient() {
   const containerRef = useRef<HTMLDivElement>(null);
   const projectRefs = useRef<(HTMLDivElement | null)[]>([]);
-  const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    const mobileQuery = window.matchMedia("(max-width: 768px)");
-    const syncMobile = () => setIsMobile(mobileQuery.matches);
+  useLayoutEffect(() => {
+    const root = containerRef.current;
+    if (!root) return;
 
-    syncMobile();
+    let media: gsap.MatchMedia | null = null;
 
-    if (typeof mobileQuery.addEventListener === "function") {
-      mobileQuery.addEventListener("change", syncMobile);
-      return () => mobileQuery.removeEventListener("change", syncMobile);
-    }
-
-    mobileQuery.addListener(syncMobile);
-    return () => mobileQuery.removeListener(syncMobile);
-  }, []);
-
-  useEffect(() => {
     const ctx = gsap.context(() => {
-      const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-      if (motionQuery.matches) return;
+      const reduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
 
-      projectRefs.current.forEach((card, index) => {
-        if (!card) return;
-
-        const bgLayer = card.querySelector(".project-bg-layer");
-        const cardInner = card.querySelector(".project-card-inner");
-        const imgContainer = card.querySelector(".project-image-container");
-        const imgElement = card.querySelector(".project-image");
-        const titleElement = card.querySelector(".project-title");
-        const descElement = card.querySelector(".project-desc");
-        const baseRotation = editorialWorkProjects[index].rotation;
-
-        if (isMobile) {
-          gsap.fromTo(
-            cardInner,
-            { opacity: 0, y: 24 },
+      if (reduced) {
+        projectRefs.current.forEach((card) => {
+          if (!card) return;
+          gsap.set(
+            card.querySelectorAll(
+              ".project-bg-layer, .project-card-inner, .project-title, .project-desc, .project-image"
+            ),
             {
-              opacity: 1,
+              autoAlpha: 1,
+              x: 0,
               y: 0,
-              duration: 0.55,
-              ease: "power3.out",
-              scrollTrigger: {
-                trigger: card,
-                start: "top 88%",
-                once: true,
-              },
+              scale: 1,
+              clearProps: "transform",
             }
           );
+        });
+        return;
+      }
 
-          if (imgElement) {
+      media = gsap.matchMedia();
+
+      media.add("(max-width: 1023px)", () => {
+        projectRefs.current.forEach((card) => {
+          if (!card) return;
+
+          const cardInner = card.querySelector<HTMLElement>(".project-card-inner");
+          const imgElement = card.querySelector<HTMLElement>(".project-image");
+
+          if (cardInner) {
+            gsap.set(cardInner, { rotate: 0 });
+
             gsap.fromTo(
-              imgElement,
-              { scale: 1.02 },
+              cardInner,
+              { autoAlpha: 0, y: 16 },
               {
-                scale: 1,
-                duration: 0.55,
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.5,
                 ease: "power3.out",
+                force3D: true,
                 scrollTrigger: {
                   trigger: card,
-                  start: "top 85%",
+                  start: "top 92%",
+                  once: true,
+                  invalidateOnRefresh: true,
                 },
               }
             );
           }
-        } else {
-          // Desktop entrance animation
+
+          if (imgElement) {
+            gsap.fromTo(
+              imgElement,
+              { scale: 1.015 },
+              {
+                scale: 1,
+                duration: 0.5,
+                ease: "power3.out",
+                force3D: true,
+                scrollTrigger: {
+                  trigger: card,
+                  start: "top 90%",
+                  once: true,
+                  invalidateOnRefresh: true,
+                },
+              }
+            );
+          }
+        });
+      });
+
+      media.add("(min-width: 1024px)", () => {
+        projectRefs.current.forEach((card, index) => {
+          if (!card) return;
+
+          const bgLayer = card.querySelector<HTMLElement>(".project-bg-layer");
+          const cardInner = card.querySelector<HTMLElement>(".project-card-inner");
+          const imgContainer = card.querySelector<HTMLElement>(".project-image-container");
+          const imgElement = card.querySelector<HTMLElement>(".project-image");
+          const titleElement = card.querySelector<HTMLElement>(".project-title");
+          const descElement = card.querySelector<HTMLElement>(".project-desc");
+          const baseRotation = editorialWorkProjects[index].rotation;
+          const rotation = parseFloat(baseRotation);
+
           if (bgLayer) {
             gsap.fromTo(
               bgLayer,
-              { opacity: 0, scale: 0.96 },
+              { autoAlpha: 0, scale: 0.96 },
               {
-                opacity: 1,
+                autoAlpha: 1,
                 scale: 1,
                 duration: 1.1,
                 ease: "power3.out",
                 scrollTrigger: {
                   trigger: card,
                   start: "top 82%",
+                  invalidateOnRefresh: true,
                 },
               }
             );
@@ -102,16 +132,18 @@ export default function WorkPageClient() {
           if (cardInner) {
             gsap.fromTo(
               cardInner,
-              { opacity: 0, y: 70, rotate: parseFloat(baseRotation) * 1.8 },
+              { autoAlpha: 0, y: 70, rotate: rotation * 1.8 },
               {
-                opacity: 1,
+                autoAlpha: 1,
                 y: 0,
-                rotate: parseFloat(baseRotation),
-                duration: 1.0,
+                rotate: rotation,
+                duration: 1,
                 ease: "power3.out",
+                force3D: true,
                 scrollTrigger: {
                   trigger: card,
                   start: "top 82%",
+                  invalidateOnRefresh: true,
                 },
               }
             );
@@ -122,13 +154,15 @@ export default function WorkPageClient() {
               imgElement,
               { scale: 1.05 },
               {
-                scale: 1.0,
+                scale: 1,
                 ease: "none",
+                force3D: true,
                 scrollTrigger: {
                   trigger: card,
                   start: "top bottom",
                   end: "bottom top",
                   scrub: 0.8,
+                  invalidateOnRefresh: true,
                 },
               }
             );
@@ -137,15 +171,16 @@ export default function WorkPageClient() {
           if (titleElement) {
             gsap.fromTo(
               titleElement,
-              { opacity: 0, y: 30 },
+              { autoAlpha: 0, y: 30 },
               {
-                opacity: 1,
+                autoAlpha: 1,
                 y: 0,
                 duration: 0.6,
                 ease: "power3.out",
                 scrollTrigger: {
                   trigger: card,
-                  start: "top 78%",
+                  start: "top 80%",
+                  invalidateOnRefresh: true,
                 },
               }
             );
@@ -154,26 +189,39 @@ export default function WorkPageClient() {
           if (descElement) {
             gsap.fromTo(
               descElement,
-              { opacity: 0, y: 30 },
+              { autoAlpha: 0, y: 30 },
               {
-                opacity: 1,
+                autoAlpha: 1,
                 y: 0,
                 duration: 0.5,
                 delay: 0.1,
                 ease: "power3.out",
                 scrollTrigger: {
                   trigger: card,
-                  start: "top 78%",
+                  start: "top 80%",
+                  invalidateOnRefresh: true,
                 },
               }
             );
           }
-        }
+        });
       });
-    }, containerRef);
+    }, root);
 
-    return () => ctx.revert();
-  }, [isMobile]);
+    let firstFrame = 0;
+    let secondFrame = 0;
+
+    firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => ScrollTrigger.refresh());
+    });
+
+    return () => {
+      cancelAnimationFrame(firstFrame);
+      cancelAnimationFrame(secondFrame);
+      media?.revert();
+      ctx.revert();
+    };
+  }, []);
 
   return (
     <div
@@ -241,8 +289,7 @@ export default function WorkPageClient() {
               <div
                 className="project-card-inner relative bg-[#101214] border border-white/[0.06] rounded-[2px] overflow-hidden shadow-2xl transition-transform duration-400 lg:group-hover:-translate-y-1.5"
                 style={{
-                  transform: isMobile ? "none" : `rotate(${project.rotation})`,
-                  willChange: isMobile ? "auto" : "transform, opacity",
+                  willChange: "transform, opacity",
                   WebkitBackfaceVisibility: "hidden",
                   backfaceVisibility: "hidden",
                 }}

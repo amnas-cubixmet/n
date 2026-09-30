@@ -377,10 +377,12 @@ body::-webkit-scrollbar {
   transform: translate3d(0, 0, 0);
 }
 
-/* WHAT WE DO SECTION — STRICT STAGE CLIPPING */
-.wat-we-doen-sticky,
-.wat-we-doen-stage {
-  position: relative;
+/* WHAT WE DO SECTION — STRICT STAGE CLIPPING
+   Mobile/tablet use browser-native sticky positioning instead of GSAP pinning.
+   Do not force the sticky wrapper back to position:relative on touch layouts. */
+.wat-we-doen-sticky {
+  position: sticky;
+  top: 0;
   overflow: hidden;
   overflow: clip;
   width: 100%;
@@ -388,12 +390,26 @@ body::-webkit-scrollbar {
   height: 100svh;
 }
 
-/* Keep the pinned stage stable while mobile Safari/Chrome browser chrome
-   expands and collapses. Desktop can use the dynamic viewport safely. */
+.wat-we-doen-stage {
+  position: relative;
+  overflow: hidden;
+  overflow: clip;
+  width: 100%;
+  height: 100%;
+}
+
+/* Dynamic viewport height is safe once the layout is not relying on the
+   collapsing mobile browser toolbar. */
 @media (min-width: 768px) {
-  .wat-we-doen-sticky,
-  .wat-we-doen-stage {
+  .wat-we-doen-sticky {
     height: 100dvh;
+  }
+}
+
+@media (min-width: 1024px) {
+  .wat-we-doen-sticky {
+    position: relative;
+    top: auto;
   }
 }
 
@@ -509,5 +525,22 @@ video {
 
   .panel-image {
     transform-origin: center center;
+  }
+}
+
+
+@supports (overflow: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
+}
+
+@media (max-width: 1023px) {
+  .wat-we-doen-sticky,
+  #deliverables > div:first-of-type,
+  #statement > div[aria-label] {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
   }
 }

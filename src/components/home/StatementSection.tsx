@@ -35,7 +35,7 @@ export default function StatementSection() {
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ) return;
 
-      const compact = window.matchMedia("(max-width: 767px), (pointer: coarse)").matches;
+      const compact = window.matchMedia("(max-width: 1023px)").matches;
       const stage = stageRef.current;
       const wow = wowRef.current;
       const wowBox = wow.getBoundingClientRect();
@@ -62,7 +62,9 @@ export default function StatementSection() {
         );
 
       const syncSectionHeight = () => {
-        section.style.height = `${getScrollDistance()}px`;
+        section.style.height = compact
+          ? `${stage.clientHeight + getScrollDistance()}px`
+          : `${getScrollDistance()}px`;
       };
 
       syncSectionHeight();
@@ -71,11 +73,11 @@ export default function StatementSection() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: "bottom top",
-          pin: stage,
+          end: compact ? "bottom bottom" : "bottom top",
+          pin: compact ? false : stage,
           pinSpacing: false,
-          scrub: compact ? 0.14 : 0.18,
-          anticipatePin: 1,
+          scrub: compact ? 0.1 : 0.18,
+          anticipatePin: compact ? 0 : 1,
           invalidateOnRefresh: true,
           onRefreshInit: syncSectionHeight,
           onLeave: () => {
@@ -189,7 +191,7 @@ export default function StatementSection() {
 
       <div
         ref={stageRef}
-        className="relative flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 md:h-[100dvh] md:min-h-[100dvh]"
+        className="sticky top-0 flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 lg:relative lg:top-auto lg:h-[100dvh] lg:min-h-[100dvh]"
       >
         <h2 aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
 

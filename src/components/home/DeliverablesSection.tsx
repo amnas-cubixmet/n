@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -112,7 +112,7 @@ export default function DeliverablesSection() {
     };
   }, [updateMobileNavigation]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const previousIndex = prevIndexRef.current;
     const compact =
       typeof window !== "undefined" &&
@@ -225,29 +225,40 @@ export default function DeliverablesSection() {
       if (motionQuery.matches) return;
 
       const total = deliverables.length;
-      const compact = window.matchMedia(
-        "(max-width: 1023px), (pointer: coarse)"
-      ).matches;
+      const compact = window.matchMedia("(max-width: 1023px)").matches;
 
       const getPinDistance = () =>
         Math.round(
           Math.max(320, stickyRef.current?.clientHeight ?? window.innerHeight) *
-            total * (compact ? 0.75 : 0.88)
+            total * (compact ? 0.68 : 0.88)
         );
 
+      const syncMobileStageHeight = () => {
+        if (!masterRef.current || !stickyRef.current) return;
+
+        if (compact) {
+          masterRef.current.style.height =
+            `${stickyRef.current.clientHeight + getPinDistance()}px`;
+        } else {
+          masterRef.current.style.height = "";
+        }
+      };
+
+      syncMobileStageHeight();
       activeIndexRef.current = activeIndex;
 
       const timeline = gsap.timeline({
         scrollTrigger: {
           trigger: masterRef.current,
           start: "top top",
-          end: () => `+=${getPinDistance()}`,
-          pin: stickyRef.current,
-          pinSpacing: true,
-          scrub: compact ? 0.3 : 0.45,
-          anticipatePin: 1,
-          invalidateOnRefresh: false,
+          end: compact ? "bottom bottom" : () => `+=${getPinDistance()}`,
+          pin: compact ? false : stickyRef.current,
+          pinSpacing: compact ? false : true,
+          scrub: compact ? 0.14 : 0.45,
+          anticipatePin: compact ? 0 : 1,
+          invalidateOnRefresh: true,
           fastScrollEnd: false,
+          onRefreshInit: syncMobileStageHeight,
           onUpdate: (self) => {
             const serviceProgress = Math.min(1, Math.max(0, self.progress));
 
@@ -290,6 +301,11 @@ export default function DeliverablesSection() {
       timeline.to({}, { duration: 1 });
 
       return () => {
+        if (masterRef.current) {
+          masterRef.current.style.height = "";
+        }
+        timeline.scrollTrigger?.kill();
+        timeline.kill();
         scrollTriggerRef.current = null;
       };
     },
@@ -346,11 +362,11 @@ export default function DeliverablesSection() {
       tabIndex={0}
       aria-label="Deliverables and showcase"
       onKeyDown={handleKeyDown}
-      className="relative z-20 m-0 min-h-[100svh] w-full overflow-x-hidden bg-white p-0 text-black outline-none pointer-events-auto"
+      className="relative z-20 m-0 min-h-[100svh] w-full overflow-x-clip bg-white p-0 text-black outline-none pointer-events-auto"
     >
       <div
         ref={stickyRef}
-        className="relative h-[100svh] min-h-[100svh] w-full overflow-hidden bg-white lg:h-[100dvh] lg:min-h-[100dvh]"
+        className="sticky top-0 h-[100svh] min-h-[100svh] w-full overflow-hidden bg-white lg:relative lg:top-auto lg:h-[100dvh] lg:min-h-[100dvh]"
       >
         <div className="relative z-[1] flex h-full w-full flex-col justify-center overflow-hidden bg-white px-4 py-0 sm:px-8 md:px-12">
           <div className="w-full max-w-[1500px] mx-auto min-h-[72vh] flex flex-col justify-center">

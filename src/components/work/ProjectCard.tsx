@@ -8,7 +8,9 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { WorkProject } from "@/data/work";
 
-gsap.registerPlugin(ScrollTrigger);
+if (typeof window !== "undefined") {
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 interface ProjectCardProps {
   project: WorkProject;
@@ -48,11 +50,13 @@ export function ProjectCard({
           {
             yPercent: 1.5,
             ease: "none",
+            force3D: true,
             scrollTrigger: {
               trigger: cardRef.current,
               start: "top bottom",
               end: "bottom top",
               scrub: 0.6,
+              invalidateOnRefresh: true,
             },
           }
         );

@@ -48,11 +48,13 @@ export function ProjectCard({
           {
             yPercent: 1.5,
             ease: "none",
+            force3D: true,
             scrollTrigger: {
               trigger: cardRef.current,
               start: "top bottom",
               end: "bottom top",
               scrub: 0.6,
+              invalidateOnRefresh: true,
             },
           }
         );

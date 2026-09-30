@@ -77,60 +77,64 @@ export default function WatWeDoen() {
 
       mm.add(
         {
-          phone: "(max-width: 768px)",
-          tablet: "(min-width: 769px) and (max-width: 1023px)",
+          compact: "(max-width: 1023px)",
           desktop: "(min-width: 1024px)",
           reduced: "(prefers-reduced-motion: reduce)",
         },
         (context) => {
           const conditions = context.conditions as {
-            phone: boolean;
-            tablet: boolean;
+            compact: boolean;
             desktop: boolean;
             reduced: boolean;
           };
 
-          const phone = Boolean(conditions.phone);
-          const tablet = Boolean(conditions.tablet);
-          const mobile = phone || tablet;
+          const compact = Boolean(conditions.compact);
           const reduced = Boolean(conditions.reduced);
           const panelCount = services.length;
-          const revealDuration = phone ? 0.62 : tablet ? 0.7 : 0.86;
 
-          const getScrollDistance = () =>
-            Math.round(
-              sticky.clientHeight *
-                panelCount *
-                (reduced ? 0.72 : phone ? 0.74 : tablet ? 0.86 : 1.22)
-            );
+          const clearPanelProps = () => {
+            panelsRef.current.forEach((panel, index) => {
+              if (!panel) return;
+              gsap.set(panel, {
+                clearProps:
+                  "will-change,transform,opacity,visibility,clip-path,-webkit-clip-path",
+              });
 
-          const syncMobileStageHeight = () => {
-            if (mobile) {
-              wrapper.style.height = `${sticky.clientHeight + getScrollDistance()}px`;
-            } else {
-              wrapper.style.height = "";
-            }
+              gsap.set(
+                panel.querySelectorAll(".title-inner, .service-counter"),
+                { clearProps: "transform,opacity,visibility" }
+              );
+
+              const image = imagesRef.current[index];
+              if (image) {
+                gsap.set(image, {
+                  clearProps: "will-change,transform",
+                });
+              }
+            });
           };
 
-          syncMobileStageHeight();
+          if (compact) {
+            const phone = window.matchMedia("(max-width: 768px)").matches;
+            const transitionCount = Math.max(1, panelCount - 1);
 
-          panelsRef.current.forEach((panel, index) => {
-            if (!panel) return;
+            const getScrollDistance = () =>
+              Math.round(
+                sticky.clientHeight *
+                  transitionCount *
+                  (phone ? 0.78 : 0.9)
+              );
 
-            if (reduced) {
-              gsap.set(panel, {
-                inset: 0,
-                clipPath: "inset(0)",
-                WebkitClipPath: "inset(0)",
-                yPercent: 0,
-                autoAlpha: index === 0 ? 1 : 0,
-                zIndex: 10 + index,
-                force3D: true,
-                willChange: "opacity",
-              });
-            } else if (mobile) {
-              // iOS Safari / in-app browsers are much more reliable with a
-              // transform-based cover than an animated polygon clip-path.
+            const syncStageHeight = () => {
+              wrapper.style.height =
+                `${sticky.clientHeight + getScrollDistance()}px`;
+            };
+
+            syncStageHeight();
+
+            panelsRef.current.forEach((panel, index) => {
+              if (!panel) return;
+
               gsap.set(panel, {
                 inset: 0,
                 clipPath: "inset(0)",
@@ -139,32 +143,153 @@ export default function WatWeDoen() {
                 autoAlpha: 1,
                 zIndex: 10 + index,
                 force3D: true,
-                willChange: "transform",
+                willChange: reduced ? "auto" : "transform",
               });
-            } else {
-              gsap.set(panel, {
-                inset: 0,
-                clipPath: index === 0 ? "inset(0)" : CLOSED_STEPS,
-                WebkitClipPath: index === 0 ? "inset(0)" : CLOSED_STEPS,
-                yPercent: 0,
-                autoAlpha: 1,
-                zIndex: 10 + index,
+
+              gsap.set(panel.querySelectorAll(".title-inner"), {
+                yPercent: reduced || index === 0 ? 0 : 110,
+                autoAlpha: reduced || index === 0 ? 1 : 0,
                 force3D: true,
-                willChange: "clip-path",
               });
-            }
 
-            const titleParts = panel.querySelectorAll(".title-inner");
-            const counters = panel.querySelectorAll(".service-counter");
+              gsap.set(panel.querySelectorAll(".service-counter"), {
+                y: 0,
+                autoAlpha: reduced || index === 0 ? 1 : 0,
+              });
 
-            gsap.set(titleParts, {
+              const image = imagesRef.current[index];
+              if (image) {
+                gsap.set(image, {
+                  scale: 1,
+                  transformOrigin: "center center",
+                  force3D: true,
+                  willChange: reduced ? "auto" : "transform",
+                });
+              }
+            });
+
+            const clamp01 = (value: number) =>
+              Math.min(1, Math.max(0, value));
+
+            const applyProgress = (progress: number) => {
+              const scaled = progress * transitionCount;
+
+              panelsRef.current.forEach((panel, index) => {
+                if (!panel || index === 0) return;
+
+                const local = clamp01(scaled - (index - 1));
+                const titleProgress = reduced
+                  ? local >= 0.5
+                    ? 1
+                    : 0
+                  : clamp01((local - 0.5) / 0.26);
+
+                gsap.set(panel, {
+                  yPercent: reduced
+                    ? local >= 0.5
+                      ? 0
+                      : 100
+                    : (1 - local) * 100,
+                  force3D: true,
+                });
+
+                gsap.set(panel.querySelectorAll(".title-inner"), {
+                  yPercent: reduced ? 0 : (1 - titleProgress) * 110,
+                  autoAlpha: titleProgress,
+                  force3D: true,
+                });
+
+                gsap.set(panel.querySelectorAll(".service-counter"), {
+                  y: reduced ? 0 : (1 - titleProgress) * 6,
+                  autoAlpha: titleProgress,
+                });
+
+                const image = imagesRef.current[index];
+                if (image && !reduced) {
+                  gsap.set(image, {
+                    scale: 1 + local * (phone ? 0.012 : 0.018),
+                    force3D: true,
+                  });
+                }
+              });
+
+              const nextIndex = Math.min(
+                panelCount - 1,
+                Math.max(0, Math.round(scaled))
+              );
+
+              setActiveIndex((previous) =>
+                previous === nextIndex ? previous : nextIndex
+              );
+            };
+
+            const trigger = ScrollTrigger.create({
+              trigger: wrapper,
+              start: "top top",
+              end: "bottom bottom",
+              invalidateOnRefresh: true,
+              refreshPriority: 2,
+              onRefreshInit: syncStageHeight,
+              onUpdate: (self) => applyProgress(self.progress),
+              onLeave: () => {
+                applyProgress(1);
+                setActiveIndex(panelCount - 1);
+              },
+              onLeaveBack: () => {
+                applyProgress(0);
+                setActiveIndex(0);
+              },
+            });
+
+            applyProgress(trigger.progress);
+
+            let firstFrame = 0;
+            let secondFrame = 0;
+            firstFrame = requestAnimationFrame(() => {
+              secondFrame = requestAnimationFrame(() => {
+                if (trigger.isActive || wrapper.isConnected) {
+                  ScrollTrigger.refresh();
+                  applyProgress(trigger.progress);
+                }
+              });
+            });
+
+            return () => {
+              cancelAnimationFrame(firstFrame);
+              cancelAnimationFrame(secondFrame);
+              trigger.kill();
+              wrapper.style.height = "";
+              clearPanelProps();
+            };
+          }
+
+          const revealDuration = 0.86;
+          const getScrollDistance = () =>
+            Math.round(sticky.clientHeight * panelCount * 1.22);
+
+          panelsRef.current.forEach((panel, index) => {
+            if (!panel) return;
+
+            gsap.set(panel, {
+              inset: 0,
+              clipPath: index === 0 ? "inset(0)" : CLOSED_STEPS,
+              WebkitClipPath:
+                index === 0 ? "inset(0)" : CLOSED_STEPS,
+              yPercent: 0,
+              autoAlpha: 1,
+              zIndex: 10 + index,
+              force3D: true,
+              willChange: reduced ? "auto" : "clip-path",
+            });
+
+            gsap.set(panel.querySelectorAll(".title-inner"), {
               yPercent: reduced || index === 0 ? 0 : 110,
               autoAlpha: reduced || index === 0 ? 1 : 0,
               force3D: true,
             });
 
-            gsap.set(counters, {
-              y: index === 0 ? (mobile ? 8 : 12) : mobile ? 6 : 8,
+            gsap.set(panel.querySelectorAll(".service-counter"), {
+              y: index === 0 ? 12 : 8,
               autoAlpha: index === 0 ? 0 : reduced ? 1 : 0,
             });
 
@@ -180,21 +305,18 @@ export default function WatWeDoen() {
           });
 
           const timeline = gsap.timeline({
-            defaults: {
-              overwrite: "auto",
-            },
+            defaults: { overwrite: "auto" },
             scrollTrigger: {
               trigger: wrapper,
               start: "top top",
-              end: mobile ? "bottom bottom" : () => `+=${getScrollDistance()}`,
-              pin: mobile ? false : sticky,
-              pinSpacing: mobile ? false : true,
-              scrub: reduced ? 0.08 : phone ? 0.08 : tablet ? 0.12 : 0.5,
-              anticipatePin: mobile ? 0 : 1,
+              end: () => `+=${getScrollDistance()}`,
+              pin: sticky,
+              pinSpacing: true,
+              scrub: reduced ? 0.1 : 0.5,
+              anticipatePin: 1,
               invalidateOnRefresh: true,
               fastScrollEnd: false,
               refreshPriority: 1,
-              onRefreshInit: syncMobileStageHeight,
               onUpdate: (self) => {
                 const raw = Math.min(
                   self.progress * panelCount,
@@ -202,7 +324,6 @@ export default function WatWeDoen() {
                 );
                 const segment = Math.floor(raw);
                 const localProgress = raw - segment;
-
                 const nextIndex =
                   segment === 0
                     ? 0
@@ -247,25 +368,12 @@ export default function WatWeDoen() {
             }
 
             if (reduced) {
-              // Respect Reduce Motion without falling back to the old stacked
-              // card layout: keep the pinned showcase and use a tiny crossfade.
               timeline.to(
                 panel,
                 {
                   autoAlpha: 1,
                   duration: 0.12,
                   ease: "none",
-                },
-                segmentStart
-              );
-            } else if (mobile) {
-              timeline.to(
-                panel,
-                {
-                  yPercent: 0,
-                  duration: revealDuration,
-                  ease: "none",
-                  force3D: true,
                 },
                 segmentStart
               );
@@ -287,7 +395,7 @@ export default function WatWeDoen() {
               timeline.to(
                 image,
                 {
-                  scale: phone ? 1.012 : tablet ? 1.018 : 1.095,
+                  scale: 1.095,
                   duration: 1,
                   ease: "none",
                   force3D: true,
@@ -304,7 +412,7 @@ export default function WatWeDoen() {
                 {
                   yPercent: 0,
                   autoAlpha: 1,
-                  duration: phone ? 0.18 : tablet ? 0.22 : 0.26,
+                  duration: 0.26,
                   ease: "power3.out",
                   force3D: true,
                 },
@@ -316,7 +424,7 @@ export default function WatWeDoen() {
                 {
                   y: 0,
                   autoAlpha: 1,
-                  duration: phone ? 0.16 : tablet ? 0.18 : 0.22,
+                  duration: 0.22,
                   ease: "power2.out",
                 },
                 revealAt + 0.04
@@ -334,37 +442,10 @@ export default function WatWeDoen() {
             );
           });
 
-          let firstFrame = 0;
-          let secondFrame = 0;
-
-          firstFrame = requestAnimationFrame(() => {
-            secondFrame = requestAnimationFrame(() => {
-              ScrollTrigger.refresh();
-            });
-          });
-
           return () => {
-            cancelAnimationFrame(firstFrame);
-            cancelAnimationFrame(secondFrame);
-            wrapper.style.height = "";
             timeline.scrollTrigger?.kill();
             timeline.kill();
-
-            panelsRef.current.forEach((panel, index) => {
-              if (panel) {
-                gsap.set(panel, {
-                  clearProps:
-                    "will-change,transform,opacity,visibility,clip-path,-webkit-clip-path",
-                });
-              }
-
-              const image = imagesRef.current[index];
-              if (image) {
-                gsap.set(image, {
-                  clearProps: "will-change,transform",
-                });
-              }
-            });
+            clearPanelProps();
           };
         }
       );

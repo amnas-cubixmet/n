@@ -225,12 +225,16 @@ export default function DeliverablesSection() {
       if (motionQuery.matches) return;
 
       const total = deliverables.length;
-      const compact = window.matchMedia("(max-width: 1023px)").matches;
+      const phone = window.matchMedia("(max-width: 768px)").matches;
+      const tablet = window.matchMedia(
+        "(min-width: 769px) and (max-width: 1023px)"
+      ).matches;
+      const compact = phone || tablet;
 
       const getPinDistance = () =>
         Math.round(
           Math.max(320, stickyRef.current?.clientHeight ?? window.innerHeight) *
-            total * (compact ? 0.68 : 0.88)
+            total * (phone ? 0.58 : tablet ? 0.68 : 0.88)
         );
 
       const syncMobileStageHeight = () => {
@@ -254,7 +258,7 @@ export default function DeliverablesSection() {
           end: compact ? "bottom bottom" : () => `+=${getPinDistance()}`,
           pin: compact ? false : stickyRef.current,
           pinSpacing: compact ? false : true,
-          scrub: compact ? 0.14 : 0.45,
+          scrub: phone ? 0.08 : tablet ? 0.12 : 0.45,
           anticipatePin: compact ? 0 : 1,
           invalidateOnRefresh: true,
           fastScrollEnd: false,

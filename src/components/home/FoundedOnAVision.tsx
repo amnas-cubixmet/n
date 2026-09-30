@@ -65,18 +65,18 @@ export default function FoundedOnAVision() {
 
         gsap.set(text, {
           autoAlpha: 0,
-          y: mobile ? 14 : 18,
+          y: mobile ? 12 : 18,
           force3D: true,
         });
 
         gsap.set(image, {
           autoAlpha: 0,
-          y: mobile ? 12 : 16,
+          y: mobile ? 10 : 16,
           force3D: true,
         });
 
         gsap.set(imageInner, {
-          scale: 1.02,
+          scale: mobile ? 1.015 : 1.02,
           transformOrigin: "center center",
           force3D: true,
         });
@@ -88,7 +88,7 @@ export default function FoundedOnAVision() {
           },
           scrollTrigger: {
             trigger: containerRef.current,
-            start: mobile ? "top 88%" : "top 82%",
+            start: mobile ? "top 92%" : "top 82%",
             once: true,
             invalidateOnRefresh: true,
           },

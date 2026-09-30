@@ -29,8 +29,9 @@ export default function OurVision() {
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: containerRef.current,
-            start: mobile ? "top 88%" : "top 80%",
+            start: mobile ? "top 92%" : "top 82%",
             once: true,
+            invalidateOnRefresh: true,
           },
         });
 
@@ -52,7 +53,7 @@ export default function OurVision() {
             copy,
             {
               opacity: 0,
-              y: mobile ? 16 : 24,
+              y: mobile ? 12 : 24,
               duration: mobile ? 0.52 : 0.8,
               ease: "power3.out",
             },

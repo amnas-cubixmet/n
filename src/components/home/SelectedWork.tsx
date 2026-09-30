@@ -24,23 +24,27 @@ export default function SelectedWork() {
 
       const media = gsap.matchMedia();
 
-      const buildCardReveals = (mobile: boolean) => {
+      const buildCardReveals = (
+        y: number,
+        duration: number,
+        start: string
+      ) => {
         cards.forEach((card) => {
           gsap.fromTo(
             card,
             {
               autoAlpha: 0,
-              y: mobile ? 14 : 28,
+              y,
             },
             {
               autoAlpha: 1,
               y: 0,
-              duration: mobile ? 0.48 : 0.62,
+              duration,
               ease: "power3.out",
               force3D: true,
               scrollTrigger: {
                 trigger: card,
-                start: mobile ? "top 92%" : "top 88%",
+                start,
                 once: true,
                 invalidateOnRefresh: true,
               },
@@ -49,8 +53,15 @@ export default function SelectedWork() {
         });
       };
 
-      media.add("(max-width: 1023px)", () => buildCardReveals(true));
-      media.add("(min-width: 1024px)", () => buildCardReveals(false));
+      media.add("(max-width: 768px)", () =>
+        buildCardReveals(12, 0.44, "top 94%")
+      );
+      media.add("(min-width: 769px) and (max-width: 1023px)", () =>
+        buildCardReveals(16, 0.5, "top 92%")
+      );
+      media.add("(min-width: 1024px)", () =>
+        buildCardReveals(28, 0.62, "top 88%")
+      );
 
       media.add("(min-width: 1024px) and (hover: hover) and (pointer: fine)", () => {
         if (!shapeRef.current) return;

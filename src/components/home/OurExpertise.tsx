@@ -12,34 +12,73 @@ if (typeof window !== "undefined") {
 export default function OurExpertise() {
   const containerRef = useRef<HTMLElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
+  const copyRef = useRef<HTMLParagraphElement>(null);
 
   useGSAP(
     () => {
-      if (typeof window === "undefined" || !containerRef.current) return;
-
-      const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-
+      const container = containerRef.current;
       const label = labelRef.current;
-      if (!label || motionQuery.matches) return;
+      const copy = copyRef.current;
+      if (!container || !label || !copy) return;
+
+      const reduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      if (reduced) {
+        gsap.set([label, copy], {
+          autoAlpha: 1,
+          y: 0,
+          clearProps: "transform",
+        });
+        return;
+      }
 
       const mm = gsap.matchMedia();
 
       const buildReveal = (mobile: boolean) => {
-        gsap.fromTo(label, {
+        gsap.set(label, {
           autoAlpha: 0,
           y: mobile ? 6 : 8,
-        }, {
-          autoAlpha: 1,
-          y: 0,
-          duration: mobile ? 0.45 : 0.6,
-          ease: "power3.out",
+          force3D: true,
+        });
+
+        gsap.set(copy, {
+          autoAlpha: 0,
+          y: mobile ? 14 : 24,
+          force3D: true,
+        });
+
+        const timeline = gsap.timeline({
+          defaults: {
+            ease: "power3.out",
+            overwrite: "auto",
+          },
           scrollTrigger: {
-            trigger: containerRef.current,
-            start: "top 78%",
+            trigger: container,
+            start: mobile ? "top 90%" : "top 82%",
             once: true,
             invalidateOnRefresh: true,
           },
         });
+
+        timeline
+          .to(label, {
+            autoAlpha: 1,
+            y: 0,
+            duration: mobile ? 0.34 : 0.5,
+          })
+          .to(
+            copy,
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: mobile ? 0.5 : 0.66,
+            },
+            mobile ? "-=0.12" : "-=0.18"
+          );
+
+        return () => timeline.kill();
       };
 
       mm.add("(max-width: 768px)", () => buildReveal(true));
@@ -47,9 +86,7 @@ export default function OurExpertise() {
 
       return () => mm.revert();
     },
-    {
-      scope: containerRef,
-    }
+    { scope: containerRef }
   );
 
   return (
@@ -70,7 +107,10 @@ export default function OurExpertise() {
           </div>
 
           <div className="mt-7 max-w-[950px] sm:mt-10 lg:mt-14">
-            <p className="m-0 font-sans text-[clamp(18px,4.7vw,23px)] font-normal leading-[1.34] tracking-[-0.025em] text-black sm:text-[clamp(23px,2.1vw,32px)]">
+            <p
+              ref={copyRef}
+              className="m-0 font-sans text-[clamp(18px,4.7vw,23px)] font-normal leading-[1.34] tracking-[-0.025em] text-black sm:text-[clamp(23px,2.1vw,32px)]"
+            >
               What do we do best? Branding, design, and digital experiences.
               Expertise isn’t just about what we do, but how exceptionally we do
               it. We push every detail further and make work that feels

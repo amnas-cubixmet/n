@@ -159,59 +159,68 @@ export default function ContactSection() {
         return;
       }
 
-      const targets = [
-        introRef.current,
-        formAreaRef.current,
-        contactAreaRef.current,
-        brandRef.current,
-      ].filter(Boolean);
+      const mm = gsap.matchMedia();
 
-      gsap.set(targets, {
-        autoAlpha: 0,
-        y: 14,
-        force3D: true,
-      });
-
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: sectionRef.current,
-          start: "top 84%",
-          once: true,
-          invalidateOnRefresh: true,
-        },
-        defaults: {
-          ease: "power3.out",
-          overwrite: "auto",
-        },
-      });
-
-      timeline
-        .to(introRef.current, {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.42,
-        })
-        .to(
-          [formAreaRef.current, contactAreaRef.current],
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.48,
-            stagger: 0.06,
-          },
-          "-=0.24"
-        )
-        .to(
+      const buildReveal = (mobile: boolean) => {
+        const targets = [
+          introRef.current,
+          formAreaRef.current,
+          contactAreaRef.current,
           brandRef.current,
-          {
+        ].filter(Boolean);
+
+        gsap.set(targets, {
+          autoAlpha: 0,
+          y: mobile ? 10 : 14,
+          force3D: true,
+        });
+
+        const timeline = gsap.timeline({
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: mobile ? "top 92%" : "top 84%",
+            once: true,
+            invalidateOnRefresh: true,
+          },
+          defaults: {
+            ease: "power3.out",
+            overwrite: "auto",
+          },
+        });
+
+        timeline
+          .to(introRef.current, {
             autoAlpha: 1,
             y: 0,
-            duration: 0.5,
-          },
-          "-=0.28"
-        );
+            duration: mobile ? 0.34 : 0.42,
+          })
+          .to(
+            [formAreaRef.current, contactAreaRef.current],
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: mobile ? 0.4 : 0.48,
+              stagger: mobile ? 0.04 : 0.06,
+            },
+            mobile ? "-=0.18" : "-=0.24"
+          )
+          .to(
+            brandRef.current,
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: mobile ? 0.42 : 0.5,
+            },
+            mobile ? "-=0.22" : "-=0.28"
+          );
 
-      return () => timeline.kill();
+        return () => timeline.kill();
+      };
+
+      mm.add("(max-width: 768px)", () => buildReveal(true));
+      mm.add("(min-width: 769px)", () => buildReveal(false));
+
+      return () => mm.revert();
     },
     {
       scope: sectionRef,

@@ -22,22 +22,36 @@ export default function SelectedWork() {
         sectionRef.current.querySelectorAll(".work-project-item")
       );
 
-      cards.forEach((card) => {
-        gsap.fromTo(card, { autoAlpha: 0, y: 22 }, {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.62,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: card,
-            start: "top 90%",
-            once: true,
-            invalidateOnRefresh: true,
-          },
-        });
-      });
-
       const media = gsap.matchMedia();
+
+      const buildCardReveals = (mobile: boolean) => {
+        cards.forEach((card) => {
+          gsap.fromTo(
+            card,
+            {
+              autoAlpha: 0,
+              y: mobile ? 14 : 28,
+            },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration: mobile ? 0.48 : 0.62,
+              ease: "power3.out",
+              force3D: true,
+              scrollTrigger: {
+                trigger: card,
+                start: mobile ? "top 92%" : "top 88%",
+                once: true,
+                invalidateOnRefresh: true,
+              },
+            }
+          );
+        });
+      };
+
+      media.add("(max-width: 1023px)", () => buildCardReveals(true));
+      media.add("(min-width: 1024px)", () => buildCardReveals(false));
+
       media.add("(min-width: 1024px) and (hover: hover) and (pointer: fine)", () => {
         if (!shapeRef.current) return;
         gsap.fromTo(shapeRef.current, { yPercent: -5 }, {
@@ -48,6 +62,7 @@ export default function SelectedWork() {
             start: "top bottom",
             end: "bottom top",
             scrub: 0.8,
+            invalidateOnRefresh: true,
           },
         });
       });

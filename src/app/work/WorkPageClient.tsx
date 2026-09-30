@@ -208,12 +208,16 @@ export default function WorkPageClient() {
       });
     }, root);
 
-    const firstFrame = requestAnimationFrame(() => {
-      requestAnimationFrame(() => ScrollTrigger.refresh());
+    let firstFrame = 0;
+    let secondFrame = 0;
+
+    firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => ScrollTrigger.refresh());
     });
 
     return () => {
       cancelAnimationFrame(firstFrame);
+      cancelAnimationFrame(secondFrame);
       media?.revert();
       ctx.revert();
     };

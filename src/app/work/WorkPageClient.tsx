@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -18,7 +18,7 @@ export default function WorkPageClient() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mobileQuery = window.matchMedia("(max-width: 768px)");
+    const mobileQuery = window.matchMedia("(max-width: 1023px)");
     const syncMobile = () => setIsMobile(mobileQuery.matches);
 
     syncMobile();
@@ -32,7 +32,7 @@ export default function WorkPageClient() {
     return () => mobileQuery.removeListener(syncMobile);
   }, []);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
       if (motionQuery.matches) return;
@@ -51,7 +51,7 @@ export default function WorkPageClient() {
         if (isMobile) {
           gsap.fromTo(
             cardInner,
-            { opacity: 0, y: 24 },
+            { opacity: 0, y: 16 },
             {
               opacity: 1,
               y: 0,
@@ -59,8 +59,9 @@ export default function WorkPageClient() {
               ease: "power3.out",
               scrollTrigger: {
                 trigger: card,
-                start: "top 88%",
+                start: "top 92%",
                 once: true,
+                invalidateOnRefresh: true,
               },
             }
           );
@@ -75,7 +76,9 @@ export default function WorkPageClient() {
                 ease: "power3.out",
                 scrollTrigger: {
                   trigger: card,
-                  start: "top 85%",
+                  start: "top 90%",
+                  once: true,
+                  invalidateOnRefresh: true,
                 },
               }
             );
@@ -94,6 +97,7 @@ export default function WorkPageClient() {
                 scrollTrigger: {
                   trigger: card,
                   start: "top 82%",
+                  invalidateOnRefresh: true,
                 },
               }
             );
@@ -112,6 +116,7 @@ export default function WorkPageClient() {
                 scrollTrigger: {
                   trigger: card,
                   start: "top 82%",
+                  invalidateOnRefresh: true,
                 },
               }
             );
@@ -129,6 +134,7 @@ export default function WorkPageClient() {
                   start: "top bottom",
                   end: "bottom top",
                   scrub: 0.8,
+                  invalidateOnRefresh: true,
                 },
               }
             );
@@ -145,7 +151,8 @@ export default function WorkPageClient() {
                 ease: "power3.out",
                 scrollTrigger: {
                   trigger: card,
-                  start: "top 78%",
+                  start: "top 80%",
+                  invalidateOnRefresh: true,
                 },
               }
             );
@@ -163,7 +170,8 @@ export default function WorkPageClient() {
                 ease: "power3.out",
                 scrollTrigger: {
                   trigger: card,
-                  start: "top 78%",
+                  start: "top 80%",
+                  invalidateOnRefresh: true,
                 },
               }
             );

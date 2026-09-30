@@ -35,7 +35,11 @@ export default function StatementSection() {
         window.matchMedia("(prefers-reduced-motion: reduce)").matches
       ) return;
 
-      const compact = window.matchMedia("(max-width: 1023px)").matches;
+      const phone = window.matchMedia("(max-width: 768px)").matches;
+      const tablet = window.matchMedia(
+        "(min-width: 769px) and (max-width: 1023px)"
+      ).matches;
+      const compact = phone || tablet;
       const stage = stageRef.current;
       const wow = wowRef.current;
       const wowBox = wow.getBoundingClientRect();
@@ -58,7 +62,7 @@ export default function StatementSection() {
       const getScrollDistance = () =>
         Math.round(
           stage.clientHeight *
-            (1.56 + extraCount * (compact ? 0.13 : 0.15))
+            (1.48 + extraCount * (phone ? 0.1 : tablet ? 0.13 : 0.15))
         );
 
       const syncSectionHeight = () => {
@@ -76,7 +80,7 @@ export default function StatementSection() {
           end: compact ? "bottom bottom" : "bottom top",
           pin: compact ? false : stage,
           pinSpacing: false,
-          scrub: compact ? 0.1 : 0.18,
+          scrub: phone ? 0.07 : tablet ? 0.1 : 0.18,
           anticipatePin: compact ? 0 : 1,
           invalidateOnRefresh: true,
           onRefreshInit: syncSectionHeight,
@@ -111,7 +115,7 @@ export default function StatementSection() {
         exitOverlay,
         {
           yPercent: 0,
-          duration: compact ? 0.42 : 0.46,
+          duration: phone ? 0.36 : tablet ? 0.42 : 0.46,
           ease: "none",
           force3D: true,
         },
@@ -119,7 +123,12 @@ export default function StatementSection() {
       );
 
       return () => {
+        timeline.scrollTrigger?.kill();
+        timeline.kill();
         section.style.height = "";
+        gsap.set(exitOverlay, {
+          clearProps: "transform,will-change",
+        });
       };
     },
     { scope: sectionRef }

@@ -19,6 +19,7 @@ export default function MotionRuntime() {
     let refreshFrame = 0;
     let settleFrame = 0;
     let orientationTimer = 0;
+    let delayedRefreshTimer = 0;
     let active = true;
     let lastWidth = window.innerWidth;
 
@@ -56,6 +57,12 @@ export default function MotionRuntime() {
       refreshAfterPaint();
     };
 
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        refreshAfterPaint();
+      }
+    };
+
     const mediaCleanups: Array<() => void> = [];
 
     document.querySelectorAll<HTMLImageElement>("img").forEach((image) => {
@@ -79,8 +86,10 @@ export default function MotionRuntime() {
     });
 
     window.addEventListener("load", refreshAfterPaint, { once: true });
+    window.addEventListener("resize", handleViewportResize, { passive: true });
     window.addEventListener("orientationchange", handleOrientationChange);
     window.addEventListener("pageshow", handlePageShow);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     window.visualViewport?.addEventListener("resize", handleViewportResize);
 
     if (document.fonts?.ready) {
@@ -91,14 +100,23 @@ export default function MotionRuntime() {
 
     refreshAfterPaint();
 
+    // Mobile Safari/Chrome and in-app browsers can change the visual viewport
+    // again after their top/bottom browser chrome settles. One delayed refresh
+    // keeps all ScrollTrigger start/end measurements aligned without reacting
+    // continuously to toolbar height changes.
+    delayedRefreshTimer = window.setTimeout(refreshAfterPaint, 420);
+
     return () => {
       active = false;
       cancelAnimationFrame(refreshFrame);
       cancelAnimationFrame(settleFrame);
       window.clearTimeout(orientationTimer);
+      window.clearTimeout(delayedRefreshTimer);
       window.removeEventListener("load", refreshAfterPaint);
+      window.removeEventListener("resize", handleViewportResize);
       window.removeEventListener("orientationchange", handleOrientationChange);
       window.removeEventListener("pageshow", handlePageShow);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
       window.visualViewport?.removeEventListener("resize", handleViewportResize);
       mediaCleanups.forEach((cleanup) => cleanup());
     };

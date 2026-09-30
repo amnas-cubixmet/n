@@ -71,7 +71,12 @@ export default function OurUSPs() {
 
       const mm = gsap.matchMedia();
 
-      const buildMotion = (mobile: boolean) => {
+      const buildMotion = (
+        y: number,
+        duration: number,
+        start: string,
+        desktop: boolean
+      ) => {
         const reveals = gsap.utils.toArray<HTMLElement>(
           ".usp-reveal",
           containerRef.current
@@ -82,17 +87,17 @@ export default function OurUSPs() {
             element,
             {
               autoAlpha: 0,
-              y: mobile ? 14 : 28,
+              y,
             },
             {
               autoAlpha: 1,
               y: 0,
-              duration: mobile ? 0.48 : 0.52,
+              duration,
               ease: "power3.out",
               force3D: true,
               scrollTrigger: {
                 trigger: element,
-                start: mobile ? "top 92%" : "top 86%",
+                start,
                 once: true,
                 invalidateOnRefresh: true,
               },
@@ -101,7 +106,7 @@ export default function OurUSPs() {
           );
         });
 
-        if (!mobile && shapeRef.current) {
+        if (desktop && shapeRef.current) {
           gsap.fromTo(
             shapeRef.current,
             {
@@ -123,8 +128,15 @@ export default function OurUSPs() {
         }
       };
 
-      mm.add("(max-width: 1023px)", () => buildMotion(true));
-      mm.add("(min-width: 1024px)", () => buildMotion(false));
+      mm.add("(max-width: 768px)", () =>
+        buildMotion(12, 0.44, "top 94%", false)
+      );
+      mm.add("(min-width: 769px) and (max-width: 1023px)", () =>
+        buildMotion(16, 0.48, "top 92%", false)
+      );
+      mm.add("(min-width: 1024px)", () =>
+        buildMotion(28, 0.52, "top 86%", true)
+      );
 
       return () => mm.revert();
     },

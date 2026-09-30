@@ -95,7 +95,9 @@ html,
 body {
   width: 100%;
   max-width: 100%;
-  overflow-x: hidden;
+  /* clip prevents horizontal paint overflow without creating a nested
+     scroll container that can break position: sticky in iOS/WebKit. */
+  overflow-x: clip;
 }
 
 body {
@@ -540,6 +542,25 @@ video {
   .wat-we-doen-sticky,
   #deliverables > div:first-of-type,
   #statement > div[aria-label] {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+}
+
+
+/* MOBILE SCROLLTRIGGER / STICKY SAFETY
+   Never turn the main page wrappers into vertical scrolling containers.
+   Sticky storytelling sections must remain attached to the document scroller. */
+.page,
+.foreground,
+.shared-background-range,
+.wat-we-doen-scroll {
+  overflow-y: visible;
+}
+
+@media (max-width: 1023px) {
+  .wat-we-doen-sticky,
+  #deliverables > div:first-child {
     -webkit-backface-visibility: hidden;
     backface-visibility: hidden;
   }

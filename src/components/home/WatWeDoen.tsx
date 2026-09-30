@@ -77,27 +77,31 @@ export default function WatWeDoen() {
 
       mm.add(
         {
-          mobile: "(max-width: 1023px)",
+          phone: "(max-width: 768px)",
+          tablet: "(min-width: 769px) and (max-width: 1023px)",
           desktop: "(min-width: 1024px)",
           reduced: "(prefers-reduced-motion: reduce)",
         },
         (context) => {
           const conditions = context.conditions as {
-            mobile: boolean;
+            phone: boolean;
+            tablet: boolean;
             desktop: boolean;
             reduced: boolean;
           };
 
-          const mobile = Boolean(conditions.mobile);
+          const phone = Boolean(conditions.phone);
+          const tablet = Boolean(conditions.tablet);
+          const mobile = phone || tablet;
           const reduced = Boolean(conditions.reduced);
           const panelCount = services.length;
-          const revealDuration = mobile ? 0.72 : 0.86;
+          const revealDuration = phone ? 0.62 : tablet ? 0.7 : 0.86;
 
           const getScrollDistance = () =>
             Math.round(
               sticky.clientHeight *
                 panelCount *
-                (reduced ? 0.72 : mobile ? 0.84 : 1.22)
+                (reduced ? 0.72 : phone ? 0.74 : tablet ? 0.86 : 1.22)
             );
 
           const syncMobileStageHeight = () => {
@@ -185,7 +189,7 @@ export default function WatWeDoen() {
               end: mobile ? "bottom bottom" : () => `+=${getScrollDistance()}`,
               pin: mobile ? false : sticky,
               pinSpacing: mobile ? false : true,
-              scrub: reduced ? 0.1 : mobile ? 0.12 : 0.5,
+              scrub: reduced ? 0.08 : phone ? 0.08 : tablet ? 0.12 : 0.5,
               anticipatePin: mobile ? 0 : 1,
               invalidateOnRefresh: true,
               fastScrollEnd: false,
@@ -283,7 +287,7 @@ export default function WatWeDoen() {
               timeline.to(
                 image,
                 {
-                  scale: mobile ? 1.02 : 1.095,
+                  scale: phone ? 1.012 : tablet ? 1.018 : 1.095,
                   duration: 1,
                   ease: "none",
                   force3D: true,
@@ -300,7 +304,7 @@ export default function WatWeDoen() {
                 {
                   yPercent: 0,
                   autoAlpha: 1,
-                  duration: mobile ? 0.22 : 0.26,
+                  duration: phone ? 0.18 : tablet ? 0.22 : 0.26,
                   ease: "power3.out",
                   force3D: true,
                 },
@@ -312,7 +316,7 @@ export default function WatWeDoen() {
                 {
                   y: 0,
                   autoAlpha: 1,
-                  duration: mobile ? 0.18 : 0.22,
+                  duration: phone ? 0.16 : tablet ? 0.18 : 0.22,
                   ease: "power2.out",
                 },
                 revealAt + 0.04

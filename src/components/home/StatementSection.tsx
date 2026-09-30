@@ -123,7 +123,12 @@ export default function StatementSection() {
       );
 
       return () => {
+        timeline.scrollTrigger?.kill();
+        timeline.kill();
         section.style.height = "";
+        gsap.set(exitOverlay, {
+          clearProps: "transform,will-change",
+        });
       };
     },
     { scope: sectionRef }

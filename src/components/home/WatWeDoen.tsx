@@ -77,8 +77,8 @@ export default function WatWeDoen() {
 
       mm.add(
         {
-          mobile: "(max-width: 767px)",
-          desktop: "(min-width: 768px)",
+          mobile: "(max-width: 1023px)",
+          desktop: "(min-width: 1024px)",
           reduced: "(prefers-reduced-motion: reduce)",
         },
         (context) => {
@@ -91,7 +91,24 @@ export default function WatWeDoen() {
           const mobile = Boolean(conditions.mobile);
           const reduced = Boolean(conditions.reduced);
           const panelCount = services.length;
-          const revealDuration = mobile ? 0.76 : 0.86;
+          const revealDuration = mobile ? 0.72 : 0.86;
+
+          const getScrollDistance = () =>
+            Math.round(
+              sticky.clientHeight *
+                panelCount *
+                (reduced ? 0.72 : mobile ? 0.84 : 1.22)
+            );
+
+          const syncMobileStageHeight = () => {
+            if (mobile) {
+              wrapper.style.height = `${sticky.clientHeight + getScrollDistance()}px`;
+            } else {
+              wrapper.style.height = "";
+            }
+          };
+
+          syncMobileStageHeight();
 
           panelsRef.current.forEach((panel, index) => {
             if (!panel) return;
@@ -165,19 +182,15 @@ export default function WatWeDoen() {
             scrollTrigger: {
               trigger: wrapper,
               start: "top top",
-              end: () =>
-                `+=${Math.round(
-                  sticky.clientHeight *
-                    panelCount *
-                    (reduced ? 0.72 : mobile ? 0.98 : 1.22)
-                )}`,
-              pin: sticky,
-              pinSpacing: true,
-              scrub: reduced ? 0.12 : mobile ? 0.24 : 0.5,
-              anticipatePin: 1,
+              end: mobile ? "bottom bottom" : () => `+=${getScrollDistance()}`,
+              pin: mobile ? false : sticky,
+              pinSpacing: mobile ? false : true,
+              scrub: reduced ? 0.1 : mobile ? 0.12 : 0.5,
+              anticipatePin: mobile ? 0 : 1,
               invalidateOnRefresh: true,
               fastScrollEnd: false,
               refreshPriority: 1,
+              onRefreshInit: syncMobileStageHeight,
               onUpdate: (self) => {
                 const raw = Math.min(
                   self.progress * panelCount,
@@ -270,7 +283,7 @@ export default function WatWeDoen() {
               timeline.to(
                 image,
                 {
-                  scale: mobile ? 1.035 : 1.095,
+                  scale: mobile ? 1.02 : 1.095,
                   duration: 1,
                   ease: "none",
                   force3D: true,
@@ -317,11 +330,19 @@ export default function WatWeDoen() {
             );
           });
 
-          requestAnimationFrame(() => {
-            ScrollTrigger.refresh();
+          let firstFrame = 0;
+          let secondFrame = 0;
+
+          firstFrame = requestAnimationFrame(() => {
+            secondFrame = requestAnimationFrame(() => {
+              ScrollTrigger.refresh();
+            });
           });
 
           return () => {
+            cancelAnimationFrame(firstFrame);
+            cancelAnimationFrame(secondFrame);
+            wrapper.style.height = "";
             timeline.scrollTrigger?.kill();
             timeline.kill();
 
@@ -361,7 +382,7 @@ export default function WatWeDoen() {
     >
       <div
         ref={stickyRef}
-        className="wat-we-doen-sticky relative h-[100svh] min-h-[100svh] w-full overflow-hidden bg-transparent md:h-[100dvh] md:min-h-[100dvh]"
+        className="wat-we-doen-sticky sticky top-0 h-[100svh] min-h-[100svh] w-full overflow-hidden bg-transparent lg:relative lg:top-auto lg:h-[100dvh] lg:min-h-[100dvh]"
       >
         <div className="wat-we-doen-stage relative h-full w-full overflow-hidden bg-transparent">
           <div className="absolute left-[max(1.1rem,env(safe-area-inset-left))] right-[max(4.5rem,env(safe-area-inset-right))] top-[max(1.1rem,env(safe-area-inset-top))] z-[80] flex items-start gap-4 pointer-events-none md:left-8 md:right-24 md:top-[max(2rem,env(safe-area-inset-top))] md:gap-12">

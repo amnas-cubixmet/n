@@ -76,26 +76,23 @@ export default function FoundedOnAVision() {
         });
 
         gsap.set(imageInner, {
-          scale: mobile ? 1.015 : 1.02,
+          scale: mobile ? 1.025 : 1.04,
+          yPercent: mobile ? 1 : 2,
           transformOrigin: "center center",
           force3D: true,
         });
 
         const timeline = gsap.timeline({
           defaults: {
-            ease: "power3.out",
+            ease: "none",
             overwrite: "auto",
           },
           scrollTrigger: {
             trigger: containerRef.current,
-            start: mobile ? "top 92%" : "top 82%",
-            once: true,
+            start: mobile ? "top 92%" : "top 88%",
+            end: mobile ? "top 38%" : "top 34%",
+            scrub: mobile ? 0.35 : 0.7,
             invalidateOnRefresh: true,
-          },
-          onComplete: () => {
-            gsap.set([label, text, image, imageInner], {
-              clearProps: "will-change",
-            });
           },
         });
 
@@ -103,35 +100,35 @@ export default function FoundedOnAVision() {
           .to(label, {
             autoAlpha: 1,
             y: 0,
-            duration: mobile ? 0.3 : 0.36,
+            duration: 0.24,
           })
           .to(
             text,
             {
               autoAlpha: 1,
               y: 0,
-              duration: mobile ? 0.48 : 0.56,
+              duration: 0.42,
             },
-            mobile ? "-=0.12" : "-=0.14"
+            0.08
           )
           .to(
             image,
             {
               autoAlpha: 1,
               y: 0,
-              duration: mobile ? 0.5 : 0.58,
+              duration: 0.46,
             },
-            mobile ? "-=0.32" : "-=0.38"
+            0.12
           )
           .to(
             imageInner,
             {
               scale: 1,
-              duration: mobile ? 0.52 : 0.62,
-              ease: "power2.out",
+              yPercent: mobile ? -1 : -2,
+              duration: 0.58,
               force3D: true,
             },
-            "<"
+            0.12
           );
       };
 
@@ -173,7 +170,7 @@ export default function FoundedOnAVision() {
             ref={labelRef}
             className="mb-6 flex items-center sm:mb-8"
           >
-            <span className="inline-block bg-black px-2.5 py-1 font-pixel text-xs font-bold uppercase leading-none tracking-wider text-white sm:text-sm">
+            <span className="inline-block bg-black px-2.5 py-1 font-mono text-xs font-bold uppercase leading-none tracking-wider text-white sm:text-sm">
               FOUNDED ON A VISION
             </span>
           </div>

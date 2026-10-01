@@ -106,7 +106,7 @@ export default function OurExpertise() {
             </span>
           </div>
 
-          <div className="mt-7 max-w-[950px] sm:mt-10 lg:mt-14">
+          <div className="mt-4 max-w-[950px] sm:mt-5 lg:mt-6">
             <p
               ref={copyRef}
               className="m-0 font-sans text-[clamp(18px,4.7vw,23px)] font-normal leading-[1.34] tracking-[-0.025em] text-black sm:text-[clamp(23px,2.1vw,32px)]"

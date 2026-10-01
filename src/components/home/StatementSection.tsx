@@ -96,9 +96,9 @@ export default function StatementSection() {
           const getScrollDistance = () =>
             Math.round(
               stage.clientHeight *
-                (1.48 +
+                (1.9 +
                   extraCount *
-                    (phone ? 0.1 : tablet ? 0.13 : 0.15))
+                    (phone ? 0.12 : tablet ? 0.15 : 0.18))
             );
 
           const syncSectionHeight = () => {
@@ -125,20 +125,30 @@ export default function StatementSection() {
             },
           });
 
-          timeline
-            .to({}, { duration: phone ? 0.12 : tablet ? 0.14 : 0.16 })
-            .to(heading, {
-              autoAlpha: 1,
-              duration: phone ? 0.18 : tablet ? 0.2 : 0.22,
-              ease: "power1.out",
-              force3D: true,
-            });
+          // 1) The blue overlay must fully cover the viewport first.
+          // Keep the stage clean for a short beat before any typography appears.
+          timeline.to({}, {
+            duration: phone ? 0.34 : tablet ? 0.44 : 0.58,
+          });
 
+          // 2) Reveal the complete typography composition only after full cover.
+          timeline.to(heading, {
+            autoAlpha: 1,
+            duration: phone ? 0.16 : tablet ? 0.2 : 0.24,
+            ease: "power1.out",
+            force3D: true,
+          });
+
+          timeline.to({}, {
+            duration: phone ? 0.12 : tablet ? 0.16 : 0.2,
+          });
+
+          // 3) Treat each word one-by-one: WE → MAKE → BRANDS → GO → WOW.
           blackFillRefs.current.forEach((fill) => {
             timeline
               .to(fill, {
                 clipPath: "inset(0 0% 0 0)",
-                duration: phone ? 0.34 : tablet ? 0.38 : 0.42,
+                duration: phone ? 0.3 : tablet ? 0.36 : 0.42,
                 ease: "none",
               })
               .to({}, {
@@ -146,23 +156,23 @@ export default function StatementSection() {
               });
           });
 
+          // 4) Only after WOW itself is active, extend the O letters.
           extraOs.slice(0, extraCount).forEach((index) => {
             timeline.to(
               [blackOs[index], whiteOs[index]],
               {
                 width: letterWidths[index],
                 autoAlpha: 1,
-                duration: 0.2,
+                duration: phone ? 0.1 : tablet ? 0.12 : 0.14,
                 ease: "none",
-              },
-              2.04 + index * 0.16
+              }
             );
           });
 
           // Hold the completed WOW composition before the sticky stage releases.
           // After this pause, the entire blue stage and its content leave together,
           // revealing the following black section naturally.
-          timeline.to({}, { duration: phone ? 0.5 : tablet ? 0.62 : 0.78 });
+          timeline.to({}, { duration: phone ? 0.7 : tablet ? 0.86 : 1.05 });
 
           let frameA = 0;
           let frameB = 0;
@@ -242,7 +252,7 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-40 -mt-[82svh] w-full bg-[#1677FF] p-0 text-black pointer-events-auto md:-mt-[80dvh]"
+      className="relative isolate z-40 -mt-[82svh] w-full bg-[#1677FF] p-0 text-black pointer-events-auto md:-mt-[80dvh]"
       aria-label="We make brands go wow"
     >
       <div
@@ -256,7 +266,7 @@ export default function StatementSection() {
 
       <div
         ref={stageRef}
-        className="mobile-scroll-sticky flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 lg:h-[100dvh] lg:min-h-[100dvh]"
+        className="mobile-scroll-sticky z-10 flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 lg:h-[100dvh] lg:min-h-[100dvh]"
       >
         <h2 ref={headingRef} aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
 

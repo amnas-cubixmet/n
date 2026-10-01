@@ -251,7 +251,7 @@ export default function StatementSection() {
     >
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-full left-0 z-[5] h-[18svh] w-full bg-[#1677FF] md:h-[20dvh]"
+        className="pointer-events-none absolute bottom-[calc(100%-2px)] left-0 z-[5] h-[18svh] w-full bg-[#1677FF] md:h-[20dvh]"
         style={{
           clipPath:
             "polygon(0% 100%, 0% 48%, 14% 48%, 14% 74%, 28% 74%, 28% 36%, 43% 36%, 43% 60%, 57% 60%, 57% 42%, 72% 42%, 72% 70%, 86% 70%, 86% 30%, 100% 30%, 100% 100%)",

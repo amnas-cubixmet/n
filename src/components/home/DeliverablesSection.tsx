@@ -116,28 +116,6 @@ export default function DeliverablesSection() {
   }, [updateMobileNavigation]);
 
   useLayoutEffect(() => {
-    const list = desktopListRef.current;
-    const highlight = desktopHighlightRef.current;
-    const active = desktopItemRefs.current[activeIndex];
-
-    if (!list || !highlight || !active || window.innerWidth < 1024) return;
-
-    const listRect = list.getBoundingClientRect();
-    const activeRect = active.getBoundingClientRect();
-
-    gsap.to(highlight, {
-      x: activeRect.left - listRect.left,
-      y: activeRect.top - listRect.top,
-      width: activeRect.width,
-      height: activeRect.height,
-      duration: 0.48,
-      ease: "power3.out",
-      overwrite: "auto",
-      force3D: true,
-    });
-  }, [activeIndex]);
-
-  useLayoutEffect(() => {
     const previousIndex = prevIndexRef.current;
     const compact =
       typeof window !== "undefined" &&
@@ -167,15 +145,15 @@ export default function DeliverablesSection() {
           element,
           {
             autoAlpha: 0,
-            y: compact ? 8 : 12,
-            scale: compact ? 0.997 : 0.994,
+            y: compact ? 5 : 7,
+            scale: compact ? 0.999 : 0.997,
           },
           {
             autoAlpha: 1,
             y: 0,
             scale: 1,
-            duration: compact ? 0.32 : 0.44,
-            ease: "power2.out",
+            duration: compact ? 0.36 : 0.5,
+            ease: "power2.inOut",
             overwrite: "auto",
             force3D: true,
           }
@@ -187,9 +165,9 @@ export default function DeliverablesSection() {
       if (index === previousIndex) {
         gsap.to(element, {
           autoAlpha: 0,
-          y: compact ? -4 : -6,
-          duration: compact ? 0.28 : 0.34,
-          ease: "power2.out",
+          y: compact ? -3 : -4,
+          duration: compact ? 0.32 : 0.42,
+          ease: "power2.inOut",
           overwrite: "auto",
           force3D: true,
           onComplete: () => {
@@ -265,6 +243,7 @@ export default function DeliverablesSection() {
           const desktop = Boolean(conditions.desktop);
           const reduced = Boolean(conditions.reduced);
           const compact = phone || tablet;
+          const exitHold = desktop ? 0.9 : tablet ? 0.55 : 0.4;
 
           if (reduced) {
             master.style.height = "";
@@ -285,7 +264,7 @@ export default function DeliverablesSection() {
           const getPinDistance = () =>
             Math.round(
               Math.max(320, sticky.clientHeight || window.innerHeight) *
-                total *
+                (total + exitHold) *
                 (phone ? 0.58 : tablet ? 0.68 : 0.88)
             );
 
@@ -311,9 +290,10 @@ export default function DeliverablesSection() {
               refreshPriority: 1,
               onRefreshInit: syncStageHeight,
               onUpdate: (self) => {
+                const servicePhase = total / (total + exitHold);
                 const serviceProgress = Math.min(
                   1,
-                  Math.max(0, self.progress)
+                  Math.max(0, self.progress / servicePhase)
                 );
                 const continuousScale = Math.max(
                   1 / total,
@@ -332,9 +312,43 @@ export default function DeliverablesSection() {
                   });
                 }
 
+                const position = serviceProgress * (total - 1);
+                const fromIndex = Math.floor(position);
+                const toIndex = Math.min(total - 1, fromIndex + 1);
+                const mix = position - fromIndex;
+
+                if (desktop) {
+                  const highlight = desktopHighlightRef.current;
+                  const fromItem = desktopItemRefs.current[fromIndex];
+                  const toItem = desktopItemRefs.current[toIndex];
+
+                  if (highlight && fromItem && toItem) {
+                    const x =
+                      fromItem.offsetLeft +
+                      (toItem.offsetLeft - fromItem.offsetLeft) * mix;
+                    const y =
+                      fromItem.offsetTop +
+                      (toItem.offsetTop - fromItem.offsetTop) * mix;
+                    const width =
+                      fromItem.offsetWidth +
+                      (toItem.offsetWidth - fromItem.offsetWidth) * mix;
+                    const height =
+                      fromItem.offsetHeight +
+                      (toItem.offsetHeight - fromItem.offsetHeight) * mix;
+
+                    gsap.set(highlight, {
+                      x,
+                      y,
+                      width,
+                      height,
+                      force3D: true,
+                    });
+                  }
+                }
+
                 const calculatedIndex = Math.min(
                   total - 1,
-                  Math.floor(serviceProgress * total)
+                  Math.max(0, Math.round(position))
                 );
 
                 if (calculatedIndex !== activeIndexRef.current) {
@@ -360,6 +374,20 @@ export default function DeliverablesSection() {
           let frameB = 0;
           frameA = requestAnimationFrame(() => {
             frameB = requestAnimationFrame(() => {
+              if (desktop) {
+                const highlight = desktopHighlightRef.current;
+                const firstItem = desktopItemRefs.current[0];
+
+                if (highlight && firstItem) {
+                  gsap.set(highlight, {
+                    x: firstItem.offsetLeft,
+                    y: firstItem.offsetTop,
+                    width: firstItem.offsetWidth,
+                    height: firstItem.offsetHeight,
+                  });
+                }
+              }
+
               timeline.scrollTrigger?.refresh();
               timeline.scrollTrigger?.update();
             });

@@ -171,6 +171,7 @@ export default function StatementSection() {
           frameA = requestAnimationFrame(() => {
             frameB = requestAnimationFrame(() => {
               timeline.scrollTrigger?.refresh();
+              timeline.scrollTrigger?.update();
             });
           });
 

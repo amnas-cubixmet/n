@@ -67,20 +67,22 @@ export default function FoundedOnAVision() {
               xPercent: 0,
               yPercent: 0,
               scale: 1,
-              clearProps: "transform,clipPath,willChange",
+              clearProps: "transform,clipPath,filter,willChange",
             });
             return;
           }
 
           gsap.set(label, {
             autoAlpha: 0,
-            y: mobile ? 10 : 14,
+            x: mobile ? -12 : -20,
+            y: mobile ? 6 : 8,
             force3D: true,
           });
 
           gsap.set(text, {
             autoAlpha: 0,
-            y: mobile ? 24 : 38,
+            y: mobile ? 34 : 52,
+            filter: "blur(6px)",
             force3D: true,
           });
 
@@ -119,8 +121,9 @@ export default function FoundedOnAVision() {
               label,
               {
                 autoAlpha: 1,
+                x: 0,
                 y: 0,
-                duration: 0.22,
+                duration: 0.26,
               },
               0
             )
@@ -129,9 +132,10 @@ export default function FoundedOnAVision() {
               {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.46,
+                filter: "blur(0px)",
+                duration: 0.5,
               },
-              0.08
+              0.12
             )
             .to(
               visual,

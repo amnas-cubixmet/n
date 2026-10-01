@@ -171,7 +171,7 @@ export default function FoundedOnAVision() {
         <div className="flex w-full flex-col items-start text-left lg:w-[60%] xl:w-[58%]">
           <div
             ref={labelRef}
-            className="mb-6 flex items-center will-change-transform sm:mb-8"
+            className="mb-6 flex items-center sm:mb-8"
           >
             <span className="inline-block bg-black px-2.5 py-1 font-pixel text-xs font-bold uppercase leading-none tracking-wider text-white sm:text-sm">
               FOUNDED ON A VISION
@@ -180,7 +180,7 @@ export default function FoundedOnAVision() {
 
           <p
             ref={textRef}
-            className="m-0 text-left font-sans text-[clamp(24px,6.2vw,34px)] font-normal leading-[1.08] tracking-[-0.025em] text-black will-change-transform sm:text-[clamp(28px,3.4vw,42px)] lg:text-[clamp(30px,2.5vw,42px)]"
+            className="m-0 text-left font-sans text-[clamp(24px,6.2vw,34px)] font-normal leading-[1.08] tracking-[-0.025em] text-black sm:text-[clamp(28px,3.4vw,42px)] lg:text-[clamp(30px,2.5vw,42px)]"
           >
             NORTHFRAME was built on my belief that ordinary isn’t enough.
             I bring strategy, creativity, and technology together to help brands
@@ -192,20 +192,19 @@ export default function FoundedOnAVision() {
         <div
           ref={imageRef}
           data-cursor-theme="image"
-          className="relative aspect-[4/5] w-full max-w-[430px] self-center overflow-hidden bg-transparent shadow-2xl will-change-transform sm:w-[80%] lg:w-[36%] lg:self-auto xl:w-[35%]"
+          className="relative aspect-[4/5] w-full max-w-[430px] self-center overflow-hidden bg-transparent shadow-2xl sm:w-[80%] lg:w-[36%] lg:self-auto xl:w-[35%]"
           style={{
             clipPath: "polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 8%)",
           }}
         >
           <div
             ref={imageInnerRef}
-            className="relative h-full w-full will-change-transform"
+            className="relative h-full w-full"
           >
             <Image
               src="/images/FOUNDED/Head.png"
               alt="NORTHFRAME Founder"
               fill
-              priority
               className="object-cover object-center grayscale contrast-105"
               sizes="(max-width: 1024px) 80vw, 36vw"
             />

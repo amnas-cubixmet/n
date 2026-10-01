@@ -325,7 +325,7 @@ export default function ContactSection() {
           className="mb-12 w-full max-w-[1050px] sm:mb-16"
         >
           <div className="mb-6 flex items-center sm:mb-8">
-            <span className="inline-block bg-white px-2.5 py-1 font-pixel text-xs font-bold uppercase leading-none tracking-wider text-black sm:text-sm">
+            <span className="inline-block bg-white px-2.5 py-1 font-mono text-xs font-bold uppercase leading-none tracking-wider text-black sm:text-sm">
               CONTACT
             </span>
           </div>
@@ -360,7 +360,7 @@ export default function ContactSection() {
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => toggleService(chip)}
-                        className={`min-h-[42px] w-full cursor-pointer px-3 py-2.5 text-center font-mono text-xs tracking-wider transition-[background-color,border-color,color] duration-200 focus:outline-none focus:ring-2 focus:ring-[#1677FF] sm:px-4 sm:text-sm ${
+                        className={`min-h-[42px] w-full cursor-pointer px-3 py-2.5 text-center font-mono text-xs uppercase tracking-wider transition-[background-color,border-color,color] duration-200 focus:outline-none focus:ring-2 focus:ring-[#1677FF] sm:px-4 sm:text-sm ${
                           isSelected
                             ? "bg-[#1677FF] font-semibold text-white"
                             : "border border-white/10 bg-white/[0.035] text-white/65 lg:hover:border-white/35 lg:hover:text-white"

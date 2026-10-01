@@ -70,17 +70,11 @@ export default function FoundedOnAVision() {
 
         if (!label || !text || !image || !imageInner || !topShape || !bottomShape) return;
 
-        gsap.set(label, {
-          autoAlpha: 0,
-          x: mobile ? -16 : -28,
+        gsap.set([label, text], {
+          autoAlpha: 1,
+          x: 0,
           y: 0,
-          force3D: true,
-        });
-
-        gsap.set(text, {
-          autoAlpha: 0,
-          y: mobile ? 28 : 46,
-          force3D: true,
+          clearProps: "transform",
         });
 
         gsap.set(image, {
@@ -124,20 +118,6 @@ export default function FoundedOnAVision() {
         });
 
         timeline
-          .to(label, {
-            autoAlpha: 1,
-            x: 0,
-            duration: 0.24,
-          })
-          .to(
-            text,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.42,
-            },
-            0.08
-          )
           .to(
             image,
             {

@@ -140,7 +140,7 @@ body::-webkit-scrollbar {
 
 @media (min-width: 769px) {
   .hero-logo-wrapper {
-    width: clamp(340px, 44vw, 700px);
+    width: clamp(400px, 50vw, 780px);
   }
 }
 

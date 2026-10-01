@@ -336,6 +336,7 @@ export default function DeliverablesSection() {
           frameA = requestAnimationFrame(() => {
             frameB = requestAnimationFrame(() => {
               timeline.scrollTrigger?.refresh();
+              timeline.scrollTrigger?.update();
             });
           });
 

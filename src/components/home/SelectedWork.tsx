@@ -71,16 +71,16 @@ export default function SelectedWork() {
 
         const shapeTween = gsap.fromTo(
           shape,
-          { yPercent: -3 },
+          { yPercent: -1.5 },
           {
-            yPercent: 5,
+            yPercent: 2.5,
             ease: "none",
             force3D: true,
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top bottom",
               end: "bottom top",
-              scrub: 1.8,
+              scrub: 2.6,
               invalidateOnRefresh: true,
             },
           }
@@ -88,9 +88,9 @@ export default function SelectedWork() {
 
         const contentTween = gsap.fromTo(
           content,
-          { yPercent: 0.25 },
+          { yPercent: 0.1 },
           {
-            yPercent: -0.5,
+            yPercent: -0.25,
             ease: "none",
             force3D: true,
             scrollTrigger: {

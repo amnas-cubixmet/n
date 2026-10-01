@@ -412,7 +412,7 @@ export default function WatWeDoen() {
                 <div className="absolute bottom-[max(3.5rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] z-30 max-w-[90vw] pointer-events-auto md:bottom-[max(3rem,env(safe-area-inset-bottom))] md:left-8 lg:left-12">
                   <TransitionLink
                     href={`/services/${service.slug}`}
-                    className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(30px,8vw,42px)] font-bold uppercase leading-[0.91] tracking-normal text-white transition-opacity sm:text-[clamp(34px,8.2vw,46px)] md:text-[clamp(42px,6.4vw,58px)] lg:text-[106px] lg:leading-[0.94] lg:hover:opacity-[0.85]"
+                    className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(30px,8vw,42px)] font-bold uppercase leading-[0.91] tracking-normal text-white sm:text-[clamp(34px,8.2vw,46px)] md:text-[clamp(42px,6.4vw,58px)] lg:text-[106px] lg:leading-[0.94]"
                   >
                     {service.displayLines.map((line) => (
                       <span key={line} className="title-mask">

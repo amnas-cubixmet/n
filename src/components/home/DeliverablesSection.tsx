@@ -269,9 +269,7 @@ export default function DeliverablesSection() {
             );
 
           const syncStageHeight = () => {
-            master.style.height = compact
-              ? `${sticky.clientHeight + getPinDistance()}px`
-              : "";
+            master.style.height = `${sticky.clientHeight + getPinDistance()}px`;
           };
 
           syncStageHeight();
@@ -281,10 +279,10 @@ export default function DeliverablesSection() {
               trigger: master,
               start: "top top",
               end: () => `+=${getPinDistance()}`,
-              pin: desktop ? sticky : false,
-              pinSpacing: desktop,
+              pin: false,
+              pinSpacing: false,
               scrub: phone ? true : tablet ? 0.08 : 0.45,
-              anticipatePin: desktop ? 1 : 0,
+              anticipatePin: 0,
               invalidateOnRefresh: true,
               fastScrollEnd: false,
               refreshPriority: 1,

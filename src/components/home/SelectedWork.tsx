@@ -92,11 +92,23 @@ export default function SelectedWork() {
       <div
         ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-[25%] top-[32%] z-0 h-[63%] w-[84%] bg-[#F2F3F5] max-lg:hidden"
-        style={{
-          clipPath: "polygon(20% 0, 100% 0, 100% 62%, 79% 62%, 79% 100%, 0 100%, 0 20%)",
-        }}
-      />
+        className="pointer-events-none absolute left-[18%] top-[31%] z-0 aspect-[341/220] w-[84%] max-lg:hidden"
+      >
+        <div
+          className="absolute inset-0 bg-[#F2F3F5]"
+          style={{
+            clipPath:
+              "polygon(64.22% 0%, 50.44% 0%, 32.26% 21.36%, 13.49% 0%, 0% 0%, 31.96% 99.55%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 bg-[#F2F3F5]"
+          style={{
+            clipPath:
+              "polygon(67.74% 0%, 35.19% 99.55%, 48.97% 99.55%, 67.45% 77.73%, 85.92% 99.55%, 99.71% 99.55%)",
+          }}
+        />
+      </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-12 sm:gap-16 lg:block lg:min-h-[clamp(1550px,125vw,1900px)]">
         <div className="work-project-item flex flex-col items-start gap-[2px] lg:absolute lg:left-0 lg:top-[clamp(72px,6vw,96px)]">

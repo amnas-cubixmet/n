@@ -80,7 +80,7 @@ export default function SelectedWork() {
               trigger: sectionRef.current,
               start: "top bottom",
               end: "bottom top",
-              scrub: 1,
+              scrub: 1.8,
               invalidateOnRefresh: true,
             },
           }
@@ -97,7 +97,7 @@ export default function SelectedWork() {
               trigger: sectionRef.current,
               start: "top bottom",
               end: "bottom top",
-              scrub: 1.2,
+              scrub: 2.2,
               invalidateOnRefresh: true,
             },
           }

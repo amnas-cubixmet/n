@@ -87,7 +87,7 @@ export default function SelectedWork() {
       id="selected-work"
       ref={sectionRef}
       aria-label="A selection of our work"
-      className="relative isolate z-20 w-full overflow-hidden bg-white px-[max(1.25rem,env(safe-area-inset-left))] py-16 pr-[max(1.25rem,env(safe-area-inset-right))] text-black pointer-events-auto sm:px-8 lg:px-10 lg:py-0"
+      className="relative isolate z-20 w-full overflow-hidden bg-white px-[max(1.1rem,env(safe-area-inset-left))] py-16 pr-[max(1.1rem,env(safe-area-inset-right))] text-black pointer-events-auto sm:px-8 lg:px-12 lg:py-0 xl:px-16"
     >
       <div
         ref={shapeRef}

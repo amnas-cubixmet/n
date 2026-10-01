@@ -16,7 +16,6 @@ export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
-  const headingRef = useRef<HTMLHeadingElement>(null);
   const wowRef = useRef<HTMLSpanElement>(null);
   const blackORefs = useRef<(HTMLSpanElement | null)[]>([]);
   const whiteORefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -76,11 +75,7 @@ export default function StatementSection() {
             force3D: true,
           });
 
-          gsap.set(heading, {
-            autoAlpha: 0,
-          });
-
-                    const wowBox = wow.getBoundingClientRect();
+          const wowBox = wow.getBoundingClientRect();
           const blackOs = blackORefs.current as HTMLSpanElement[];
           const whiteOs = whiteORefs.current as HTMLSpanElement[];
           const letterWidths = blackOs.map(
@@ -139,17 +134,7 @@ export default function StatementSection() {
               force3D: true,
             });
 
-          timeline.to(
-            heading,
-            {
-              autoAlpha: 1,
-              duration: 0.08,
-              ease: "none",
-            },
-            0
-          );
-
-                    blackFillRefs.current.forEach((fill) => {
+          blackFillRefs.current.forEach((fill) => {
             timeline
               .to(fill, {
                 clipPath: "inset(0 0% 0 0)",

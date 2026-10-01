@@ -179,18 +179,19 @@ export default function FoundedOnAVision() {
       <div
         ref={topShapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute right-[-8%] top-[10%] h-[42%] w-[46%] bg-[#C7C9DD]/55 sm:right-[-4%] lg:right-[2%] lg:top-[8%] lg:h-[46%] lg:w-[34%]"
+        className="pointer-events-none absolute right-[-2%] top-[8%] h-[58%] w-[42%] bg-[#C7C9DD]/50 sm:right-[0%] lg:right-[1%] lg:top-[7%] lg:h-[62%] lg:w-[36%]"
         style={{
-          clipPath: "polygon(18% 0, 100% 0, 100% 100%, 0 100%, 0 24%)",
+          clipPath:
+            "polygon(12% 0, 100% 0, 100% 72%, 82% 72%, 82% 100%, 60% 82%, 0 82%, 0 12%)",
         }}
       />
 
       <div
         ref={bottomShapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-[8%] left-[-10%] h-[28%] w-[42%] bg-[#BFC2D8]/35 sm:left-[-6%] lg:left-[4%] lg:w-[28%]"
+        className="pointer-events-none absolute bottom-[6%] right-[0%] h-[26%] w-[34%] bg-[#BFC2D8]/32 sm:right-[1%] lg:right-[3%] lg:w-[28%]"
         style={{
-          clipPath: "polygon(0 0, 82% 0, 100% 28%, 100% 100%, 0 100%)",
+          clipPath: "polygon(0 0, 70% 0, 100% 36%, 100% 100%, 38% 100%, 0 62%)",
         }}
       />
 
@@ -221,7 +222,7 @@ export default function FoundedOnAVision() {
           data-cursor-theme="image"
           className="relative aspect-[4/5] w-full max-w-[430px] self-center overflow-hidden bg-transparent shadow-2xl sm:w-[80%] lg:w-[36%] lg:self-auto xl:w-[35%]"
           style={{
-            clipPath: "polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 8%)",
+            clipPath: "polygon(12% 0, 100% 0, 100% 100%, 0 100%, 0 12%)",
           }}
         >
           <div

@@ -246,20 +246,9 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-40 -mt-[100svh] w-full bg-black p-0 text-black pointer-events-auto motion-reduce:mt-0 md:-mt-[100dvh] md:motion-reduce:mt-0"
+      className="relative z-40 mt-0 w-full bg-black p-0 text-black pointer-events-auto"
       aria-label="We make brands go wow"
     >
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute left-0 z-[5] h-[20svh] w-full bg-[#1677FF] md:h-[22dvh]"
-        style={{
-          // A stepped cap previews the blue statement before the full stage
-          // enters, without overlapping an entire viewport or disturbing pin spacing.
-          bottom: "calc(100% - 1px)",
-          clipPath: "polygon(0% 100%, 0% 42%, 14% 42%, 14% 72%, 28% 72%, 28% 30%, 43% 30%, 43% 58%, 57% 58%, 57% 38%, 72% 38%, 72% 68%, 86% 68%, 86% 26%, 100% 26%, 100% 100%)",
-        }}
-      />
-
       <div
         ref={stageRef}
         className="mobile-scroll-sticky flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 lg:h-[100dvh] lg:min-h-[100dvh]"

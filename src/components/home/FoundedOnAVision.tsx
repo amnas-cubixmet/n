@@ -21,8 +21,6 @@ export default function FoundedOnAVision() {
   const labelRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
   const visualRef = useRef<HTMLDivElement>(null);
-  const shapeRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
   const imageInnerRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -31,8 +29,6 @@ export default function FoundedOnAVision() {
       const label = labelRef.current;
       const text = textRef.current;
       const visual = visualRef.current;
-      const shape = shapeRef.current;
-      const image = imageRef.current;
       const imageInner = imageInnerRef.current;
 
       if (
@@ -40,8 +36,6 @@ export default function FoundedOnAVision() {
         !label ||
         !text ||
         !visual ||
-        !shape ||
-        !image ||
         !imageInner
       ) {
         return;
@@ -66,7 +60,7 @@ export default function FoundedOnAVision() {
           const reduced = Boolean(conditions.reduced);
 
           if (reduced) {
-            gsap.set([label, text, visual, shape, image, imageInner], {
+            gsap.set([label, text, visual, imageInner], {
               autoAlpha: 1,
               x: 0,
               y: 0,
@@ -91,21 +85,11 @@ export default function FoundedOnAVision() {
           });
 
           gsap.set(visual, {
-            autoAlpha: 1,
-          });
-
-          gsap.set(shape, {
-            xPercent: mobile ? 3 : 6,
-            yPercent: mobile ? -2 : -4,
-            scale: mobile ? 0.99 : 0.985,
-            transformOrigin: "center center",
-            force3D: true,
-          });
-
-          gsap.set(image, {
             autoAlpha: 0,
             y: mobile ? 20 : 34,
-            clipPath: "inset(14% 0 0 0)",
+            xPercent: mobile ? 2 : 4,
+            scale: mobile ? 0.99 : 0.985,
+            transformOrigin: "center center",
             force3D: true,
           });
 
@@ -150,12 +134,14 @@ export default function FoundedOnAVision() {
               0.08
             )
             .to(
-              image,
+              visual,
               {
                 autoAlpha: 1,
                 y: 0,
-                clipPath: "inset(0% 0 0 0)",
-                duration: 0.5,
+                xPercent: 0,
+                scale: 1,
+                duration: 0.52,
+                force3D: true,
               },
               0.1
             )
@@ -164,21 +150,10 @@ export default function FoundedOnAVision() {
               {
                 scale: 1,
                 yPercent: 0,
-                duration: 0.62,
+                duration: 0.66,
                 force3D: true,
               },
               0.1
-            )
-            .to(
-              shape,
-              {
-                xPercent: mobile ? -1 : -2.5,
-                yPercent: mobile ? 1 : 2.5,
-                scale: 1,
-                duration: 0.72,
-                force3D: true,
-              },
-              0
             );
 
           return () => {
@@ -223,34 +198,23 @@ export default function FoundedOnAVision() {
 
         <div
           ref={visualRef}
-          className="relative w-full max-w-[470px] self-center sm:w-[82%] lg:w-[38%] lg:self-auto xl:w-[36%]"
+          data-cursor-theme="image"
+          className="relative aspect-[4/5] w-full max-w-[470px] self-center overflow-hidden bg-[#C7C9DD] shadow-2xl will-change-transform sm:w-[82%] lg:w-[38%] lg:self-auto xl:w-[36%]"
+          style={{ clipPath: BACKING_SHAPE }}
         >
           <div
-            ref={shapeRef}
-            aria-hidden="true"
-            className="pointer-events-none absolute -inset-x-[7%] -top-[5%] bottom-[-8%] bg-[#C7C9DD]/65 will-change-transform"
-            style={{ clipPath: BACKING_SHAPE }}
-          />
-
-          <div
-            ref={imageRef}
-            data-cursor-theme="image"
-            className="relative z-10 aspect-[4/5] w-full overflow-hidden bg-transparent shadow-2xl will-change-transform"
+            ref={imageInnerRef}
+            className="absolute inset-[5%] overflow-hidden will-change-transform"
             style={{ clipPath: IMAGE_SHAPE }}
           >
-            <div
-              ref={imageInnerRef}
-              className="relative h-full w-full will-change-transform"
-            >
-              <Image
-                src="/images/FOUNDED/Head.png"
-                alt="NORTHFRAME Founder"
-                fill
-                className="object-cover object-center grayscale contrast-105"
-                sizes="(max-width: 768px) 82vw, (max-width: 1024px) 56vw, 38vw"
-                priority={false}
-              />
-            </div>
+            <Image
+              src="/images/FOUNDED/Head.png"
+              alt="NORTHFRAME Founder"
+              fill
+              className="object-cover object-center grayscale contrast-105"
+              sizes="(max-width: 768px) 82vw, (max-width: 1024px) 56vw, 38vw"
+              priority={false}
+            />
           </div>
         </div>
       </div>

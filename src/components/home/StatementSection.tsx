@@ -123,7 +123,7 @@ export default function StatementSection() {
               fastScrollEnd: false,
               onRefreshInit: syncSectionHeight,
               onLeave: () => {
-                gsap.set(exitOverlay, { yPercent: 0 });
+                gsap.set(exitOverlay, { yPercent: 50 });
               },
             },
           });
@@ -156,7 +156,7 @@ export default function StatementSection() {
           timeline.to(
             exitOverlay,
             {
-              yPercent: 0,
+              yPercent: 50,
               duration: phone ? 0.36 : tablet ? 0.42 : 0.46,
               ease: "none",
               force3D: true,
@@ -244,7 +244,7 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-40 mt-0 w-full bg-black p-0 text-black pointer-events-auto"
+      className="relative z-40 -mt-[100svh] w-full bg-black p-0 text-black pointer-events-auto md:-mt-[100dvh]"
       aria-label="We make brands go wow"
     >
       <div

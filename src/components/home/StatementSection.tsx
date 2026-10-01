@@ -248,6 +248,15 @@ export default function StatementSection() {
       aria-label="We make brands go wow"
     >
       <div
+        aria-hidden="true"
+        className="pointer-events-none absolute bottom-full left-0 z-[5] h-[18svh] w-full bg-[#1677FF] md:h-[20dvh]"
+        style={{
+          clipPath:
+            "polygon(0% 100%, 0% 48%, 14% 48%, 14% 74%, 28% 74%, 28% 36%, 43% 36%, 43% 60%, 57% 60%, 57% 42%, 72% 42%, 72% 70%, 86% 70%, 86% 30%, 100% 30%, 100% 100%)",
+        }}
+      />
+
+      <div
         ref={stageRef}
         className="mobile-scroll-sticky flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 lg:h-[100dvh] lg:min-h-[100dvh]"
       >

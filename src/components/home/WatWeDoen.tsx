@@ -186,14 +186,14 @@ export default function WatWeDoen() {
             scrollTrigger: {
               trigger: wrapper,
               start: "top top",
-              end: mobile ? "bottom bottom" : () => `+=${getScrollDistance()}`,
+              end: () => `+=${getScrollDistance()}`,
               pin: mobile ? false : sticky,
               pinSpacing: mobile ? false : true,
-              scrub: reduced ? 0.08 : phone ? 0.08 : tablet ? 0.12 : 0.5,
+              scrub: reduced ? true : phone ? true : tablet ? 0.08 : 0.5,
               anticipatePin: mobile ? 0 : 1,
               invalidateOnRefresh: true,
               fastScrollEnd: false,
-              refreshPriority: 1,
+              refreshPriority: 2,
               onRefreshInit: syncMobileStageHeight,
               onUpdate: (self) => {
                 const raw = Math.min(

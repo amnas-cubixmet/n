@@ -409,7 +409,7 @@ export default function DeliverablesSection() {
     >
       <div
         ref={stickyRef}
-        className="sticky top-0 h-[100svh] min-h-[100svh] w-full overflow-hidden bg-white lg:relative lg:top-auto lg:h-[100dvh] lg:min-h-[100dvh]"
+        className="mobile-scroll-sticky h-[100svh] min-h-[100svh] w-full overflow-hidden bg-white lg:h-[100dvh] lg:min-h-[100dvh]"
       >
         <div className="relative z-[1] flex h-full w-full flex-col justify-center overflow-hidden bg-white px-4 py-0 sm:px-8 md:px-12">
           <div className="w-full max-w-[1500px] mx-auto min-h-[72vh] flex flex-col justify-center">

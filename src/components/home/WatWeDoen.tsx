@@ -95,11 +95,12 @@ export default function WatWeDoen() {
           const reduced = Boolean(conditions.reduced);
           const panelCount = services.length;
           const revealDuration = phone ? 0.62 : tablet ? 0.7 : 0.86;
+          const introSegment = reduced ? 0.2 : phone ? 1.05 : tablet ? 1.1 : 1.2;
 
           const getScrollDistance = () =>
             Math.round(
               sticky.clientHeight *
-                panelCount *
+                (panelCount + introSegment - 1) *
                 (reduced ? 0.72 : phone ? 0.74 : tablet ? 0.86 : 1.22)
             );
 
@@ -156,10 +157,19 @@ export default function WatWeDoen() {
             const image = imagesRef.current[index];
             if (image) {
               gsap.set(image, {
-                scale: 1,
+                scale: !reduced && index === 0 ? 1.035 : 1,
                 transformOrigin: "center center",
                 force3D: true,
                 willChange: reduced ? "auto" : "transform",
+              });
+            }
+
+            if (index === 0) {
+              const introText = panel.querySelectorAll(".first-service-intro");
+              gsap.set(introText, {
+                y: reduced ? 0 : 22,
+                autoAlpha: reduced ? 1 : 0,
+                force3D: true,
               });
             }
           });
@@ -188,12 +198,43 @@ export default function WatWeDoen() {
             const image = imagesRef.current[index];
             if (!panel) return;
 
-            const segmentStart = index;
-
             if (index === 0) {
-              timeline.to({}, { duration: 0.72 }, 0.28);
+              const introText = panel.querySelectorAll(".first-service-intro");
+
+              if (!reduced) {
+                if (image) {
+                  timeline.to(
+                    image,
+                    {
+                      scale: 1,
+                      duration: 0.58,
+                      ease: "power2.out",
+                      force3D: true,
+                    },
+                    0
+                  );
+                }
+
+                timeline.to(
+                  introText,
+                  {
+                    y: 0,
+                    autoAlpha: 1,
+                    duration: 0.48,
+                    ease: "power3.out",
+                    force3D: true,
+                  },
+                  0.08
+                );
+              }
+
+              // Reserve the first scroll movement for the BRAND IDENTITY intro.
+              // The next service panel does not start revealing until this finishes.
+              timeline.to({}, { duration: introSegment }, 0);
               return;
             }
+
+            const segmentStart = introSegment + (index - 1);
 
             if (reduced) {
               // Respect Reduce Motion without falling back to the old stacked
@@ -343,7 +384,9 @@ export default function WatWeDoen() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/72 via-black/12 to-black/10" />
               </div>
 
-              <div className="absolute left-[max(1.1rem,env(safe-area-inset-left))] right-[max(4.5rem,env(safe-area-inset-right))] top-[max(1.1rem,env(safe-area-inset-top))] z-20 flex items-start gap-4 pointer-events-none md:left-8 md:right-24 md:top-[max(2rem,env(safe-area-inset-top))] md:gap-12">
+              <div
+                className={`absolute left-[max(1.1rem,env(safe-area-inset-left))] right-[max(4.5rem,env(safe-area-inset-right))] top-[max(1.1rem,env(safe-area-inset-top))] z-20 flex items-start gap-4 pointer-events-none md:left-8 md:right-24 md:top-[max(2rem,env(safe-area-inset-top))] md:gap-12 ${index === 0 ? "first-service-intro" : ""}`}
+              >
                 <span className="shrink-0 bg-black px-1.5 py-0.5 font-montserrat text-[9px] font-semibold uppercase leading-none tracking-[0.04em] text-white sm:text-[10px] md:text-[16px]">
                   WHAT WE DO
                 </span>
@@ -361,7 +404,9 @@ export default function WatWeDoen() {
               </div>
 
               <div className="absolute inset-0 z-20 pointer-events-none">
-                <div className="absolute bottom-[max(3.5rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] max-w-[90vw] pointer-events-auto md:bottom-[max(3rem,env(safe-area-inset-bottom))] md:left-8 lg:left-12">
+                <div
+                  className={`absolute bottom-[max(3.5rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] max-w-[90vw] pointer-events-auto md:bottom-[max(3rem,env(safe-area-inset-bottom))] md:left-8 lg:left-12 ${index === 0 ? "first-service-intro" : ""}`}
+                >
                   <TransitionLink
                     href={`/services/${service.slug}`}
                     className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(30px,8vw,42px)] font-bold uppercase leading-[0.91] tracking-normal text-white sm:text-[clamp(34px,8.2vw,46px)] md:text-[clamp(42px,6.4vw,58px)] lg:text-[106px] lg:leading-[0.94]"
@@ -377,7 +422,9 @@ export default function WatWeDoen() {
                   </TransitionLink>
                 </div>
 
-                <div className="absolute bottom-[max(1rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] inline-flex items-center gap-2 bg-black px-2 py-1 font-pixel text-[10px] tracking-wider text-white md:left-auto md:right-8 md:bottom-[max(2rem,env(safe-area-inset-bottom))] md:font-mono md:text-xs lg:right-12">
+                <div
+                  className={`absolute bottom-[max(1rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] inline-flex items-center gap-2 bg-black px-2 py-1 font-pixel text-[10px] tracking-wider text-white md:left-auto md:right-8 md:bottom-[max(2rem,env(safe-area-inset-bottom))] md:font-mono md:text-xs lg:right-12 ${index === 0 ? "first-service-intro" : ""}`}
+                >
                   <span>{String(index + 1).padStart(2, "0")}</span>
                   <span className="relative h-[2px] w-7 overflow-hidden bg-white/30">
                     <span className="absolute inset-0 origin-left bg-[#1677FF]" />

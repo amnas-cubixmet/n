@@ -95,7 +95,7 @@ export default function OurExpertise() {
       ref={containerRef}
       className="relative z-20 w-full bg-white text-black pointer-events-auto overflow-hidden"
     >
-      <div className="mx-auto flex min-h-[62svh] w-full max-w-[1600px] flex-col justify-start px-[max(1.1rem,env(safe-area-inset-left))] pb-[clamp(5rem,12vh,10rem)] pt-[clamp(5rem,12vh,10rem)] pr-[max(1.1rem,env(safe-area-inset-right))] sm:min-h-[68svh] sm:px-8 lg:min-h-[75svh] lg:px-12 xl:px-16">
+      <div className="mx-auto flex min-h-[62svh] w-full max-w-[1600px] flex-col justify-start px-[max(1.1rem,env(safe-area-inset-left))] pb-[clamp(2rem,5vh,4rem)] pt-[clamp(5rem,12vh,10rem)] pr-[max(1.1rem,env(safe-area-inset-right))] sm:min-h-[68svh] sm:px-8 lg:min-h-0 lg:pb-8 lg:px-12 xl:px-16">
         <div className="w-full max-w-[1050px]">
           <div
             ref={labelRef}

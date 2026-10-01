@@ -123,7 +123,7 @@ export default function StatementSection() {
               fastScrollEnd: false,
               onRefreshInit: syncSectionHeight,
               onLeave: () => {
-                gsap.set(exitOverlay, { yPercent: 50 });
+                gsap.set(exitOverlay, { yPercent: 0 });
               },
             },
           });
@@ -153,11 +153,13 @@ export default function StatementSection() {
             );
           });
 
+          timeline.to({}, { duration: 0.18 });
+
           timeline.to(
             exitOverlay,
             {
-              yPercent: 50,
-              duration: phone ? 0.36 : tablet ? 0.42 : 0.46,
+              yPercent: 0,
+              duration: phone ? 0.42 : tablet ? 0.5 : 0.58,
               ease: "none",
               force3D: true,
             },

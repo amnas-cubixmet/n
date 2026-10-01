@@ -34,7 +34,7 @@ export default function HeroContent({
           width={700}
           height={116}
           priority
-          sizes="(max-width: 768px) 76vw, (max-width: 1200px) 38vw, 520px"
+          sizes="(max-width: 768px) 76vw, (max-width: 1200px) 50vw, 780px"
           className="block h-auto w-full object-contain"
         />
       </div>

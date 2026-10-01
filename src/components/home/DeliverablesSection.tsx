@@ -244,12 +244,16 @@ export default function DeliverablesSection() {
           if (reduced) {
             master.style.height = "";
             scrollTriggerRef.current = null;
-            gsap.set(progressFillRef.current, {
-              scaleY: 1 / total,
-            });
-            gsap.set(mobileProgressFillRef.current, {
-              scaleX: 1 / total,
-            });
+            if (progressFillRef.current) {
+              gsap.set(progressFillRef.current, {
+                scaleY: 1 / total,
+              });
+            }
+            if (mobileProgressFillRef.current) {
+              gsap.set(mobileProgressFillRef.current, {
+                scaleX: 1 / total,
+              });
+            }
             return;
           }
 

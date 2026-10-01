@@ -273,16 +273,16 @@ export default function Header() {
           aria-expanded={menuOpen}
           aria-controls="northframe-menu-panel"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="header-menu-button pointer-events-auto relative z-[110] inline-flex min-h-0 min-w-0 items-center justify-center bg-[#1677FF] p-[3px] text-white rounded-none select-none touch-action-manipulation cursor-pointer focus:outline-none before:absolute before:-inset-3 before:content-[''] md:h-auto md:w-auto md:min-h-0 md:min-w-0 md:gap-2.5 md:p-0 md:focus-visible:ring-2 md:focus-visible:ring-white/70"
+          className="header-menu-button pointer-events-auto relative z-[110] inline-flex min-h-0 min-w-0 items-center justify-center bg-[#1677FF] p-[3px] text-white rounded-none select-none touch-action-manipulation cursor-pointer focus:outline-none before:absolute before:-inset-3 before:content-[''] md:h-[14px] md:w-[58px] md:min-h-0 md:min-w-0 md:gap-[5px] md:px-[4px] md:py-0 md:focus-visible:ring-2 md:focus-visible:ring-white/70"
         >
-          <span className="hidden md:inline font-mono text-[10px] font-semibold uppercase tracking-[0.12em] leading-none">
+          <span className="hidden md:inline font-mono text-[7px] font-semibold uppercase tracking-[0.08em] leading-none">
             {menuOpen ? "CLOSE" : "MENU"}
           </span>
 
-          <span className="relative block h-3 w-4 pointer-events-none">
+          <span className="relative block h-3 w-4 pointer-events-none md:h-2 md:w-[14px]">
             <span
               className={
-                "absolute left-0 top-[2px] block w-4 h-[1.5px] origin-center transition-[transform,background-color] duration-300 " +
+                "absolute left-0 top-[2px] block w-4 h-[1.5px] origin-center transition-[transform,background-color] duration-300 md:top-[1px] md:w-[14px] md:h-px " +
                 (menuOpen
                   ? "translate-y-[3.5px] rotate-45 bg-white"
                   : "bg-white")
@@ -290,7 +290,7 @@ export default function Header() {
             />
             <span
               className={
-                "absolute left-0 bottom-[2px] block w-4 h-[1.5px] origin-center transition-[transform,background-color] duration-300 " +
+                "absolute left-0 bottom-[2px] block w-4 h-[1.5px] origin-center transition-[transform,background-color] duration-300 md:bottom-[1px] md:w-[14px] md:h-px " +
                 (menuOpen
                   ? "-translate-y-[3.5px] -rotate-45 bg-white"
                   : "bg-white")

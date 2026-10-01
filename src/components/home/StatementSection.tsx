@@ -15,6 +15,7 @@ const extraOs = Array.from({ length: 20 }, (_, index) => index);
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const wowRef = useRef<HTMLSpanElement>(null);
   const blackORefs = useRef<(HTMLSpanElement | null)[]>([]);
   const whiteORefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -24,11 +25,13 @@ export default function StatementSection() {
     () => {
       const section = sectionRef.current;
       const stage = stageRef.current;
+      const heading = headingRef.current;
       const wow = wowRef.current;
 
       if (
         !section ||
         !stage ||
+        !heading ||
         !wow ||
         blackORefs.current.length !== extraOs.length ||
         whiteORefs.current.length !== extraOs.length ||
@@ -63,8 +66,14 @@ export default function StatementSection() {
 
           if (reduced) {
             section.style.height = "";
+            gsap.set(heading, { autoAlpha: 1 });
             return;
           }
+
+          gsap.set(heading, {
+            autoAlpha: 0,
+            force3D: true,
+          });
 
           const wowBox = wow.getBoundingClientRect();
           const blackOs = blackORefs.current as HTMLSpanElement[];
@@ -113,6 +122,15 @@ export default function StatementSection() {
             },
           });
 
+          timeline
+            .to({}, { duration: phone ? 0.12 : tablet ? 0.14 : 0.16 })
+            .to(heading, {
+              autoAlpha: 1,
+              duration: phone ? 0.18 : tablet ? 0.2 : 0.22,
+              ease: "power1.out",
+              force3D: true,
+            });
+
           blackFillRefs.current.forEach((fill) => {
             timeline
               .to(fill, {
@@ -158,6 +176,7 @@ export default function StatementSection() {
             timeline.scrollTrigger?.kill();
             timeline.kill();
             section.style.height = "";
+            gsap.set(heading, { clearProps: "opacity,visibility,will-change" });
           };
         }
       );
@@ -236,7 +255,7 @@ export default function StatementSection() {
         ref={stageRef}
         className="mobile-scroll-sticky flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 lg:h-[100dvh] lg:min-h-[100dvh]"
       >
-        <h2 aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
+        <h2 ref={headingRef} aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
 
       </div>
     </section>

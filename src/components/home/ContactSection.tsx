@@ -57,7 +57,6 @@ export default function ContactSection() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [projectDetails, setProjectDetails] = useState("");
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -354,7 +353,7 @@ export default function ContactSection() {
                   Select Services <span className="text-[#1677FF]">*</span>
                 </label>
 
-                <div className="flex flex-wrap gap-2.5 sm:gap-3">
+                <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
                   {SERVICE_CHIPS.map((chip) => {
                     const isSelected = selectedServices.includes(chip);
 
@@ -364,7 +363,7 @@ export default function ContactSection() {
                         type="button"
                         aria-pressed={isSelected}
                         onClick={() => toggleService(chip)}
-                        className={`min-h-[42px] cursor-pointer px-4 py-2.5 font-mono text-xs tracking-wider transition-[background-color,border-color,color] duration-200 focus:outline-none focus:ring-2 focus:ring-[#1677FF] sm:px-5 sm:text-sm ${
+                        className={`min-h-[42px] w-full cursor-pointer px-3 py-2.5 text-center font-mono text-xs tracking-wider transition-[background-color,border-color,color] duration-200 focus:outline-none focus:ring-2 focus:ring-[#1677FF] sm:px-4 sm:text-sm ${
                           isSelected
                             ? "bg-[#1677FF] font-semibold text-white"
                             : "border border-white/10 bg-white/[0.035] text-white/65 lg:hover:border-white/35 lg:hover:text-white"
@@ -406,7 +405,7 @@ export default function ContactSection() {
                         }));
                       }
                     }}
-                    placeholder="Enter your full name"
+                    placeholder="Name"
                     className={`w-full rounded-none border-b bg-transparent py-3.5 text-base text-white outline-none transition-colors placeholder:text-white/25 focus:border-[#1677FF] ${
                       errors.name ? "border-red-500" : "border-white/20"
                     }`}
@@ -442,7 +441,7 @@ export default function ContactSection() {
                           }));
                         }
                       }}
-                      placeholder="+91 807 555 9044"
+                      placeholder="Phone Number"
                       className={`w-full rounded-none border-b bg-transparent py-3.5 text-base text-white outline-none transition-colors placeholder:text-white/25 focus:border-[#1677FF] ${
                         errors.phone ? "border-red-500" : "border-white/20"
                       }`}
@@ -460,10 +459,7 @@ export default function ContactSection() {
                       htmlFor="contact-email"
                       className="mb-1 font-mono text-xs font-bold uppercase tracking-wider text-white/65"
                     >
-                      Email Address{" "}
-                      <span className="font-normal text-white/35">
-                        (Optional)
-                      </span>
+                      Email ID
                     </label>
 
                     <input
@@ -471,34 +467,12 @@ export default function ContactSection() {
                       type="email"
                       value={email}
                       onChange={(event) => setEmail(event.target.value)}
-                      placeholder="of.northframe@gmail.com"
+                      placeholder="Email ID"
                       className="w-full rounded-none border-b border-white/20 bg-transparent py-3.5 text-base text-white outline-none transition-colors placeholder:text-white/25 focus:border-[#1677FF]"
                     />
                   </div>
                 </div>
 
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="contact-details"
-                    className="mb-1 font-mono text-xs font-bold uppercase tracking-wider text-white/65"
-                  >
-                    Project Details{" "}
-                    <span className="font-normal text-white/35">
-                      (Optional)
-                    </span>
-                  </label>
-
-                  <textarea
-                    id="contact-details"
-                    rows={3}
-                    value={projectDetails}
-                    onChange={(event) =>
-                      setProjectDetails(event.target.value)
-                    }
-                    placeholder="Tell us a little about your project goals or timeline..."
-                    className="w-full resize-none rounded-none border-b border-white/20 bg-transparent py-3.5 text-base text-white outline-none transition-colors placeholder:text-white/25 focus:border-[#1677FF]"
-                  />
-                </div>
               </div>
 
               {submissionNotice && (

@@ -213,103 +213,147 @@ export default function DeliverablesSection() {
 
   useGSAP(
     () => {
-      if (
-        typeof window === "undefined" ||
-        !masterRef.current ||
-        !stickyRef.current
-      ) {
-        return;
-      }
-
-      const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-      if (motionQuery.matches) return;
+      const master = masterRef.current;
+      const sticky = stickyRef.current;
+      if (!master || !sticky) return;
 
       const total = deliverables.length;
-      const phone = window.matchMedia("(max-width: 768px)").matches;
-      const tablet = window.matchMedia(
-        "(min-width: 769px) and (max-width: 1023px)"
-      ).matches;
-      const compact = phone || tablet;
+      const mm = gsap.matchMedia();
 
-      const getPinDistance = () =>
-        Math.round(
-          Math.max(320, stickyRef.current?.clientHeight ?? window.innerHeight) *
-            total * (phone ? 0.58 : tablet ? 0.68 : 0.88)
-        );
+      mm.add(
+        {
+          phone: "(max-width: 768px)",
+          tablet: "(min-width: 769px) and (max-width: 1023px)",
+          desktop: "(min-width: 1024px)",
+          reduced: "(prefers-reduced-motion: reduce)",
+        },
+        (context) => {
+          const conditions = context.conditions as {
+            phone: boolean;
+            tablet: boolean;
+            desktop: boolean;
+            reduced: boolean;
+          };
 
-      const syncMobileStageHeight = () => {
-        if (!masterRef.current || !stickyRef.current) return;
+          const phone = Boolean(conditions.phone);
+          const tablet = Boolean(conditions.tablet);
+          const desktop = Boolean(conditions.desktop);
+          const reduced = Boolean(conditions.reduced);
+          const compact = phone || tablet;
 
-        if (compact) {
-          masterRef.current.style.height =
-            `${stickyRef.current.clientHeight + getPinDistance()}px`;
-        } else {
-          masterRef.current.style.height = "";
-        }
-      };
-
-      syncMobileStageHeight();
-      activeIndexRef.current = activeIndex;
-
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: masterRef.current,
-          start: "top top",
-          end: compact ? "bottom bottom" : () => `+=${getPinDistance()}`,
-          pin: compact ? false : stickyRef.current,
-          pinSpacing: compact ? false : true,
-          scrub: phone ? 0.08 : tablet ? 0.12 : 0.45,
-          anticipatePin: compact ? 0 : 1,
-          invalidateOnRefresh: true,
-          fastScrollEnd: false,
-          onRefreshInit: syncMobileStageHeight,
-          onUpdate: (self) => {
-            const serviceProgress = Math.min(1, Math.max(0, self.progress));
-
-            const continuousScale = Math.max(
-              1 / total,
-              serviceProgress
-            );
-
+          if (reduced) {
+            master.style.height = "";
+            scrollTriggerRef.current = null;
             if (progressFillRef.current) {
               gsap.set(progressFillRef.current, {
-                scaleY: continuousScale,
+                scaleY: 1 / total,
               });
             }
-
             if (mobileProgressFillRef.current) {
               gsap.set(mobileProgressFillRef.current, {
-                scaleX: continuousScale,
+                scaleX: 1 / total,
               });
             }
+            return;
+          }
 
-            const calculatedIndex = Math.min(total - 1, Math.floor(serviceProgress * total));
-            if (calculatedIndex !== activeIndexRef.current) {
-              activeIndexRef.current = calculatedIndex;
-              setActiveIndex(calculatedIndex);
-            }
-          },
-          onLeave: () => {
-            activeIndexRef.current = total - 1;
-            setActiveIndex(total - 1);
-          },
-          onLeaveBack: () => {
-            activeIndexRef.current = 0;
-            setActiveIndex(0);
-          },
-        },
-      });
+          const getPinDistance = () =>
+            Math.round(
+              Math.max(320, sticky.clientHeight || window.innerHeight) *
+                total *
+                (phone ? 0.58 : tablet ? 0.68 : 0.88)
+            );
 
-      scrollTriggerRef.current = timeline.scrollTrigger ?? null;
+          const syncStageHeight = () => {
+            master.style.height = compact
+              ? `${sticky.clientHeight + getPinDistance()}px`
+              : "";
+          };
 
-      timeline.to({}, { duration: 1 });
+          syncStageHeight();
+
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: master,
+              start: "top top",
+              end: () => `+=${getPinDistance()}`,
+              pin: desktop ? sticky : false,
+              pinSpacing: desktop,
+              scrub: phone ? true : tablet ? 0.08 : 0.45,
+              anticipatePin: desktop ? 1 : 0,
+              invalidateOnRefresh: true,
+              fastScrollEnd: false,
+              refreshPriority: 1,
+              onRefreshInit: syncStageHeight,
+              onUpdate: (self) => {
+                const serviceProgress = Math.min(
+                  1,
+                  Math.max(0, self.progress)
+                );
+                const continuousScale = Math.max(
+                  1 / total,
+                  serviceProgress
+                );
+
+                if (progressFillRef.current) {
+                  gsap.set(progressFillRef.current, {
+                    scaleY: continuousScale,
+                  });
+                }
+
+                if (mobileProgressFillRef.current) {
+                  gsap.set(mobileProgressFillRef.current, {
+                    scaleX: continuousScale,
+                  });
+                }
+
+                const calculatedIndex = Math.min(
+                  total - 1,
+                  Math.floor(serviceProgress * total)
+                );
+
+                if (calculatedIndex !== activeIndexRef.current) {
+                  activeIndexRef.current = calculatedIndex;
+                  setActiveIndex(calculatedIndex);
+                }
+              },
+              onLeave: () => {
+                activeIndexRef.current = total - 1;
+                setActiveIndex(total - 1);
+              },
+              onLeaveBack: () => {
+                activeIndexRef.current = 0;
+                setActiveIndex(0);
+              },
+            },
+          });
+
+          scrollTriggerRef.current = timeline.scrollTrigger ?? null;
+          timeline.to({}, { duration: 1 });
+
+          let frameA = 0;
+          let frameB = 0;
+          frameA = requestAnimationFrame(() => {
+            frameB = requestAnimationFrame(() => {
+              timeline.scrollTrigger?.refresh();
+              timeline.scrollTrigger?.update();
+            });
+          });
+
+          return () => {
+            cancelAnimationFrame(frameA);
+            cancelAnimationFrame(frameB);
+            timeline.scrollTrigger?.kill();
+            timeline.kill();
+            master.style.height = "";
+            scrollTriggerRef.current = null;
+          };
+        }
+      );
 
       return () => {
-        if (masterRef.current) {
-          masterRef.current.style.height = "";
-        }
-        timeline.scrollTrigger?.kill();
-        timeline.kill();
+        mm.revert();
+        master.style.height = "";
         scrollTriggerRef.current = null;
       };
     },
@@ -370,7 +414,7 @@ export default function DeliverablesSection() {
     >
       <div
         ref={stickyRef}
-        className="sticky top-0 h-[100svh] min-h-[100svh] w-full overflow-hidden bg-white lg:relative lg:top-auto lg:h-[100dvh] lg:min-h-[100dvh]"
+        className="mobile-scroll-sticky h-[100svh] min-h-[100svh] w-full overflow-hidden bg-white lg:h-[100dvh] lg:min-h-[100dvh]"
       >
         <div className="relative z-[1] flex h-full w-full flex-col justify-center overflow-hidden bg-white px-4 py-0 sm:px-8 md:px-12">
           <div className="w-full max-w-[1500px] mx-auto min-h-[72vh] flex flex-col justify-center">

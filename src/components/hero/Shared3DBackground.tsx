@@ -133,15 +133,33 @@ function AnimatedModel({
   const geometry = useMemo(() => createNorthframeGeometry(), []);
 
   useEffect(() => {
+    let lastWidth = window.innerWidth;
+
     const measureHero = () => {
-      heroHeightRef.current = document.querySelector<HTMLElement>(".hero")?.offsetHeight || window.innerHeight;
+      heroHeightRef.current =
+        document.querySelector<HTMLElement>(".hero")?.offsetHeight ||
+        window.innerHeight;
     };
+
+    const handleWidthResize = () => {
+      const nextWidth = window.innerWidth;
+      if (Math.abs(nextWidth - lastWidth) < 2) return;
+      lastWidth = nextWidth;
+      measureHero();
+    };
+
+    const handleOrientation = () => {
+      lastWidth = window.innerWidth;
+      measureHero();
+    };
+
     measureHero();
-    window.addEventListener("orientationchange", measureHero);
-    window.addEventListener("resize", measureHero, { passive: true });
+    window.addEventListener("orientationchange", handleOrientation);
+    window.addEventListener("resize", handleWidthResize, { passive: true });
+
     return () => {
-      window.removeEventListener("orientationchange", measureHero);
-      window.removeEventListener("resize", measureHero);
+      window.removeEventListener("orientationchange", handleOrientation);
+      window.removeEventListener("resize", handleWidthResize);
     };
   }, []);
 
@@ -335,13 +353,24 @@ export default function Shared3DBackground() {
     syncVisibility();
 
     let resizeFrame = 0;
+    let lastWidth = window.innerWidth;
+
     const handleResize = () => {
+      const nextWidth = window.innerWidth;
+      if (Math.abs(nextWidth - lastWidth) < 2) return;
+      lastWidth = nextWidth;
+      cancelAnimationFrame(resizeFrame);
+      resizeFrame = requestAnimationFrame(syncViewport);
+    };
+
+    const handleOrientation = () => {
+      lastWidth = window.innerWidth;
       cancelAnimationFrame(resizeFrame);
       resizeFrame = requestAnimationFrame(syncViewport);
     };
 
     window.addEventListener("resize", handleResize, { passive: true });
-    window.addEventListener("orientationchange", handleResize);
+    window.addEventListener("orientationchange", handleOrientation);
     document.addEventListener("visibilitychange", syncVisibility);
 
     const sharedRange = document.querySelector(".shared-background-range");
@@ -368,7 +397,7 @@ export default function Shared3DBackground() {
     return () => {
       cancelAnimationFrame(resizeFrame);
       window.removeEventListener("resize", handleResize);
-      window.removeEventListener("orientationchange", handleResize);
+      window.removeEventListener("orientationchange", handleOrientation);
       document.removeEventListener("visibilitychange", syncVisibility);
       rangeObserver?.disconnect();
 

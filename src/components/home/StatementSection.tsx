@@ -23,112 +23,174 @@ export default function StatementSection() {
 
   useGSAP(
     () => {
+      const section = sectionRef.current;
+      const stage = stageRef.current;
+      const wow = wowRef.current;
+      const exitOverlay = exitOverlayRef.current;
+
       if (
-        !sectionRef.current ||
-        !stageRef.current ||
-        !wowRef.current ||
-        !exitOverlayRef.current ||
+        !section ||
+        !stage ||
+        !wow ||
+        !exitOverlay ||
         blackORefs.current.length !== extraOs.length ||
         whiteORefs.current.length !== extraOs.length ||
         blackFillRefs.current.length !== words.length ||
-        blackFillRefs.current.some((fill) => !fill) ||
-        window.matchMedia("(prefers-reduced-motion: reduce)").matches
-      ) return;
+        blackFillRefs.current.some((fill) => !fill)
+      ) {
+        return;
+      }
 
-      const phone = window.matchMedia("(max-width: 768px)").matches;
-      const tablet = window.matchMedia(
-        "(min-width: 769px) and (max-width: 1023px)"
-      ).matches;
-      const compact = phone || tablet;
-      const stage = stageRef.current;
-      const wow = wowRef.current;
-      const wowBox = wow.getBoundingClientRect();
-      const blackOs = blackORefs.current as HTMLSpanElement[];
-      const whiteOs = whiteORefs.current as HTMLSpanElement[];
-      const letterWidths = blackOs.map((letter) => letter.firstElementChild!.getBoundingClientRect().width);
-      const extraCount = Math.min(
-        extraOs.length,
-        Math.max(3, Math.ceil((stage.clientWidth * 1.04 - wowBox.width) / letterWidths[0])),
-      );
+      const mm = gsap.matchMedia();
 
-      const section = sectionRef.current;
-      const exitOverlay = exitOverlayRef.current;
-
-      gsap.set(exitOverlay, {
-        yPercent: 100,
-        force3D: true,
-      });
-
-      const getScrollDistance = () =>
-        Math.round(
-          stage.clientHeight *
-            (1.48 + extraCount * (phone ? 0.1 : tablet ? 0.13 : 0.15))
-        );
-
-      const syncSectionHeight = () => {
-        section.style.height = compact
-          ? `${stage.clientHeight + getScrollDistance()}px`
-          : `${getScrollDistance()}px`;
-      };
-
-      syncSectionHeight();
-
-      const timeline = gsap.timeline({
-        scrollTrigger: {
-          trigger: section,
-          start: "top top",
-          end: compact ? "bottom bottom" : "bottom top",
-          pin: compact ? false : stage,
-          pinSpacing: false,
-          scrub: phone ? 0.07 : tablet ? 0.1 : 0.18,
-          anticipatePin: compact ? 0 : 1,
-          invalidateOnRefresh: true,
-          onRefreshInit: syncSectionHeight,
-          onLeave: () => {
-            gsap.set(exitOverlay, { yPercent: 0 });
-          },
-        },
-      });
-
-      // The entire phrase is present as black text when the panel arrives.
-      // Each word's own background then fills continuously with the scroll.
-      blackFillRefs.current.forEach((fill, index) => {
-        timeline.to(fill, {
-          clipPath: "inset(0 0% 0 0)",
-          duration: 0.42,
-          ease: "none",
-        }, index * 0.39);
-      });
-
-      // Continue the WOW line inside the same five-line statement. The other
-      // words remain visible, and the black backing grows with each O.
-      extraOs.slice(0, extraCount).forEach((index) => {
-        timeline.to([blackOs[index], whiteOs[index]], {
-          width: letterWidths[index],
-          autoAlpha: 1,
-          duration: 0.2,
-          ease: "none",
-        }, 2.04 + index * 0.16);
-      });
-
-      timeline.to(
-        exitOverlay,
+      mm.add(
         {
-          yPercent: 0,
-          duration: phone ? 0.36 : tablet ? 0.42 : 0.46,
-          ease: "none",
-          force3D: true,
+          phone: "(max-width: 768px)",
+          tablet: "(min-width: 769px) and (max-width: 1023px)",
+          desktop: "(min-width: 1024px)",
+          reduced: "(prefers-reduced-motion: reduce)",
         },
-        ">"
+        (context) => {
+          const conditions = context.conditions as {
+            phone: boolean;
+            tablet: boolean;
+            desktop: boolean;
+            reduced: boolean;
+          };
+
+          const phone = Boolean(conditions.phone);
+          const tablet = Boolean(conditions.tablet);
+          const desktop = Boolean(conditions.desktop);
+          const reduced = Boolean(conditions.reduced);
+          const compact = phone || tablet;
+
+          if (reduced) {
+            section.style.height = "";
+            gsap.set(exitOverlay, {
+              yPercent: 100,
+              clearProps: "will-change",
+            });
+            return;
+          }
+
+          const wowBox = wow.getBoundingClientRect();
+          const blackOs = blackORefs.current as HTMLSpanElement[];
+          const whiteOs = whiteORefs.current as HTMLSpanElement[];
+          const letterWidths = blackOs.map(
+            (letter) =>
+              letter.firstElementChild?.getBoundingClientRect().width || 1
+          );
+          const extraCount = Math.min(
+            extraOs.length,
+            Math.max(
+              3,
+              Math.ceil(
+                (stage.clientWidth * 1.04 - wowBox.width) /
+                  Math.max(1, letterWidths[0])
+              )
+            )
+          );
+
+          gsap.set(exitOverlay, {
+            yPercent: 100,
+            force3D: true,
+          });
+
+          const getScrollDistance = () =>
+            Math.round(
+              stage.clientHeight *
+                (1.48 +
+                  extraCount *
+                    (phone ? 0.1 : tablet ? 0.13 : 0.15))
+            );
+
+          const syncSectionHeight = () => {
+            section.style.height = compact
+              ? `${stage.clientHeight + getScrollDistance()}px`
+              : `${getScrollDistance()}px`;
+          };
+
+          syncSectionHeight();
+
+          const timeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: "top top",
+              end: () => `+=${getScrollDistance()}`,
+              pin: desktop ? stage : false,
+              pinSpacing: false,
+              scrub: phone ? true : tablet ? 0.08 : 0.18,
+              anticipatePin: desktop ? 1 : 0,
+              invalidateOnRefresh: true,
+              fastScrollEnd: false,
+              onRefreshInit: syncSectionHeight,
+              onLeave: () => {
+                gsap.set(exitOverlay, { yPercent: 0 });
+              },
+            },
+          });
+
+          blackFillRefs.current.forEach((fill, index) => {
+            timeline.to(
+              fill,
+              {
+                clipPath: "inset(0 0% 0 0)",
+                duration: 0.42,
+                ease: "none",
+              },
+              index * 0.39
+            );
+          });
+
+          extraOs.slice(0, extraCount).forEach((index) => {
+            timeline.to(
+              [blackOs[index], whiteOs[index]],
+              {
+                width: letterWidths[index],
+                autoAlpha: 1,
+                duration: 0.2,
+                ease: "none",
+              },
+              2.04 + index * 0.16
+            );
+          });
+
+          timeline.to(
+            exitOverlay,
+            {
+              yPercent: 0,
+              duration: phone ? 0.36 : tablet ? 0.42 : 0.46,
+              ease: "none",
+              force3D: true,
+            },
+            ">"
+          );
+
+          let frameA = 0;
+          let frameB = 0;
+          frameA = requestAnimationFrame(() => {
+            frameB = requestAnimationFrame(() => {
+              timeline.scrollTrigger?.refresh();
+              timeline.scrollTrigger?.update();
+            });
+          });
+
+          return () => {
+            cancelAnimationFrame(frameA);
+            cancelAnimationFrame(frameB);
+            timeline.scrollTrigger?.kill();
+            timeline.kill();
+            section.style.height = "";
+            gsap.set(exitOverlay, {
+              clearProps: "transform,will-change",
+            });
+          };
+        }
       );
 
       return () => {
-        timeline.scrollTrigger?.kill();
-        timeline.kill();
+        mm.revert();
         section.style.height = "";
-        gsap.set(exitOverlay, {
-          clearProps: "transform,will-change",
-        });
       };
     },
     { scope: sectionRef }
@@ -184,7 +246,7 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-40 -mt-[100svh] w-full bg-black p-0 text-black pointer-events-auto md:-mt-[100dvh]"
+      className="relative z-40 -mt-[100svh] w-full bg-black p-0 text-black pointer-events-auto motion-reduce:mt-0 md:-mt-[100dvh] md:motion-reduce:mt-0"
       aria-label="We make brands go wow"
     >
       <div
@@ -200,7 +262,7 @@ export default function StatementSection() {
 
       <div
         ref={stageRef}
-        className="sticky top-0 flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 lg:relative lg:top-auto lg:h-[100dvh] lg:min-h-[100dvh]"
+        className="mobile-scroll-sticky flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 lg:h-[100dvh] lg:min-h-[100dvh]"
       >
         <h2 aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
 

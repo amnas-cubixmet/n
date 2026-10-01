@@ -389,6 +389,7 @@ body::-webkit-scrollbar {
    Mobile/tablet use browser-native sticky positioning instead of GSAP pinning.
    Do not force the sticky wrapper back to position:relative on touch layouts. */
 .wat-we-doen-sticky {
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
   overflow: hidden;
@@ -416,6 +417,20 @@ body::-webkit-scrollbar {
 
 @media (min-width: 1024px) {
   .wat-we-doen-sticky {
+    position: relative;
+    top: auto;
+  }
+}
+
+/* Shared mobile storytelling stage fallback for Safari/WKWebView. */
+.mobile-scroll-sticky {
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+}
+
+@media (min-width: 1024px) {
+  .mobile-scroll-sticky {
     position: relative;
     top: auto;
   }

@@ -192,7 +192,7 @@ body::-webkit-scrollbar {
 
   .hero-logo-wrapper {
     order: 2;
-    width: min(80vw, 320px);
+    width: min(72vw, 285px);
     max-width: calc(100vw - 32px);
   }
 
@@ -237,7 +237,7 @@ body::-webkit-scrollbar {
   }
 
   .hero-logo-wrapper {
-    width: min(76vw, 260px);
+    width: min(70vw, 235px);
   }
 
   .service-item {
@@ -260,7 +260,7 @@ body::-webkit-scrollbar {
   }
 
   .hero-logo-wrapper {
-    width: min(68vw, 235px);
+    width: min(64vw, 220px);
   }
 
   .service-item {

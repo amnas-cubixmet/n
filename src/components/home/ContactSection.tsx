@@ -57,6 +57,7 @@ export default function ContactSection() {
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [projectDetails, setProjectDetails] = useState("");
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -349,10 +350,6 @@ export default function ContactSection() {
           <div ref={formAreaRef} className="lg:col-span-7">
             <form onSubmit={handleSubmit} noValidate className="space-y-8">
               <div>
-                <label className="mb-3 block font-mono text-xs font-bold uppercase tracking-wider text-white/65">
-                  Select Services <span className="text-[#1677FF]">*</span>
-                </label>
-
                 <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
                   {SERVICE_CHIPS.map((chip) => {
                     const isSelected = selectedServices.includes(chip);
@@ -384,13 +381,6 @@ export default function ContactSection() {
 
               <div className="space-y-6">
                 <div className="flex flex-col">
-                  <label
-                    htmlFor="contact-name"
-                    className="mb-1 font-mono text-xs font-bold uppercase tracking-wider text-white/65"
-                  >
-                    Name <span className="text-[#1677FF]">*</span>
-                  </label>
-
                   <input
                     id="contact-name"
                     type="text"
@@ -420,13 +410,6 @@ export default function ContactSection() {
 
                 <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8">
                   <div className="flex flex-col">
-                    <label
-                      htmlFor="contact-phone"
-                      className="mb-1 font-mono text-xs font-bold uppercase tracking-wider text-white/65"
-                    >
-                      Phone Number <span className="text-[#1677FF]">*</span>
-                    </label>
-
                     <input
                       id="contact-phone"
                       type="tel"
@@ -455,13 +438,6 @@ export default function ContactSection() {
                   </div>
 
                   <div className="flex flex-col">
-                    <label
-                      htmlFor="contact-email"
-                      className="mb-1 font-mono text-xs font-bold uppercase tracking-wider text-white/65"
-                    >
-                      Email ID
-                    </label>
-
                     <input
                       id="contact-email"
                       type="email"
@@ -471,6 +447,18 @@ export default function ContactSection() {
                       className="w-full rounded-none border-b border-white/20 bg-transparent py-3.5 text-base text-white outline-none transition-colors placeholder:text-white/25 focus:border-[#1677FF]"
                     />
                   </div>
+                </div>
+
+                <div className="flex flex-col">
+                  <input
+                    id="contact-details"
+                    type="text"
+                    value={projectDetails}
+                    onChange={(event) => setProjectDetails(event.target.value)}
+                    placeholder="Project Details"
+                    aria-label="Project Details"
+                    className="w-full rounded-none border-b border-white/20 bg-transparent py-3.5 text-base text-white outline-none transition-colors placeholder:text-white/25 focus:border-[#1677FF]"
+                  />
                 </div>
 
               </div>

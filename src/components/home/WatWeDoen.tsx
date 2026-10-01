@@ -24,6 +24,7 @@ export default function WatWeDoen() {
   const panelsRef = useRef<(HTMLElement | null)[]>([]);
   const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
   const viewportWidthRef = useRef(0);
+  const serviceListRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -157,15 +158,17 @@ export default function WatWeDoen() {
             const titleParts = panel.querySelectorAll(".title-inner");
             const counters = panel.querySelectorAll(".service-counter");
 
+            // Service titles and counters stay static inside each panel.
+            // Only the top-right service item list gets its own text animation.
             gsap.set(titleParts, {
-              yPercent: reduced || index === 0 ? 0 : 110,
-              autoAlpha: reduced || index === 0 ? 1 : 0,
+              yPercent: 0,
+              autoAlpha: 1,
               force3D: true,
             });
 
             gsap.set(counters, {
-              y: index === 0 ? (mobile ? 8 : 12) : mobile ? 6 : 8,
-              autoAlpha: index === 0 ? 0 : reduced ? 1 : 0,
+              y: 0,
+              autoAlpha: 1,
             });
 
             const image = imagesRef.current[index];
@@ -232,16 +235,6 @@ export default function WatWeDoen() {
             const segmentStart = index;
 
             if (index === 0) {
-              timeline.to(
-                panel.querySelectorAll(".service-counter"),
-                {
-                  y: 0,
-                  autoAlpha: 1,
-                  duration: reduced ? 0.08 : 0.16,
-                  ease: "power2.out",
-                },
-                0.12
-              );
               timeline.to({}, { duration: 0.72 }, 0.28);
               return;
             }
@@ -293,33 +286,6 @@ export default function WatWeDoen() {
                   force3D: true,
                 },
                 segmentStart
-              );
-            }
-
-            if (!reduced) {
-              const revealAt = segmentStart + revealDuration * 0.55;
-
-              timeline.to(
-                panel.querySelectorAll(".title-inner"),
-                {
-                  yPercent: 0,
-                  autoAlpha: 1,
-                  duration: phone ? 0.18 : tablet ? 0.22 : 0.26,
-                  ease: "power3.out",
-                  force3D: true,
-                },
-                revealAt
-              );
-
-              timeline.to(
-                panel.querySelectorAll(".service-counter"),
-                {
-                  y: 0,
-                  autoAlpha: 1,
-                  duration: phone ? 0.16 : tablet ? 0.18 : 0.22,
-                  ease: "power2.out",
-                },
-                revealAt + 0.04
               );
             }
 
@@ -378,6 +344,44 @@ export default function WatWeDoen() {
 
   const activeService = services[activeIndex];
 
+  useGSAP(
+    () => {
+      const list = serviceListRef.current;
+      if (!list) return;
+
+      const items = Array.from(list.querySelectorAll<HTMLElement>(".service-meta-item"));
+      if (!items.length) return;
+
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (reduced) {
+        gsap.set(items, { y: 0, autoAlpha: 1 });
+        return;
+      }
+
+      gsap.fromTo(
+        items,
+        {
+          y: 8,
+          autoAlpha: 0,
+        },
+        {
+          y: 0,
+          autoAlpha: 1,
+          duration: 0.28,
+          stagger: 0.035,
+          ease: "power3.out",
+          overwrite: "auto",
+          clearProps: "transform,opacity,visibility",
+        }
+      );
+    },
+    {
+      scope: wrapperRef,
+      dependencies: [activeIndex],
+      revertOnUpdate: true,
+    }
+  );
+
   return (
     <section
       ref={wrapperRef}
@@ -396,12 +400,13 @@ export default function WatWeDoen() {
 
             <div
               key={activeService.id}
+              ref={serviceListRef}
               className="flex max-w-[55vw] flex-col items-start gap-[2px] md:max-w-[440px]"
             >
               {activeService.items.map((item) => (
                 <span
                   key={item}
-                  className="inline-block bg-black px-1 py-[1px] font-montserrat text-[8px] font-medium uppercase leading-none tracking-[0.03em] text-white sm:text-[9px] md:text-[16px]"
+                  className="service-meta-item inline-block bg-black px-1 py-[1px] font-montserrat text-[8px] font-medium uppercase leading-none tracking-[0.03em] text-white sm:text-[9px] md:text-[16px]"
                 >
                   {item}
                 </span>

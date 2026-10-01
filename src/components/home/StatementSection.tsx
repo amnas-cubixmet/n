@@ -113,16 +113,16 @@ export default function StatementSection() {
             },
           });
 
-          blackFillRefs.current.forEach((fill, index) => {
-            timeline.to(
-              fill,
-              {
+          blackFillRefs.current.forEach((fill) => {
+            timeline
+              .to(fill, {
                 clipPath: "inset(0 0% 0 0)",
-                duration: 0.42,
+                duration: phone ? 0.34 : tablet ? 0.38 : 0.42,
                 ease: "none",
-              },
-              index * 0.39
-            );
+              })
+              .to({}, {
+                duration: phone ? 0.08 : tablet ? 0.1 : 0.12,
+              });
           });
 
           extraOs.slice(0, extraCount).forEach((index) => {
@@ -141,7 +141,7 @@ export default function StatementSection() {
           // Hold the completed WOW composition before the sticky stage releases.
           // After this pause, the entire blue stage and its content leave together,
           // revealing the following black section naturally.
-          timeline.to({}, { duration: phone ? 0.42 : tablet ? 0.52 : 0.66 });
+          timeline.to({}, { duration: phone ? 0.5 : tablet ? 0.62 : 0.78 });
 
           let frameA = 0;
           let frameB = 0;

@@ -111,8 +111,8 @@ export default function SelectedWork() {
       </div>
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-12 sm:gap-16 lg:block lg:min-h-[clamp(1550px,125vw,1900px)]">
-        <div className="work-project-item flex flex-col items-start gap-[2px] lg:absolute lg:left-0 lg:top-[clamp(72px,6vw,96px)]">
-          <h2 className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(20px,2vw,28px)] font-semibold uppercase leading-[0.92] tracking-[-0.025em]">
+        <div className="work-project-item flex flex-col items-start gap-[2px] lg:absolute lg:left-0 lg:top-[clamp(80px,6.5vw,104px)]">
+          <h2 className="flex flex-col items-start gap-[2px] font-montserrat text-[clamp(14px,1.35vw,19px)] font-semibold uppercase leading-[1] tracking-[0.01em]">
             <span className="bg-black px-[3px] text-white">A SELECTION</span>
             <span className="bg-black px-[3px] text-white">OF OUR WORK</span>
           </h2>

@@ -154,7 +154,7 @@ export default function OurUSPs() {
       <div
         ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-[6%] top-[8%] z-0 h-[88%] w-[88%] bg-[#151515] will-change-transform sm:left-[10%] sm:w-[82%] lg:left-[18%] lg:top-[6%] lg:h-[90%] lg:w-[70%]"
+        className="pointer-events-none absolute left-[6%] top-[8%] z-0 h-[88%] w-[88%] bg-[#151515] sm:left-[10%] lg:will-change-transform sm:w-[82%] lg:left-[18%] lg:top-[6%] lg:h-[90%] lg:w-[70%]"
         style={{
           clipPath:
             "polygon(11% 0, 100% 0, 100% 22%, 91% 22%, 91% 48%, 100% 48%, 100% 100%, 14% 100%, 14% 90%, 0 90%, 0 16%, 11% 16%)",

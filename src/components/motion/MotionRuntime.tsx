@@ -63,6 +63,16 @@ export default function MotionRuntime() {
       }
     };
 
+    const handleLateAssetReady = (event: Event) => {
+      const target = event.target;
+      if (
+        target instanceof HTMLImageElement ||
+        target instanceof HTMLVideoElement
+      ) {
+        refreshAfterPaint();
+      }
+    };
+
     const mediaCleanups: Array<() => void> = [];
 
     document.querySelectorAll<HTMLImageElement>("img").forEach((image) => {
@@ -90,6 +100,8 @@ export default function MotionRuntime() {
     window.addEventListener("orientationchange", handleOrientationChange);
     window.addEventListener("pageshow", handlePageShow);
     document.addEventListener("visibilitychange", handleVisibilityChange);
+    document.addEventListener("load", handleLateAssetReady, true);
+    document.addEventListener("loadedmetadata", handleLateAssetReady, true);
     window.visualViewport?.addEventListener("resize", handleViewportResize);
 
     if (document.fonts?.ready) {
@@ -117,6 +129,8 @@ export default function MotionRuntime() {
       window.removeEventListener("orientationchange", handleOrientationChange);
       window.removeEventListener("pageshow", handlePageShow);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("load", handleLateAssetReady, true);
+      document.removeEventListener("loadedmetadata", handleLateAssetReady, true);
       window.visualViewport?.removeEventListener("resize", handleViewportResize);
       mediaCleanups.forEach((cleanup) => cleanup());
     };

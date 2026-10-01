@@ -154,22 +154,6 @@ export default function WatWeDoen() {
               });
             }
 
-            const titleParts = panel.querySelectorAll(".title-inner");
-            const counters = panel.querySelectorAll(".service-counter");
-
-            // Service titles, counters, and the top service list stay static.
-            // Only the panel/image transition is scroll-animated.
-            gsap.set(titleParts, {
-              yPercent: 0,
-              autoAlpha: 1,
-              force3D: true,
-            });
-
-            gsap.set(counters, {
-              y: 0,
-              autoAlpha: 1,
-            });
-
             const image = imagesRef.current[index];
             if (image) {
               gsap.set(image, {
@@ -407,33 +391,31 @@ export default function WatWeDoen() {
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/72 via-black/12 to-black/10" />
               </div>
-
-              <div className="relative z-20 flex h-full w-full pointer-events-none">
-                <div className="absolute bottom-[max(3.5rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] z-30 max-w-[90vw] pointer-events-auto md:bottom-[max(3rem,env(safe-area-inset-bottom))] md:left-8 lg:left-12">
-                  <TransitionLink
-                    href={`/services/${service.slug}`}
-                    className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(30px,8vw,42px)] font-bold uppercase leading-[0.91] tracking-normal text-white sm:text-[clamp(34px,8.2vw,46px)] md:text-[clamp(42px,6.4vw,58px)] lg:text-[106px] lg:leading-[0.94]"
-                  >
-                    {service.displayLines.map((line) => (
-                      <span key={line} className="title-mask">
-                        <span className="title-inner block w-fit bg-black px-[0.06em] py-[0.01em] leading-[0.94] text-white lg:leading-[0.96]">
-                          {line}
-                        </span>
-                      </span>
-                    ))}
-                  </TransitionLink>
-                </div>
-
-                <div className="service-counter absolute bottom-[max(1rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] z-30 inline-flex items-center gap-2 bg-black px-2 py-1 font-pixel text-[10px] tracking-wider text-white pointer-events-none md:left-auto md:right-8 md:bottom-[max(2rem,env(safe-area-inset-bottom))] md:font-mono md:text-xs lg:right-12">
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <span className="relative h-[2px] w-7 overflow-hidden bg-white/30">
-                    <span className="absolute inset-0 origin-left bg-[#1677FF]" />
-                  </span>
-                  <span>{String(services.length).padStart(2, "0")}</span>
-                </div>
-              </div>
             </article>
           ))}
+
+          <div className="absolute inset-0 z-[90] pointer-events-none">
+            <div className="absolute bottom-[max(3.5rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] max-w-[90vw] pointer-events-auto md:bottom-[max(3rem,env(safe-area-inset-bottom))] md:left-8 lg:left-12">
+              <TransitionLink
+                href={`/services/${activeService.slug}`}
+                className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(30px,8vw,42px)] font-bold uppercase leading-[0.91] tracking-normal text-white sm:text-[clamp(34px,8.2vw,46px)] md:text-[clamp(42px,6.4vw,58px)] lg:text-[106px] lg:leading-[0.94]"
+              >
+                {activeService.displayLines.map((line) => (
+                  <span key={line} className="block w-fit bg-black px-[0.06em] py-[0.01em] leading-[0.94] text-white lg:leading-[0.96]">
+                    {line}
+                  </span>
+                ))}
+              </TransitionLink>
+            </div>
+
+            <div className="absolute bottom-[max(1rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] inline-flex items-center gap-2 bg-black px-2 py-1 font-pixel text-[10px] tracking-wider text-white md:left-auto md:right-8 md:bottom-[max(2rem,env(safe-area-inset-bottom))] md:font-mono md:text-xs lg:right-12">
+              <span>{String(activeIndex + 1).padStart(2, "0")}</span>
+              <span className="relative h-[2px] w-7 overflow-hidden bg-white/30">
+                <span className="absolute inset-0 origin-left bg-[#1677FF]" />
+              </span>
+              <span>{String(services.length).padStart(2, "0")}</span>
+            </div>
+          </div>
         </div>
       </div>
     </section>

@@ -24,6 +24,8 @@ export default function WatWeDoen() {
   const panelsRef = useRef<(HTMLElement | null)[]>([]);
   const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
   const viewportWidthRef = useRef(0);
+  const serviceListRef = useRef<HTMLDivElement>(null);
+  const previousActiveIndexRef = useRef(0);
   const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
@@ -343,6 +345,58 @@ export default function WatWeDoen() {
 
   const activeService = services[activeIndex];
 
+  useGSAP(
+    () => {
+      const list = serviceListRef.current;
+      if (!list) return;
+
+      const items = Array.from(
+        list.querySelectorAll<HTMLElement>(".service-meta-item")
+      );
+      if (!items.length) return;
+
+      const previousIndex = previousActiveIndexRef.current;
+      const direction = activeIndex >= previousIndex ? 1 : -1;
+      previousActiveIndexRef.current = activeIndex;
+
+      const reduced = window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches;
+
+      if (reduced || activeIndex === previousIndex) {
+        gsap.set(items, {
+          yPercent: 0,
+          autoAlpha: 1,
+        });
+        return;
+      }
+
+      gsap.killTweensOf(items);
+
+      gsap.fromTo(
+        items,
+        {
+          yPercent: direction > 0 ? 115 : -115,
+          autoAlpha: 0,
+        },
+        {
+          yPercent: 0,
+          autoAlpha: 1,
+          duration: 0.46,
+          stagger: 0.055,
+          ease: "power3.out",
+          overwrite: true,
+          clearProps: "transform,opacity,visibility",
+        }
+      );
+    },
+    {
+      scope: wrapperRef,
+      dependencies: [activeIndex],
+      revertOnUpdate: true,
+    }
+  );
+
   return (
     <section
       ref={wrapperRef}
@@ -361,12 +415,13 @@ export default function WatWeDoen() {
 
             <div
               key={activeService.id}
-              className="flex max-w-[55vw] flex-col items-start gap-[2px] md:max-w-[440px]"
+              ref={serviceListRef}
+              className="flex max-w-[55vw] flex-col items-start gap-[2px] overflow-hidden md:max-w-[440px]"
             >
               {activeService.items.map((item) => (
                 <span
                   key={item}
-                  className="inline-block bg-black px-1 py-[1px] font-montserrat text-[8px] font-medium uppercase leading-none tracking-[0.03em] text-white sm:text-[9px] md:text-[16px]"
+                  className="service-meta-item inline-block bg-black px-1 py-[1px] font-montserrat text-[8px] font-medium uppercase leading-none tracking-[0.03em] text-white sm:text-[9px] md:text-[16px]"
                 >
                   {item}
                 </span>

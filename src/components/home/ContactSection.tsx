@@ -330,19 +330,29 @@ export default function ContactSection() {
             </span>
           </div>
 
-          <h2 className="m-0 w-full text-left font-sans text-[clamp(25px,6.2vw,36px)] font-normal leading-[1.08] tracking-[-0.025em] text-white sm:text-[clamp(30px,3.4vw,44px)] lg:max-w-[1000px] lg:text-[clamp(34px,2.5vw,46px)]">
-            Ready to take your brand to the next level? Fill out the form or
-            drop us a{" "}
-            <a
-              href={CONTACT_CONFIG.whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline decoration-white/50 underline-offset-4 transition-colors lg:hover:text-[#1677FF]"
-            >
-              WhatsApp message
-            </a>
-            . Let’s connect, share ideas, and create something that makes
-            people say WOOOOOW.
+          <h2 className="m-0 w-full text-left font-sans text-[clamp(25px,6.2vw,36px)] font-normal leading-[1.08] tracking-[-0.025em] text-white sm:text-[clamp(30px,3.4vw,44px)] lg:max-w-[1100px] lg:text-[clamp(34px,2.5vw,46px)]">
+            <span className="block">Ready to take your brand to the next level?</span>
+            <span className="block">
+              Fill out the form or drop us a{" "}
+              <a
+                href={CONTACT_CONFIG.whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 align-baseline text-white transition-colors lg:hover:text-[#1677FF]"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                  className="h-[0.85em] w-[0.85em] shrink-0 fill-current"
+                >
+                  <path d="M12.04 2a9.74 9.74 0 0 0-8.3 14.83L2.4 21.76l5.06-1.32A9.76 9.76 0 1 0 12.04 2Zm0 17.73a7.94 7.94 0 0 1-4.05-1.11l-.29-.17-3 .78.8-2.92-.19-.3a7.96 7.96 0 1 1 6.73 3.72Zm4.37-5.96c-.24-.12-1.41-.7-1.63-.77-.22-.08-.38-.12-.54.12-.16.24-.62.77-.76.93-.14.16-.28.18-.52.06-.24-.12-1.01-.37-1.92-1.18-.71-.63-1.19-1.41-1.33-1.65-.14-.24-.02-.37.1-.49.11-.11.24-.28.36-.42.12-.14.16-.24.24-.4.08-.16.04-.3-.02-.42-.06-.12-.54-1.3-.74-1.78-.2-.47-.4-.4-.54-.41h-.46c-.16 0-.42.06-.64.3-.22.24-.84.82-.84 2s.86 2.32.98 2.48c.12.16 1.69 2.58 4.1 3.62.57.25 1.02.4 1.37.51.58.18 1.1.16 1.52.1.46-.07 1.41-.58 1.61-1.13.2-.56.2-1.03.14-1.13-.06-.1-.22-.16-.46-.28Z" />
+                </svg>
+                <span>WhatsApp message</span>
+              </a>
+              .
+            </span>
+            <span className="block">Let’s connect, share ideas, and create something</span>
+            <span className="block">that makes people say WOOOOOW.</span>
           </h2>
         </div>
 

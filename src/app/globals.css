@@ -429,13 +429,6 @@ body::-webkit-scrollbar {
   top: 0;
 }
 
-@media (min-width: 1024px) {
-  .mobile-scroll-sticky {
-    position: relative;
-    top: auto;
-  }
-}
-
 
 /* HERO MOBILE / SAFARI STABILITY */
 .hero,

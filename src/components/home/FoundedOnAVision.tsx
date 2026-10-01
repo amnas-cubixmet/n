@@ -16,6 +16,8 @@ export default function FoundedOnAVision() {
   const textRef = useRef<HTMLParagraphElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const imageInnerRef = useRef<HTMLDivElement>(null);
+  const topShapeRef = useRef<HTMLDivElement>(null);
+  const bottomShapeRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -25,7 +27,9 @@ export default function FoundedOnAVision() {
         !labelRef.current ||
         !textRef.current ||
         !imageRef.current ||
-        !imageInnerRef.current
+        !imageInnerRef.current ||
+        !topShapeRef.current ||
+        !bottomShapeRef.current
       ) {
         return;
       }
@@ -36,7 +40,14 @@ export default function FoundedOnAVision() {
 
       if (reducedMotion) {
         gsap.set(
-          [labelRef.current, textRef.current, imageRef.current, imageInnerRef.current],
+          [
+            labelRef.current,
+            textRef.current,
+            imageRef.current,
+            imageInnerRef.current,
+            topShapeRef.current,
+            bottomShapeRef.current,
+          ],
           {
             autoAlpha: 1,
             y: 0,
@@ -54,24 +65,28 @@ export default function FoundedOnAVision() {
         const text = textRef.current;
         const image = imageRef.current;
         const imageInner = imageInnerRef.current;
+        const topShape = topShapeRef.current;
+        const bottomShape = bottomShapeRef.current;
 
-        if (!label || !text || !image || !imageInner) return;
+        if (!label || !text || !image || !imageInner || !topShape || !bottomShape) return;
 
         gsap.set(label, {
           autoAlpha: 0,
-          y: mobile ? 5 : 7,
+          x: mobile ? -16 : -28,
+          y: 0,
           force3D: true,
         });
 
         gsap.set(text, {
           autoAlpha: 0,
-          y: mobile ? 12 : 18,
+          y: mobile ? 28 : 46,
           force3D: true,
         });
 
         gsap.set(image, {
           autoAlpha: 0,
-          y: mobile ? 10 : 16,
+          y: mobile ? 24 : 42,
+          clipPath: "inset(18% 0 0 0)",
           force3D: true,
         });
 
@@ -79,6 +94,18 @@ export default function FoundedOnAVision() {
           scale: mobile ? 1.025 : 1.04,
           yPercent: mobile ? 1 : 2,
           transformOrigin: "center center",
+          force3D: true,
+        });
+
+        gsap.set(topShape, {
+          xPercent: mobile ? 4 : 8,
+          yPercent: mobile ? -2 : -5,
+          force3D: true,
+        });
+
+        gsap.set(bottomShape, {
+          xPercent: mobile ? -4 : -8,
+          yPercent: mobile ? 2 : 5,
           force3D: true,
         });
 
@@ -99,7 +126,7 @@ export default function FoundedOnAVision() {
         timeline
           .to(label, {
             autoAlpha: 1,
-            y: 0,
+            x: 0,
             duration: 0.24,
           })
           .to(
@@ -116,7 +143,8 @@ export default function FoundedOnAVision() {
             {
               autoAlpha: 1,
               y: 0,
-              duration: 0.46,
+              clipPath: "inset(0% 0 0 0)",
+              duration: 0.5,
             },
             0.12
           )
@@ -125,10 +153,30 @@ export default function FoundedOnAVision() {
             {
               scale: 1,
               yPercent: mobile ? -1 : -2,
-              duration: 0.58,
+              duration: 0.62,
               force3D: true,
             },
             0.12
+          )
+          .to(
+            topShape,
+            {
+              xPercent: mobile ? -1 : -3,
+              yPercent: mobile ? 1 : 3,
+              duration: 0.7,
+              force3D: true,
+            },
+            0
+          )
+          .to(
+            bottomShape,
+            {
+              xPercent: mobile ? 1 : 3,
+              yPercent: mobile ? -1 : -3,
+              duration: 0.7,
+              force3D: true,
+            },
+            0
           );
       };
 
@@ -149,6 +197,7 @@ export default function FoundedOnAVision() {
       className="relative z-30 m-0 w-full overflow-hidden bg-[#D4D6E4] px-[max(1.1rem,env(safe-area-inset-left))] py-16 pr-[max(1.1rem,env(safe-area-inset-right))] text-black pointer-events-auto select-none sm:px-10 sm:py-20 lg:px-16 lg:py-24"
     >
       <div
+        ref={topShapeRef}
         aria-hidden="true"
         className="pointer-events-none absolute right-[-8%] top-[10%] h-[42%] w-[46%] bg-[#C7C9DD]/55 sm:right-[-4%] lg:right-[2%] lg:top-[8%] lg:h-[46%] lg:w-[34%]"
         style={{
@@ -157,6 +206,7 @@ export default function FoundedOnAVision() {
       />
 
       <div
+        ref={bottomShapeRef}
         aria-hidden="true"
         className="pointer-events-none absolute bottom-[8%] left-[-10%] h-[28%] w-[42%] bg-[#BFC2D8]/35 sm:left-[-6%] lg:left-[4%] lg:w-[28%]"
         style={{

@@ -510,7 +510,7 @@ export default function ContactSection() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex min-h-[48px] cursor-pointer items-center justify-center bg-[#1677FF] px-8 py-4 font-mono text-sm font-bold uppercase tracking-wider text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white disabled:cursor-not-allowed disabled:opacity-60 sm:px-10 sm:text-base lg:hover:bg-[#1260CC]"
+                className="inline-flex min-h-[40px] cursor-pointer items-center justify-center bg-[#1677FF] px-5 py-2.5 font-mono text-sm font-bold uppercase tracking-wider text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white disabled:cursor-not-allowed disabled:opacity-60 sm:px-6 lg:hover:bg-[#1260CC]"
               >
                 {isSubmitting ? "Sending..." : "Send Enquiry"}
               </button>
@@ -580,28 +580,22 @@ export default function ContactSection() {
               </div>
             </div>
 
-            <div className="space-y-3 pt-2">
-              <span className="block font-mono text-xs font-semibold uppercase tracking-wider text-[#1677FF]">
-                SOCIAL PROFILES
-              </span>
-
-              <div className="flex flex-col space-y-2">
-                {[
-                  ["INSTAGRAM", CONTACT_CONFIG.instagramUrl],
-                  ["FACEBOOK", CONTACT_CONFIG.facebookUrl],
-                  ["LINKEDIN", CONTACT_CONFIG.linkedinUrl],
-                ].map(([label, href]) => (
-                  <a
-                    key={label}
-                    href={href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block font-mono text-sm text-white/65 transition-colors lg:hover:text-white"
-                  >
-                    {label} →
-                  </a>
-                ))}
-              </div>
+            <div className="flex flex-col items-start gap-2 pt-2">
+              {[
+                ["INSTAGRAM", CONTACT_CONFIG.instagramUrl],
+                ["FACEBOOK", CONTACT_CONFIG.facebookUrl],
+                ["LINKEDIN", CONTACT_CONFIG.linkedinUrl],
+              ].map(([label, href]) => (
+                <a
+                  key={label}
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block w-fit font-mono text-sm text-white/65 transition-colors lg:hover:text-white"
+                >
+                  {label}
+                </a>
+              ))}
             </div>
           </div>
         </div>

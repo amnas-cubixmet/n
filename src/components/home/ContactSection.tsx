@@ -482,7 +482,7 @@ export default function ContactSection() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex min-h-[36px] cursor-pointer items-center justify-center bg-[#1677FF] px-4 py-2 font-mono text-[13px] font-bold uppercase tracking-wider text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white disabled:cursor-not-allowed disabled:opacity-60 sm:px-5 sm:text-sm lg:hover:bg-[#1260CC]"
+                className="inline-flex min-h-[36px] cursor-pointer items-center justify-center border border-white/10 bg-white/[0.035] px-4 py-2 font-mono text-[13px] font-bold uppercase tracking-wider text-white/80 transition-[background-color,border-color,color] duration-200 focus:outline-none focus:ring-2 focus:ring-[#1677FF] disabled:cursor-not-allowed disabled:opacity-60 sm:px-5 sm:text-sm lg:hover:border-[#1677FF] lg:hover:bg-[#1677FF] lg:hover:text-white"
               >
                 {isSubmitting ? "Sending..." : "Send Enquiry"}
               </button>

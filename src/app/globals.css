@@ -138,6 +138,12 @@ body::-webkit-scrollbar {
   will-change: transform, opacity;
 }
 
+@media (min-width: 769px) {
+  .hero-logo-wrapper {
+    width: clamp(340px, 44vw, 700px);
+  }
+}
+
 .service-item {
   display: block;
   width: fit-content;

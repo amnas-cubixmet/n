@@ -15,7 +15,7 @@ export default function ScrollIndicator({
     <div
       ref={labelRef}
       aria-hidden="true"
-      className="scroll-indicator-wrapper absolute top-[29%] sm:top-[37%] left-[max(16px,env(safe-area-inset-left))] sm:left-[max(28px,env(safe-area-inset-left))] lg:left-[max(40px,env(safe-area-inset-left))] z-[4] flex items-center gap-[10px] select-none pointer-events-none opacity-0"
+      className="scroll-indicator-wrapper absolute top-[29%] sm:top-[37%] left-[max(16px,env(safe-area-inset-left))] sm:left-[max(28px,env(safe-area-inset-left))] lg:left-[max(40px,env(safe-area-inset-left))] z-[4] flex items-center gap-[6px] select-none pointer-events-none opacity-0"
     >
       <span
         ref={lineRef}

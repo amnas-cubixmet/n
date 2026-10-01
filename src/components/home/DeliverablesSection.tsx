@@ -17,6 +17,9 @@ export default function DeliverablesSection() {
 
   const mobileTrackRef = useRef<HTMLDivElement>(null);
   const mobileItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const desktopListRef = useRef<HTMLDivElement>(null);
+  const desktopItemRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const desktopHighlightRef = useRef<HTMLDivElement>(null);
 
   const progressFillRef = useRef<HTMLDivElement>(null);
   const mobileProgressFillRef = useRef<HTMLDivElement>(null);
@@ -111,6 +114,28 @@ export default function DeliverablesSection() {
       window.removeEventListener("orientationchange", handleOrientationChange);
     };
   }, [updateMobileNavigation]);
+
+  useLayoutEffect(() => {
+    const list = desktopListRef.current;
+    const highlight = desktopHighlightRef.current;
+    const active = desktopItemRefs.current[activeIndex];
+
+    if (!list || !highlight || !active || window.innerWidth < 1024) return;
+
+    const listRect = list.getBoundingClientRect();
+    const activeRect = active.getBoundingClientRect();
+
+    gsap.to(highlight, {
+      x: activeRect.left - listRect.left,
+      y: activeRect.top - listRect.top,
+      width: activeRect.width,
+      height: activeRect.height,
+      duration: 0.48,
+      ease: "power3.out",
+      overwrite: "auto",
+      force3D: true,
+    });
+  }, [activeIndex]);
 
   useLayoutEffect(() => {
     const previousIndex = prevIndexRef.current;
@@ -478,29 +503,40 @@ export default function DeliverablesSection() {
             <div className="w-full max-w-[1500px] mx-auto grid grid-cols-1 lg:grid-cols-[minmax(0,0.9fr)_24px_minmax(0,1.1fr)] items-center gap-x-12 xl:gap-x-16">
               
               {/* Desktop Left Nav */}
-              <div className="hidden lg:flex w-full flex-col items-start overflow-hidden pr-4">
-                <nav className="relative w-full overflow-visible" aria-label="Deliverable services">
-                  <div className="flex w-full flex-col items-start gap-0">
+              <div className="hidden lg:flex w-full flex-col items-center justify-center overflow-visible pr-4">
+                <nav
+                  className="relative flex w-full justify-center overflow-visible"
+                  aria-label="Deliverable services"
+                >
+                  <div
+                    ref={desktopListRef}
+                    className="relative flex w-fit flex-col items-center gap-0"
+                  >
+                    <div
+                      ref={desktopHighlightRef}
+                      aria-hidden="true"
+                      className="pointer-events-none absolute left-0 top-0 z-0 bg-black will-change-transform"
+                    />
+
                     {deliverables.map((item, index) => {
                       const isActive = index === activeIndex;
 
                       return (
                         <button
                           key={item.id}
+                          ref={(element) => {
+                            desktopItemRefs.current[index] = element;
+                          }}
                           type="button"
                           onClick={() => handleSelectService(index)}
                           aria-current={isActive ? "true" : undefined}
-                          className="group block text-left leading-none select-none"
+                          className={`relative z-10 block w-fit whitespace-nowrap px-2 py-[3px] text-center font-sans text-[clamp(20px,2vw,34px)] leading-[0.94] tracking-tight transition-colors duration-300 select-none ${
+                            isActive
+                              ? "text-white"
+                              : "text-black/20 lg:hover:text-black/45"
+                          }`}
                         >
-                          <span
-                            className={`inline-block px-2 py-[3px] font-sans text-[clamp(20px,2vw,34px)] leading-[0.94] tracking-tight transition-[color,background-color] duration-300 ${
-                              isActive
-                                ? "bg-black text-white"
-                                : "bg-transparent text-black/20 lg:group-hover:text-black/45"
-                            }`}
-                          >
-                            {item.title}
-                          </span>
+                          {item.title}
                         </button>
                       );
                     })}

@@ -273,7 +273,7 @@ export default function Header() {
           aria-expanded={menuOpen}
           aria-controls="northframe-menu-panel"
           aria-label={menuOpen ? "Close menu" : "Open menu"}
-          className="header-menu-button pointer-events-auto relative z-[110] inline-flex min-h-0 min-w-0 items-center justify-center bg-[#1677FF] p-[3px] text-white rounded-none select-none touch-action-manipulation cursor-pointer focus:outline-none before:absolute before:-inset-3 before:content-[''] md:h-auto md:w-auto md:min-h-[44px] md:min-w-[44px] md:gap-2.5 md:px-3.5 md:py-2.5 md:before:content-none md:focus-visible:ring-2 md:focus-visible:ring-white/70"
+          className="header-menu-button pointer-events-auto relative z-[110] inline-flex min-h-0 min-w-0 items-center justify-center bg-[#1677FF] p-[3px] text-white rounded-none select-none touch-action-manipulation cursor-pointer focus:outline-none before:absolute before:-inset-3 before:content-[''] md:h-auto md:w-auto md:min-h-0 md:min-w-0 md:gap-2.5 md:p-0 md:focus-visible:ring-2 md:focus-visible:ring-white/70"
         >
           <span className="hidden md:inline font-mono text-[10px] font-semibold uppercase tracking-[0.12em] leading-none">
             {menuOpen ? "CLOSE" : "MENU"}

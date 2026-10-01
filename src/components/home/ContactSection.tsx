@@ -544,7 +544,7 @@ export default function ContactSection() {
 
               <div>
                 <span className="mb-1 block font-mono text-xs font-semibold uppercase tracking-wider text-[#1677FF]">
-                  PHONE / WHATSAPP
+                  CALL / WHATSAPP
                 </span>
                 <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                   <a

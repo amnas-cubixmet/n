@@ -373,20 +373,30 @@ export default function WatWeDoen() {
 
       gsap.killTweensOf(items);
 
+      const fromClip =
+        direction > 0
+          ? "inset(100% 0% 0% 0%)"
+          : "inset(0% 0% 100% 0%)";
+
       gsap.fromTo(
         items,
         {
-          yPercent: direction > 0 ? 115 : -115,
-          autoAlpha: 0,
+          yPercent: direction > 0 ? 135 : -135,
+          clipPath: fromClip,
+          WebkitClipPath: fromClip,
+          autoAlpha: 1,
         },
         {
           yPercent: 0,
+          clipPath: "inset(0% 0% 0% 0%)",
+          WebkitClipPath: "inset(0% 0% 0% 0%)",
           autoAlpha: 1,
-          duration: 0.46,
-          stagger: 0.055,
-          ease: "power3.out",
+          duration: 0.62,
+          stagger: 0.085,
+          ease: "power4.out",
           overwrite: true,
-          clearProps: "transform,opacity,visibility",
+          clearProps:
+            "transform,opacity,visibility,clip-path,-webkit-clip-path",
         }
       );
     },

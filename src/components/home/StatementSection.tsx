@@ -246,7 +246,7 @@ export default function StatementSection() {
     <section
       id="statement"
       ref={sectionRef}
-      className="relative z-40 -mt-[100svh] w-full bg-black p-0 text-black pointer-events-auto md:-mt-[100dvh]"
+      className="relative z-40 -mt-[82svh] w-full bg-black p-0 text-black pointer-events-auto md:-mt-[80dvh]"
       aria-label="We make brands go wow"
     >
       <div

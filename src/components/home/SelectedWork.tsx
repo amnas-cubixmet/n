@@ -13,6 +13,7 @@ if (typeof window !== "undefined") gsap.registerPlugin(ScrollTrigger);
 export default function SelectedWork() {
   const sectionRef = useRef<HTMLElement>(null);
   const shapeRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -64,18 +65,50 @@ export default function SelectedWork() {
       );
 
       media.add("(min-width: 1024px) and (hover: hover) and (pointer: fine)", () => {
-        if (!shapeRef.current) return;
-        gsap.fromTo(shapeRef.current, { yPercent: -5 }, {
-          yPercent: 10,
-          ease: "none",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top bottom",
-            end: "bottom top",
-            scrub: 0.8,
-            invalidateOnRefresh: true,
-          },
-        });
+        const shape = shapeRef.current;
+        const content = contentRef.current;
+        if (!shape || !content) return;
+
+        const shapeTween = gsap.fromTo(
+          shape,
+          { yPercent: -8 },
+          {
+            yPercent: 14,
+            ease: "none",
+            force3D: true,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+
+        const contentTween = gsap.fromTo(
+          content,
+          { yPercent: 0.8 },
+          {
+            yPercent: -1.6,
+            ease: "none",
+            force3D: true,
+            scrollTrigger: {
+              trigger: sectionRef.current,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 1.2,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+
+        return () => {
+          shapeTween.scrollTrigger?.kill();
+          shapeTween.kill();
+          contentTween.scrollTrigger?.kill();
+          contentTween.kill();
+        };
       });
       return () => media.revert();
     },
@@ -110,7 +143,10 @@ export default function SelectedWork() {
         />
       </div>
 
-      <div className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-12 sm:gap-16 lg:block lg:min-h-[clamp(1550px,125vw,1900px)]">
+      <div
+        ref={contentRef}
+        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-12 sm:gap-16 lg:block lg:min-h-[clamp(1550px,125vw,1900px)]"
+      >
         <div className="work-project-item flex flex-col items-start gap-[2px] lg:absolute lg:left-0 lg:top-[clamp(80px,6.5vw,104px)]">
           <h2 className="flex flex-col items-start gap-[2px] font-montserrat text-[clamp(14px,1.35vw,19px)] font-semibold uppercase leading-[1] tracking-[0.01em]">
             <span className="bg-black px-[3px] text-white">A SELECTION</span>

@@ -510,7 +510,7 @@ export default function ContactSection() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="inline-flex min-h-[40px] cursor-pointer items-center justify-center bg-[#1677FF] px-5 py-2.5 font-mono text-sm font-bold uppercase tracking-wider text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white disabled:cursor-not-allowed disabled:opacity-60 sm:px-6 lg:hover:bg-[#1260CC]"
+                className="inline-flex min-h-[36px] cursor-pointer items-center justify-center bg-[#1677FF] px-4 py-2 font-mono text-[13px] font-bold uppercase tracking-wider text-white transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-white disabled:cursor-not-allowed disabled:opacity-60 sm:px-5 sm:text-sm lg:hover:bg-[#1260CC]"
               >
                 {isSubmitting ? "Sending..." : "Send Enquiry"}
               </button>
@@ -580,7 +580,7 @@ export default function ContactSection() {
               </div>
             </div>
 
-            <div className="flex flex-col items-start gap-2 pt-2">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-2">
               {[
                 ["INSTAGRAM", CONTACT_CONFIG.instagramUrl],
                 ["FACEBOOK", CONTACT_CONFIG.facebookUrl],

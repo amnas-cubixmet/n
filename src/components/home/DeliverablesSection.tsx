@@ -480,7 +480,7 @@ export default function DeliverablesSection() {
               {/* Desktop Left Nav */}
               <div className="hidden lg:flex w-full flex-col items-start overflow-hidden pr-4">
                 <nav className="relative w-full overflow-visible" aria-label="Deliverable services">
-                  <div className="flex w-full flex-col items-start gap-3.5">
+                  <div className="flex w-full flex-col items-start gap-0">
                     {deliverables.map((item, index) => {
                       const isActive = index === activeIndex;
 
@@ -490,21 +490,13 @@ export default function DeliverablesSection() {
                           type="button"
                           onClick={() => handleSelectService(index)}
                           aria-current={isActive ? "true" : undefined}
-                          className="group flex min-h-[44px] items-center gap-3 text-left select-none"
+                          className="group block text-left leading-none select-none"
                         >
                           <span
-                            className={`font-mono text-[clamp(14px,1.2vw,20px)] font-bold transition-colors duration-300 ${
-                              isActive ? "text-black" : "text-black/20"
-                            }`}
-                          >
-                            {String(item.id).padStart(2, "0")}
-                          </span>
-
-                          <span
-                            className={`inline-block px-2.5 py-1.5 font-sans text-[clamp(20px,2vw,34px)] leading-none tracking-tight transition-[color,background-color,transform] duration-300 ${
+                            className={`inline-block px-2 py-[3px] font-sans text-[clamp(20px,2vw,34px)] leading-[0.94] tracking-tight transition-[color,background-color] duration-300 ${
                               isActive
-                                ? "translate-x-0 bg-black text-white"
-                                : "translate-x-0 bg-transparent text-black/20 lg:group-hover:text-black/45"
+                                ? "bg-black text-white"
+                                : "bg-transparent text-black/20 lg:group-hover:text-black/45"
                             }`}
                           >
                             {item.title}

@@ -189,10 +189,14 @@ export default function WatWeDoen() {
                 const segment = Math.floor(raw);
                 const localProgress = raw - segment;
 
+                // Keep the current service text visible for the entire
+                // image/panel transition. Switch metadata only after the
+                // incoming panel has fully completed its reveal.
+                const switchPoint = reduced ? 0.12 : revealDuration;
                 const nextIndex =
                   segment === 0
                     ? 0
-                    : localProgress >= 0.5
+                    : localProgress >= switchPoint
                       ? segment
                       : segment - 1;
 

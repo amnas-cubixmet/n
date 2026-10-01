@@ -77,12 +77,13 @@ export default function StatementSection() {
         scrollTrigger: {
           trigger: section,
           start: "top top",
-          end: compact ? "bottom bottom" : "bottom top",
+          end: compact ? () => `+=${getScrollDistance()}` : "bottom top",
           pin: compact ? false : stage,
           pinSpacing: false,
-          scrub: phone ? 0.07 : tablet ? 0.1 : 0.18,
+          scrub: phone ? true : tablet ? 0.08 : 0.18,
           anticipatePin: compact ? 0 : 1,
           invalidateOnRefresh: true,
+          refreshPriority: 0,
           onRefreshInit: syncSectionHeight,
           onLeave: () => {
             gsap.set(exitOverlay, { yPercent: 0 });

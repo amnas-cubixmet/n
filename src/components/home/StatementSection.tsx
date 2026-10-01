@@ -105,9 +105,7 @@ export default function StatementSection() {
             );
 
           const syncSectionHeight = () => {
-            section.style.height = compact
-              ? `${stage.clientHeight + getScrollDistance()}px`
-              : `${getScrollDistance()}px`;
+            section.style.height = `${stage.clientHeight + getScrollDistance()}px`;
           };
 
           syncSectionHeight();
@@ -117,10 +115,10 @@ export default function StatementSection() {
               trigger: section,
               start: "top top",
               end: () => `+=${getScrollDistance()}`,
-              pin: desktop ? stage : false,
+              pin: false,
               pinSpacing: false,
               scrub: phone ? true : tablet ? 0.08 : 0.18,
-              anticipatePin: desktop ? 1 : 0,
+              anticipatePin: 0,
               invalidateOnRefresh: true,
               fastScrollEnd: false,
               onRefreshInit: syncSectionHeight,

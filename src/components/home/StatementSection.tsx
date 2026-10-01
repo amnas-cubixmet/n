@@ -19,20 +19,17 @@ export default function StatementSection() {
   const blackORefs = useRef<(HTMLSpanElement | null)[]>([]);
   const whiteORefs = useRef<(HTMLSpanElement | null)[]>([]);
   const blackFillRefs = useRef<(HTMLSpanElement | null)[]>([]);
-  const exitOverlayRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       const section = sectionRef.current;
       const stage = stageRef.current;
       const wow = wowRef.current;
-      const exitOverlay = exitOverlayRef.current;
 
       if (
         !section ||
         !stage ||
         !wow ||
-        !exitOverlay ||
         blackORefs.current.length !== extraOs.length ||
         whiteORefs.current.length !== extraOs.length ||
         blackFillRefs.current.length !== words.length ||
@@ -66,10 +63,6 @@ export default function StatementSection() {
 
           if (reduced) {
             section.style.height = "";
-            gsap.set(exitOverlay, {
-              yPercent: 100,
-              clearProps: "will-change",
-            });
             return;
           }
 
@@ -90,11 +83,6 @@ export default function StatementSection() {
               )
             )
           );
-
-          gsap.set(exitOverlay, {
-            yPercent: 100,
-            force3D: true,
-          });
 
           const getScrollDistance = () =>
             Math.round(
@@ -122,9 +110,6 @@ export default function StatementSection() {
               invalidateOnRefresh: true,
               fastScrollEnd: false,
               onRefreshInit: syncSectionHeight,
-              onLeave: () => {
-                gsap.set(exitOverlay, { yPercent: 0 });
-              },
             },
           });
 
@@ -153,18 +138,10 @@ export default function StatementSection() {
             );
           });
 
-          timeline.to({}, { duration: 0.18 });
-
-          timeline.to(
-            exitOverlay,
-            {
-              yPercent: 0,
-              duration: phone ? 0.42 : tablet ? 0.5 : 0.58,
-              ease: "none",
-              force3D: true,
-            },
-            ">"
-          );
+          // Hold the completed WOW composition before the sticky stage releases.
+          // After this pause, the entire blue stage and its content leave together,
+          // revealing the following black section naturally.
+          timeline.to({}, { duration: phone ? 0.42 : tablet ? 0.52 : 0.66 });
 
           let frameA = 0;
           let frameB = 0;
@@ -181,9 +158,6 @@ export default function StatementSection() {
             timeline.scrollTrigger?.kill();
             timeline.kill();
             section.style.height = "";
-            gsap.set(exitOverlay, {
-              clearProps: "transform,will-change",
-            });
           };
         }
       );
@@ -264,13 +238,6 @@ export default function StatementSection() {
       >
         <h2 aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
 
-        <div
-          ref={exitOverlayRef}
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-20 translate-y-full bg-black will-change-transform"
-        >
-
-        </div>
       </div>
     </section>
   );

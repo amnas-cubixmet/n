@@ -71,9 +71,9 @@ export default function SelectedWork() {
 
         const shapeTween = gsap.fromTo(
           shape,
-          { yPercent: -8 },
+          { yPercent: -3 },
           {
-            yPercent: 14,
+            yPercent: 5,
             ease: "none",
             force3D: true,
             scrollTrigger: {
@@ -88,9 +88,9 @@ export default function SelectedWork() {
 
         const contentTween = gsap.fromTo(
           content,
-          { yPercent: 0.8 },
+          { yPercent: 0.25 },
           {
-            yPercent: -1.6,
+            yPercent: -0.5,
             ease: "none",
             force3D: true,
             scrollTrigger: {
@@ -125,7 +125,7 @@ export default function SelectedWork() {
       <div
         ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-[18%] top-[31%] z-0 aspect-[341/220] w-[84%] max-lg:hidden"
+        className="pointer-events-none absolute left-[20%] top-[31%] z-0 aspect-[341/220] w-[82%] max-lg:hidden"
       >
         <div
           className="absolute inset-0 bg-[#F2F3F5]"
@@ -145,7 +145,7 @@ export default function SelectedWork() {
 
       <div
         ref={contentRef}
-        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-12 sm:gap-16 lg:block lg:min-h-[clamp(1550px,125vw,1900px)]"
+        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-12 sm:gap-16 lg:block lg:min-h-[clamp(1550px,125vw,1900px)] lg:translate-x-2 xl:translate-x-3"
       >
         <div className="work-project-item flex flex-col items-start gap-[2px] lg:absolute lg:left-0 lg:top-[clamp(80px,6.5vw,104px)]">
           <h2 className="flex flex-col items-start gap-[2px] font-montserrat text-[clamp(14px,1.35vw,19px)] font-semibold uppercase leading-[1] tracking-[0.01em]">

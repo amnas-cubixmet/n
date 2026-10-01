@@ -255,13 +255,14 @@ export default function DeliverablesSection() {
         scrollTrigger: {
           trigger: masterRef.current,
           start: "top top",
-          end: compact ? "bottom bottom" : () => `+=${getPinDistance()}`,
+          end: () => `+=${getPinDistance()}`,
           pin: compact ? false : stickyRef.current,
           pinSpacing: compact ? false : true,
-          scrub: phone ? 0.08 : tablet ? 0.12 : 0.45,
+          scrub: phone ? true : tablet ? 0.08 : 0.45,
           anticipatePin: compact ? 0 : 1,
           invalidateOnRefresh: true,
           fastScrollEnd: false,
+          refreshPriority: 1,
           onRefreshInit: syncMobileStageHeight,
           onUpdate: (self) => {
             const serviceProgress = Math.min(1, Math.max(0, self.progress));

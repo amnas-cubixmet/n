@@ -26,12 +26,6 @@ export default function WatWeDoen() {
   const viewportWidthRef = useRef(0);
 
   useEffect(() => {
-    services.forEach((service) => {
-      if (!service.image) return;
-      const image = new window.Image();
-      image.src = service.image;
-    });
-
     viewportWidthRef.current = window.innerWidth;
     let resizeFrame = 0;
     let orientationTimer = 0;
@@ -373,6 +367,8 @@ export default function WatWeDoen() {
                     alt={service.imageAlt || service.title}
                     fill
                     priority={index === 0}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    fetchPriority={index === 0 ? "high" : "low"}
                     sizes="100vw"
                     className="panel-image object-cover select-none pointer-events-none"
                     style={{

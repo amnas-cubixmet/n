@@ -159,17 +159,17 @@ export default function DeliverablesSection() {
           element,
           {
             opacity: 1,
-            yPercent: compact ? 24 : 34,
-            scale: compact ? 1.015 : 1.025,
-            clipPath: "inset(100% 0% 0% 0%)",
+            yPercent: 100,
+            scale: 1.02,
+            clipPath: "inset(0% 0% 0% 0%)",
           },
           {
             opacity: 1,
             yPercent: 0,
             scale: 1,
             clipPath: "inset(0% 0% 0% 0%)",
-            duration: compact ? 0.52 : 0.68,
-            ease: "expo.out",
+            duration: compact ? 0.66 : 0.82,
+            ease: "power3.inOut",
             overwrite: "auto",
             force3D: true,
           }
@@ -180,9 +180,10 @@ export default function DeliverablesSection() {
 
       if (index === previousIndex) {
         gsap.to(element, {
-          yPercent: compact ? -8 : -12,
+          zIndex: 10,
+          yPercent: compact ? -34 : -46,
           scale: compact ? 0.995 : 0.99,
-          duration: compact ? 0.42 : 0.56,
+          duration: compact ? 0.58 : 0.74,
           ease: "power3.inOut",
           overwrite: "auto",
           force3D: true,
@@ -281,17 +282,17 @@ export default function DeliverablesSection() {
                   currentMedia,
                   {
                     opacity: 1,
-                    yPercent: compact ? 22 : 32,
-                    scale: compact ? 1.015 : 1.025,
-                    clipPath: "inset(100% 0% 0% 0%)",
+                    yPercent: 100,
+                    scale: 1.02,
+                    clipPath: "inset(0% 0% 0% 0%)",
                   },
                   {
                     opacity: 1,
                     yPercent: 0,
                     scale: 1,
                     clipPath: "inset(0% 0% 0% 0%)",
-                    duration: compact ? 0.58 : 0.76,
-                    ease: "expo.out",
+                    duration: compact ? 0.7 : 0.86,
+                    ease: "power3.inOut",
                     overwrite: "auto",
                     force3D: true,
                   }

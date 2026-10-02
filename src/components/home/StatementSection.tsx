@@ -13,13 +13,13 @@ const words = ["WE", "MAKE", "BRANDS", "GO", "WOW"];
 const extraOs = Array.from({ length: 20 }, (_, index) => index);
 
 const TOP_STEP_OPEN =
-  "polygon(0% 100%, 0% 48%, 14% 48%, 14% 74%, 28% 74%, 28% 36%, 43% 36%, 43% 60%, 57% 60%, 57% 42%, 72% 42%, 72% 70%, 86% 70%, 86% 30%, 100% 30%, 100% 100%)";
+  "polygon(0% 100%, 0% 36%, 14% 36%, 14% 78%, 28% 78%, 28% 24%, 43% 24%, 43% 66%, 57% 66%, 57% 30%, 72% 30%, 72% 76%, 86% 76%, 86% 18%, 100% 18%, 100% 100%)";
 
 const TOP_STEP_TIGHT =
   "polygon(0% 100%, 0% 34%, 14% 34%, 14% 38%, 28% 38%, 28% 32%, 43% 32%, 43% 37%, 57% 37%, 57% 33%, 72% 33%, 72% 38%, 86% 38%, 86% 30%, 100% 30%, 100% 100%)";
 
 const BOTTOM_STEP_OPEN =
-  "polygon(0% 0%, 0% 52%, 14% 52%, 14% 26%, 28% 26%, 28% 64%, 43% 64%, 43% 40%, 57% 40%, 57% 58%, 72% 58%, 72% 30%, 86% 30%, 86% 70%, 100% 70%, 100% 0%)";
+  "polygon(0% 0%, 0% 64%, 14% 64%, 14% 22%, 28% 22%, 28% 76%, 43% 76%, 43% 34%, 57% 34%, 57% 70%, 72% 70%, 72% 24%, 86% 24%, 86% 82%, 100% 82%, 100% 0%)";
 
 const BOTTOM_STEP_TIGHT =
   "polygon(0% 0%, 0% 66%, 14% 66%, 14% 62%, 28% 62%, 28% 68%, 43% 68%, 43% 63%, 57% 63%, 57% 67%, 72% 67%, 72% 62%, 86% 62%, 86% 70%, 100% 70%, 100% 0%)";
@@ -310,7 +310,7 @@ export default function StatementSection() {
       <div
         ref={topStepRef}
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-[calc(100%-2px)] left-0 z-[50] h-[24svh] min-h-[24svh] w-full bg-[#1677FF] will-change-transform md:h-[26dvh] md:min-h-[26dvh]"
+        className="pointer-events-none absolute bottom-[calc(100%-2px)] left-0 z-[50] h-[28svh] min-h-[28svh] w-full bg-[#1677FF] will-change-transform md:h-[30dvh] md:min-h-[30dvh]"
         style={{
           clipPath: TOP_STEP_OPEN,
           WebkitClipPath: TOP_STEP_OPEN,
@@ -320,7 +320,7 @@ export default function StatementSection() {
       <div
         ref={bottomStepRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-[calc(100%-2px)] z-[50] h-[24svh] min-h-[24svh] w-full bg-[#1677FF] will-change-transform md:h-[26dvh] md:min-h-[26dvh]"
+        className="pointer-events-none absolute left-0 top-[calc(100%-2px)] z-[50] h-[28svh] min-h-[28svh] w-full bg-[#1677FF] will-change-transform md:h-[30dvh] md:min-h-[30dvh]"
         style={{
           clipPath: BOTTOM_STEP_OPEN,
           WebkitClipPath: BOTTOM_STEP_OPEN,

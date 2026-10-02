@@ -22,12 +22,12 @@ interface SavedScrollStyles {
   rootOverscrollBehavior: string;
 }
 
-let hasPlayedInRuntime = false;
 
 export default function BrandIntro({ onComplete }: BrandIntroProps) {
   const [isVisible, setIsVisible] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const markRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
   const coverRef = useRef<HTMLDivElement>(null);
   const timelineRef = useRef<gsap.core.Timeline | null>(null);
   const finishedRef = useRef(false);
@@ -55,8 +55,6 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     timelineRef.current?.kill();
     timelineRef.current = null;
     restoreScroll();
-    hasPlayedInRuntime = true;
-
     setIsVisible(false);
     onComplete?.();
 
@@ -73,11 +71,6 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
 
   useLayoutEffect(() => {
     if (!isVisible) return;
-
-    if (hasPlayedInRuntime) {
-      finishIntro();
-      return;
-    }
 
     savedScrollStylesRef.current = {
       bodyOverflow: document.body.style.overflow,
@@ -129,48 +122,96 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     });
     gsap.set(cover, { autoAlpha: 0 });
 
-    const timeline = gsap.timeline({
-      onComplete: finishIntro,
-      defaults: { overwrite: "auto" },
-    });
-    timelineRef.current = timeline;
+    let cancelled = false;
+    let assetFallbackTimer = 0;
+    let removeAssetListeners = () => {};
 
-    if (reducedMotion) {
-      timeline.to({}, { duration: 0.22 });
-    } else {
-      timeline.to(mark, {
-        autoAlpha: 1,
-        scale: 1,
-        duration: mobileLike ? 0.46 : 0.55,
-        ease: "power3.out",
-        force3D: true,
+    const startTimeline = () => {
+      if (cancelled || finishedRef.current || timelineRef.current) return;
+
+      const timeline = gsap.timeline({
+        onComplete: finishIntro,
+        defaults: { overwrite: "auto" },
       });
-      timeline.to({}, { duration: mobileLike ? 0.2 : 0.3 });
-      timeline.to(mark, {
-        scale: coverScale,
-        duration: mobileLike ? 0.62 : 0.68,
-        ease: "power3.in",
-        force3D: true,
-      });
-      timeline.to(
-        cover,
-        {
+      timelineRef.current = timeline;
+
+      if (reducedMotion) {
+        timeline.to({}, { duration: 0.22 });
+      } else {
+        timeline.to(mark, {
           autoAlpha: 1,
-          duration: mobileLike ? 0.1 : 0.12,
-          ease: "none",
-        },
-        mobileLike ? "-=0.2" : "-=0.17"
-      );
+          scale: 1,
+          duration: mobileLike ? 0.46 : 0.55,
+          ease: "power3.out",
+          force3D: true,
+        });
+        timeline.to({}, { duration: mobileLike ? 0.2 : 0.3 });
+        timeline.to(mark, {
+          scale: coverScale,
+          duration: mobileLike ? 0.62 : 0.68,
+          ease: "power3.in",
+          force3D: true,
+        });
+        timeline.to(
+          cover,
+          {
+            autoAlpha: 1,
+            duration: mobileLike ? 0.1 : 0.12,
+            ease: "none",
+          },
+          mobileLike ? "-=0.2" : "-=0.17"
+        );
+      }
+
+      timeline.to(container, {
+        autoAlpha: 0,
+        duration: reducedMotion ? 0.12 : mobileLike ? 0.22 : 0.3,
+        ease: "power2.out",
+      });
+    };
+
+    const image = imageRef.current;
+
+    if (reducedMotion || !image) {
+      startTimeline();
+    } else if (image.complete && image.naturalWidth > 0) {
+      if (typeof image.decode === "function") {
+        image.decode().catch(() => undefined).finally(startTimeline);
+      } else {
+        startTimeline();
+      }
+    } else {
+      const handleReady = () => {
+        removeAssetListeners();
+        if (typeof image.decode === "function") {
+          image.decode().catch(() => undefined).finally(startTimeline);
+        } else {
+          startTimeline();
+        }
+      };
+
+      const handleError = () => {
+        removeAssetListeners();
+        startTimeline();
+      };
+
+      image.addEventListener("load", handleReady, { once: true });
+      image.addEventListener("error", handleError, { once: true });
+
+      removeAssetListeners = () => {
+        image.removeEventListener("load", handleReady);
+        image.removeEventListener("error", handleError);
+      };
+
+      // Never leave the screen blocked if an in-app browser delays image events.
+      assetFallbackTimer = window.setTimeout(startTimeline, 1400);
     }
 
-    timeline.to(container, {
-      autoAlpha: 0,
-      duration: reducedMotion ? 0.12 : mobileLike ? 0.22 : 0.3,
-      ease: "power2.out",
-    });
-
     return () => {
-      timeline.kill();
+      cancelled = true;
+      window.clearTimeout(assetFallbackTimer);
+      removeAssetListeners();
+      timelineRef.current?.kill();
       timelineRef.current = null;
       restoreScroll();
     };
@@ -186,11 +227,14 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     >
       <div ref={markRef} className="relative z-10 h-[72px] w-[72px] opacity-0 will-change-transform sm:h-[92px] sm:w-[92px]">
         <Image
+          ref={imageRef}
           src="/images/brand/northframe-icon.webp"
           alt=""
           width={1254}
           height={1254}
           priority
+          loading="eager"
+          fetchPriority="high"
           sizes="(max-width: 640px) 72px, 92px"
           className="block h-full w-full object-contain"
         />

@@ -187,12 +187,9 @@ export default function OurUSPs() {
           }}
         />
 
-        <span className="absolute left-[43%] top-[31%] h-2.5 w-2.5 bg-[#1677FF]" />
-        <span className="absolute left-[46%] top-[54%] h-2.5 w-2.5 bg-[#1677FF]" />
-        <span className="absolute left-[45%] top-[76%] h-2.5 w-2.5 bg-[#1677FF]" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1300px] px-6 pb-[max(5rem,env(safe-area-inset-bottom))] sm:px-10 sm:pb-24 md:px-16 lg:min-h-[2500px] lg:px-20 lg:pb-40 xl:min-h-[2750px]">
+      <div className="relative z-10 mx-auto w-full max-w-[1300px] px-6 pb-[max(5rem,env(safe-area-inset-bottom))] sm:px-10 sm:pb-24 md:px-16 lg:min-h-[3100px] lg:px-20 lg:pb-40 xl:min-h-[3300px]">
         <header className="usp-reveal pt-0 lg:absolute lg:left-20 lg:top-12">
           <div className="flex flex-col items-start gap-[2px]">
             <span className="inline-block bg-white p-0 font-mono text-[clamp(18px,5vw,28px)] font-bold uppercase leading-none tracking-[0.04em] text-black">
@@ -207,11 +204,11 @@ export default function OurUSPs() {
         <div className="mt-6 flex w-full flex-col gap-5 sm:mt-8 sm:gap-6 lg:mt-0 lg:block">
           {usps.map((item, index) => {
             const desktopPositions = [
-              "lg:absolute lg:right-[5%] lg:top-[70px]",
-              "lg:absolute lg:left-[9%] lg:top-[520px]",
-              "lg:absolute lg:right-[8%] lg:top-[930px]",
-              "lg:absolute lg:left-[18%] lg:top-[1360px]",
-              "lg:absolute lg:right-[7%] lg:top-[1810px]",
+              "lg:absolute lg:right-[2%] lg:top-[110px]",
+              "lg:absolute lg:left-[3%] lg:top-[700px]",
+              "lg:absolute lg:right-[11%] lg:top-[1290px]",
+              "lg:absolute lg:left-[15%] lg:top-[1880px]",
+              "lg:absolute lg:right-[4%] lg:top-[2470px]",
             ];
 
             return (
@@ -245,7 +242,7 @@ export default function OurUSPs() {
           })}
         </div>
 
-        <div className="usp-reveal mt-10 flex w-full max-w-[430px] flex-col items-start text-left sm:mt-12 lg:absolute lg:bottom-28 lg:left-20 lg:mt-0 lg:max-w-[390px]">
+        <div className="usp-reveal mt-10 flex w-full max-w-[430px] flex-col items-start text-left sm:mt-12 lg:absolute lg:bottom-20 lg:left-20 lg:mt-0 lg:max-w-[390px]">
           <h4 className="mb-3 font-sans text-[clamp(21px,5.5vw,28px)] font-semibold leading-tight tracking-tight text-white lg:text-[28px]">
             Ready to make your mark?
           </h4>

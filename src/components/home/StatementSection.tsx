@@ -65,14 +65,22 @@ export default function StatementSection() {
           const compact = phone || tablet;
 
           if (reduced) {
-            section.style.height = "";
             gsap.set(heading, { autoAlpha: 1 });
+            gsap.set(blackFillRefs.current, {
+              clipPath: "inset(0 0% 0 0)",
+            });
             return;
           }
 
+          // Typography is visible as the blue overlay enters.
+          // The black word backgrounds are introduced later by scroll progress.
           gsap.set(heading, {
-            autoAlpha: 0,
+            autoAlpha: 1,
             force3D: true,
+          });
+
+          gsap.set(blackFillRefs.current, {
+            clipPath: "inset(0 100% 0 0)",
           });
 
           const wowBox = wow.getBoundingClientRect();
@@ -93,70 +101,31 @@ export default function StatementSection() {
             )
           );
 
-          const getScrollDistance = () =>
-            Math.round(
-              stage.clientHeight *
-                (1.9 +
-                  extraCount *
-                    (phone ? 0.12 : tablet ? 0.15 : 0.18))
-            );
-
-          const syncSectionHeight = () => {
-            section.style.height = `${stage.clientHeight + getScrollDistance()}px`;
-          };
-
-          syncSectionHeight();
-
           const timeline = gsap.timeline({
             scrollTrigger: {
               trigger: section,
-              start: "top top",
-              end: () => `+=${getScrollDistance()}`,
-              pin: false,
-              pinSpacing: false,
-              scrub: phone ? true : tablet ? 0.08 : 0.18,
-              anticipatePin: 0,
+              // Start once a meaningful part of the WOW overlay is already
+              // covering Deliverables. The section itself keeps moving upward.
+              start: phone ? "top 60%" : tablet ? "top 58%" : "top 55%",
+              // Finish before the blue section has completely left the viewport.
+              end: phone ? "bottom 16%" : tablet ? "bottom 18%" : "bottom 20%",
+              scrub: phone ? 0.12 : tablet ? 0.16 : 0.22,
               invalidateOnRefresh: true,
               fastScrollEnd: false,
-              onRefreshInit: syncSectionHeight,
-              onLeaveBack: () => {
-                gsap.set(heading, { autoAlpha: 0 });
-              },
             },
           });
 
-          // 1) The blue overlay must fully cover the viewport first.
-          // Keep the stage clean for a short beat before any typography appears.
-          timeline.to({}, {
-            duration: phone ? 0.34 : tablet ? 0.44 : 0.58,
-          });
-
-          // 2) Reveal the complete typography composition only after full cover.
-          timeline.to(heading, {
-            autoAlpha: 1,
-            duration: phone ? 0.16 : tablet ? 0.2 : 0.24,
-            ease: "power1.out",
-            force3D: true,
-          });
-
-          timeline.to({}, {
-            duration: phone ? 0.12 : tablet ? 0.16 : 0.2,
-          });
-
-          // 3) Treat each word one-by-one: WE → MAKE → BRANDS → GO → WOW.
+          // Reveal the black word backgrounds while the whole section is
+          // naturally scrolling upward: WE → MAKE → BRANDS → GO → WOW.
           blackFillRefs.current.forEach((fill) => {
-            timeline
-              .to(fill, {
-                clipPath: "inset(0 0% 0 0)",
-                duration: phone ? 0.3 : tablet ? 0.36 : 0.42,
-                ease: "none",
-              })
-              .to({}, {
-                duration: phone ? 0.08 : tablet ? 0.1 : 0.12,
-              });
+            timeline.to(fill, {
+              clipPath: "inset(0 0% 0 0)",
+              duration: phone ? 0.34 : tablet ? 0.38 : 0.42,
+              ease: "none",
+            });
           });
 
-          // 4) Only after WOW itself is active, extend the O letters.
+          // Continue the same scroll-linked motion by extending the WOW letters.
           extraOs.slice(0, extraCount).forEach((index) => {
             timeline.to(
               [blackOs[index], whiteOs[index]],
@@ -168,11 +137,6 @@ export default function StatementSection() {
               }
             );
           });
-
-          // Hold the completed WOW composition before the sticky stage releases.
-          // After this pause, the entire blue stage and its content leave together,
-          // revealing the following black section naturally.
-          timeline.to({}, { duration: phone ? 0.7 : tablet ? 0.86 : 1.05 });
 
           let frameA = 0;
           let frameB = 0;
@@ -188,15 +152,13 @@ export default function StatementSection() {
             cancelAnimationFrame(frameB);
             timeline.scrollTrigger?.kill();
             timeline.kill();
-            section.style.height = "";
-            gsap.set(heading, { clearProps: "opacity,visibility,will-change" });
+            gsap.set(heading, { clearProps: "will-change" });
           };
         }
       );
 
       return () => {
         mm.revert();
-        section.style.height = "";
       };
     },
     { scope: sectionRef }
@@ -231,7 +193,7 @@ export default function StatementSection() {
           index === 4
             ? "text-[clamp(42px,min(11vw,15svh),84px)] md:text-[clamp(68px,min(16vw,20svh),220px)]"
             : "text-[clamp(34px,min(9vw,13svh),68px)] md:text-[clamp(60px,min(14vw,18svh),205px)]"
-        } motion-reduce:!text-[clamp(36px,8vw,90px)] text-black`}
+        } motion-reduce:!text-[clamp(36px,8vw,90px)] text-white`}
       >
         <span>{index === 4 ? renderWowLetters(false) : word}</span>
         <span
@@ -266,7 +228,7 @@ export default function StatementSection() {
 
       <div
         ref={stageRef}
-        className="mobile-scroll-sticky z-10 flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:relative motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 lg:h-[100dvh] lg:min-h-[100dvh]"
+        className="relative z-10 flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 lg:h-[100dvh] lg:min-h-[100dvh]"
       >
         <h2 ref={headingRef} aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
 

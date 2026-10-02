@@ -87,6 +87,13 @@ export default function OurUSPs() {
         Math.round(labelRect.left - contentRect.left)
       );
 
+      const firstLeft = Math.round(
+        (content.clientWidth - firstCard.offsetWidth) / 2
+      );
+
+      firstCard.style.left = `${firstLeft}px`;
+      firstCard.style.right = "auto";
+
       const secondTop = Math.round(
         firstCard.offsetTop + firstCard.offsetHeight * 0.5
       );

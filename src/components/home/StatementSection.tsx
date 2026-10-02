@@ -15,6 +15,8 @@ const extraOs = Array.from({ length: 20 }, (_, index) => index);
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const topStepRef = useRef<HTMLDivElement>(null);
+  const bottomStepRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const wowRef = useRef<HTMLSpanElement>(null);
   const blackORefs = useRef<(HTMLSpanElement | null)[]>([]);
@@ -25,12 +27,16 @@ export default function StatementSection() {
     () => {
       const section = sectionRef.current;
       const stage = stageRef.current;
+      const topStep = topStepRef.current;
+      const bottomStep = bottomStepRef.current;
       const heading = headingRef.current;
       const wow = wowRef.current;
 
       if (
         !section ||
         !stage ||
+        !topStep ||
+        !bottomStep ||
         !heading ||
         !wow ||
         blackORefs.current.length !== extraOs.length ||
@@ -66,6 +72,11 @@ export default function StatementSection() {
 
           if (reduced) {
             gsap.set(heading, { autoAlpha: 1 });
+            gsap.set([topStep, bottomStep], {
+              yPercent: 0,
+              scaleY: 1,
+              clearProps: "transform",
+            });
             gsap.set(blackFillRefs.current, {
               clipPath: "inset(0 0% 0 0)",
             });
@@ -81,6 +92,20 @@ export default function StatementSection() {
 
           gsap.set(blackFillRefs.current, {
             clipPath: "inset(0 100% 0 0)",
+          });
+
+          gsap.set(topStep, {
+            yPercent: 0,
+            scaleY: 1,
+            transformOrigin: "bottom center",
+            force3D: true,
+          });
+
+          gsap.set(bottomStep, {
+            yPercent: 0,
+            scaleY: 1,
+            transformOrigin: "top center",
+            force3D: true,
           });
 
           const wowBox = wow.getBoundingClientRect();
@@ -138,6 +163,43 @@ export default function StatementSection() {
             );
           });
 
+          // Top and bottom steps use the same scroll system.
+          // They gently retract toward the section edges so the protruding
+          // stepped gap becomes smaller without ever snapping or locking.
+          const edgeTimeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: section,
+              start: phone ? "top 90%" : tablet ? "top 88%" : "top 86%",
+              end: phone ? "bottom 12%" : tablet ? "bottom 14%" : "bottom 16%",
+              scrub: phone ? 0.18 : tablet ? 0.22 : 0.28,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          edgeTimeline
+            .to(
+              topStep,
+              {
+                yPercent: phone ? 8 : tablet ? 10 : 12,
+                scaleY: phone ? 0.86 : tablet ? 0.82 : 0.78,
+                duration: 1,
+                ease: "none",
+                force3D: true,
+              },
+              0
+            )
+            .to(
+              bottomStep,
+              {
+                yPercent: phone ? -8 : tablet ? -10 : -12,
+                scaleY: phone ? 0.86 : tablet ? 0.82 : 0.78,
+                duration: 1,
+                ease: "none",
+                force3D: true,
+              },
+              0
+            );
+
           let frameA = 0;
           let frameB = 0;
           frameA = requestAnimationFrame(() => {
@@ -152,6 +214,11 @@ export default function StatementSection() {
             cancelAnimationFrame(frameB);
             timeline.scrollTrigger?.kill();
             timeline.kill();
+            edgeTimeline.scrollTrigger?.kill();
+            edgeTimeline.kill();
+            gsap.set([topStep, bottomStep], {
+              clearProps: "transform,will-change",
+            });
             gsap.set(heading, { clearProps: "will-change" });
           };
         }
@@ -218,8 +285,9 @@ export default function StatementSection() {
       aria-label="We make brands go wow"
     >
       <div
+        ref={topStepRef}
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-[calc(100%-2px)] left-0 z-[5] h-[18svh] w-full bg-[#1677FF] md:h-[20dvh]"
+        className="pointer-events-none absolute bottom-[calc(100%-2px)] left-0 z-[20] h-[18svh] w-full bg-[#1677FF] will-change-transform md:h-[20dvh]"
         style={{
           clipPath:
             "polygon(0% 100%, 0% 48%, 14% 48%, 14% 74%, 28% 74%, 28% 36%, 43% 36%, 43% 60%, 57% 60%, 57% 42%, 72% 42%, 72% 70%, 86% 70%, 86% 30%, 100% 30%, 100% 100%)",
@@ -227,11 +295,12 @@ export default function StatementSection() {
       />
 
       <div
+        ref={bottomStepRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-[calc(100%-2px)] z-[5] h-[9svh] w-full bg-[#1677FF] md:h-[11dvh]"
+        className="pointer-events-none absolute left-0 top-[calc(100%-2px)] z-[20] h-[18svh] w-full bg-[#1677FF] will-change-transform md:h-[20dvh]"
         style={{
           clipPath:
-            "polygon(0% 0%, 100% 0%, 100% 34%, 88% 34%, 88% 58%, 72% 58%, 72% 42%, 57% 42%, 57% 68%, 42% 68%, 42% 48%, 27% 48%, 27% 72%, 13% 72%, 13% 44%, 0% 44%)",
+            "polygon(0% 0%, 0% 52%, 14% 52%, 14% 26%, 28% 26%, 28% 64%, 43% 64%, 43% 40%, 57% 40%, 57% 58%, 72% 58%, 72% 30%, 86% 30%, 86% 70%, 100% 70%, 100% 0%)",
         }}
       />
 

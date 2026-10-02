@@ -227,9 +227,6 @@ export default function SelectedWork() {
         />
 
         <div className="work-project-item flex max-w-[390px] flex-col items-start gap-3 lg:absolute lg:left-[3%] lg:top-[clamp(820px,69vw,1050px)] lg:w-[30%]">
-          <span className="inline-block bg-[#1677FF] px-2 py-1 font-mono text-[10px] font-bold uppercase leading-none tracking-[0.06em] text-white">
-            YOUR BRAND NEXT?
-          </span>
           <h3 className="font-montserrat text-xl font-semibold leading-snug tracking-tight sm:text-2xl">
             Think your brand belongs here too?
           </h3>

@@ -185,7 +185,7 @@ export default function OurUSPs() {
               trigger: section,
               start: "top bottom",
               end: "bottom top",
-              scrub: scrub + 0.7,
+              scrub: scrub + 4.2,
               invalidateOnRefresh: true,
             },
           }
@@ -305,8 +305,8 @@ export default function OurUSPs() {
           end: "top 58%",
           y: 22,
           scrub: 0.16,
-          shapeFrom: 1.5,
-          shapeTo: -1.5,
+          shapeFrom: 0.35,
+          shapeTo: -0.35,
         })
       );
 
@@ -316,8 +316,8 @@ export default function OurUSPs() {
           end: "top 54%",
           y: 28,
           scrub: 0.2,
-          shapeFrom: 2,
-          shapeTo: -2,
+          shapeFrom: 0.45,
+          shapeTo: -0.45,
         })
       );
 
@@ -327,12 +327,33 @@ export default function OurUSPs() {
           end: "top 46%",
           y: 42,
           scrub: 0.32,
-          shapeFrom: 3,
-          shapeTo: -3,
+          shapeFrom: 0.6,
+          shapeTo: -0.6,
         })
       );
 
-      return () => mm.revert();
+      const contentParallax = gsap.fromTo(
+        content,
+        { yPercent: 0.4 },
+        {
+          yPercent: -3.2,
+          ease: "none",
+          force3D: true,
+          scrollTrigger: {
+            trigger: section,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 1.05,
+            invalidateOnRefresh: true,
+          },
+        }
+      );
+
+      return () => {
+        contentParallax.scrollTrigger?.kill();
+        contentParallax.kill();
+        mm.revert();
+      };
     },
     { scope: containerRef }
   );
@@ -346,17 +367,22 @@ export default function OurUSPs() {
       <div
         ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 z-0 w-[190%] -translate-x-1/2 -translate-y-1/2 opacity-10 sm:w-[160%] lg:left-auto lg:right-[-12%] lg:top-[8%] lg:w-[118%] lg:translate-x-0 lg:translate-y-0"
+        className="pointer-events-none absolute left-[10%] top-[18%] z-0 aspect-[341/220] w-[118%] opacity-85 sm:left-[14%] sm:w-[104%] lg:left-[18%] lg:top-[20%] lg:w-[88%] lg:opacity-100 xl:w-[82%]"
       >
-        <svg
-          viewBox="0 0 1620 1080"
-          className="h-auto w-full fill-white"
-          aria-hidden="true"
-        >
-          <path d="m1350 0-270 270h540V0Z" />
-          <path d="M270 270 0 540v540h270l270-270H270V540h540l270-270Z" />
-          <path d="m540 810 270-270h540v270Z" />
-        </svg>
+        <div
+          className="absolute inset-0 bg-[#1A1A1A]"
+          style={{
+            clipPath:
+              "polygon(64.22% 0%,50.44% 0%,32.26% 21.36%,13.49% 0%,0% 0%,31.96% 99.55%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 bg-[#1A1A1A]"
+          style={{
+            clipPath:
+              "polygon(67.74% 0%,35.19% 99.55%,48.97% 99.55%,67.45% 77.73%,85.92% 99.55%,99.71% 99.55%)",
+          }}
+        />
       </div>
 
       <div

@@ -354,12 +354,33 @@ function FloorBackdrop({ isMobile }: { isMobile: boolean }) {
 }
 
 export default function Shared3DBackground() {
-  const [isMobile, setIsMobile] = useState(false);
-  const [isTablet, setIsTablet] = useState(false);
-  const [documentHidden, setDocumentHidden] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const width = window.innerWidth;
+    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    return width <= 768 || (coarsePointer && width <= 1024);
+  });
+  const [isTablet, setIsTablet] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const width = window.innerWidth;
+    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    const mobileLike = width <= 768 || (coarsePointer && width <= 1024);
+    return !mobileLike && width > 768 && width <= 1024;
+  });
+  const [documentHidden, setDocumentHidden] = useState(() =>
+    typeof document !== "undefined" ? document.hidden : false
+  );
   const [rangeVisible, setRangeVisible] = useState(true);
-  const [canHover, setCanHover] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
+  const [canHover, setCanHover] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(hover: hover) and (pointer: fine)").matches
+      : false
+  );
+  const [reducedMotion, setReducedMotion] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      : false
+  );
 
   useEffect(() => {
     const hoverQuery = window.matchMedia("(hover: hover) and (pointer: fine)");

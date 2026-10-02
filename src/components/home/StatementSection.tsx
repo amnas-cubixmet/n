@@ -96,6 +96,17 @@ export default function StatementSection() {
             clearProps: "transform,height",
           });
 
+          if (phone || tablet) {
+            gsap.set(topStep, {
+              transformOrigin: "bottom center",
+              force3D: true,
+            });
+            gsap.set(bottomStep, {
+              transformOrigin: "top center",
+              force3D: true,
+            });
+          }
+
           const wowBox = wow.getBoundingClientRect();
           const blackOs = blackORefs.current as HTMLSpanElement[];
           const whiteOs = whiteORefs.current as HTMLSpanElement[];
@@ -170,15 +181,28 @@ export default function StatementSection() {
             },
           });
 
-          edgeTimeline.to(
-            [topStep, bottomStep],
-            {
-              height: collapsedStepHeight,
-              duration: 1,
-              ease: "none",
-            },
-            0
-          );
+          if (phone || tablet) {
+            edgeTimeline.to(
+              [topStep, bottomStep],
+              {
+                scaleY: phone ? 0.28 : 0.32,
+                duration: 1,
+                ease: "none",
+                force3D: true,
+              },
+              0
+            );
+          } else {
+            edgeTimeline.to(
+              [topStep, bottomStep],
+              {
+                height: collapsedStepHeight,
+                duration: 1,
+                ease: "none",
+              },
+              0
+            );
+          }
 
           let frameA = 0;
           let frameB = 0;

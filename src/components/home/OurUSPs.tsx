@@ -175,36 +175,37 @@ export default function OurUSPs() {
     <section
       id="our-usps"
       ref={containerRef}
-      className="relative isolate z-30 m-0 w-full overflow-hidden bg-white text-black pointer-events-auto"
+      className="relative isolate z-30 m-0 w-full overflow-hidden bg-black text-white pointer-events-auto"
     >
-      {/* Same NORTHFRAME background mark used in Selected Work */}
       <div
         ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-[10%] top-[12%] z-0 aspect-[341/220] w-[100%] opacity-80 max-lg:left-[-30%] max-lg:top-[15%] max-lg:w-[165%] max-lg:opacity-45 lg:will-change-transform"
+        className="pointer-events-none absolute inset-0 z-0 hidden lg:block lg:will-change-transform"
       >
         <div
-          className="absolute inset-0 bg-[#F2F3F5]"
-          style={{
-            clipPath:
-              "polygon(64.22% 0%, 50.44% 0%, 32.26% 21.36%, 13.49% 0%, 0% 0%, 31.96% 99.55%)",
-          }}
+          className="absolute left-[11%] top-[3%] h-[18%] w-[89%] bg-[#171717]"
+          style={{ clipPath: "polygon(7% 0,100% 0,100% 100%,0 100%,0 18%)" }}
         />
         <div
-          className="absolute inset-0 bg-[#F2F3F5]"
-          style={{
-            clipPath:
-              "polygon(67.74% 0%, 35.19% 99.55%, 48.97% 99.55%, 67.45% 77.73%, 85.92% 99.55%, 99.71% 99.55%)",
-          }}
+          className="absolute left-0 top-[24%] h-[18%] w-[78%] bg-[#191919]"
+          style={{ clipPath: "polygon(0 0,86% 0,100% 18%,100% 100%,0 100%)" }}
+        />
+        <div
+          className="absolute right-0 top-[46%] h-[18%] w-[72%] bg-[#1B1B1B]"
+          style={{ clipPath: "polygon(13% 0,100% 0,100% 100%,0 100%,0 18%)" }}
+        />
+        <div
+          className="absolute left-[15%] top-[68%] h-[17%] w-[70%] bg-[#191919]"
+          style={{ clipPath: "polygon(0 0,78% 0,100% 18%,100% 100%,16% 100%,0 82%)" }}
         />
       </div>
 
       <div
         ref={contentRef}
-        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-8 px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 pr-[max(1.1rem,env(safe-area-inset-right))] sm:gap-10 sm:px-8 sm:pb-24 lg:block lg:min-h-[clamp(2250px,176vw,2680px)] lg:px-12 lg:pb-32 xl:px-16"
+        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-8 px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 pr-[max(1.1rem,env(safe-area-inset-right))] sm:gap-10 sm:px-8 sm:pb-24 lg:block lg:min-h-[clamp(2500px,190vw,2920px)] lg:px-12 lg:pb-32 xl:px-16"
       >
         <header className="usp-reveal pt-0 lg:absolute lg:left-0 lg:top-[clamp(80px,6.5vw,104px)]">
-          <span className="inline-block bg-black px-[3px] py-[2px] font-mono text-xs font-bold uppercase leading-none tracking-[0.06em] text-white sm:text-sm">
+          <span className="inline-block bg-white px-[3px] py-[2px] font-mono text-xs font-bold uppercase leading-none tracking-[0.06em] text-black sm:text-sm">
             OUR USPs
           </span>
         </header>
@@ -212,11 +213,11 @@ export default function OurUSPs() {
         <div className="mt-8 flex w-full flex-col gap-10 sm:mt-10 sm:gap-12 lg:mt-0 lg:block">
           {usps.map((item, index) => {
             const desktopPositions = [
-              "lg:absolute lg:left-[59%] lg:top-[clamp(120px,10vw,160px)]",
-              "lg:absolute lg:left-0 lg:top-[clamp(500px,41vw,640px)]",
-              "lg:absolute lg:left-1/2 lg:top-[clamp(900px,74vw,1130px)]",
-              "lg:absolute lg:left-[8%] lg:top-[clamp(1320px,108vw,1630px)]",
-              "lg:absolute lg:right-[4%] lg:top-[clamp(1740px,142vw,2140px)]",
+              "lg:absolute lg:right-[12%] lg:top-[clamp(110px,9vw,150px)]",
+              "lg:absolute lg:left-[8%] lg:top-[clamp(560px,44vw,700px)]",
+              "lg:absolute lg:right-[11%] lg:top-[clamp(980px,78vw,1210px)]",
+              "lg:absolute lg:left-[18%] lg:top-[clamp(1420px,112vw,1740px)]",
+              "lg:absolute lg:right-[13%] lg:top-[clamp(1870px,147vw,2260px)]",
             ];
 
             const desktopWidths = [
@@ -270,18 +271,18 @@ export default function OurUSPs() {
         </div>
 
         <div className="usp-reveal mt-10 flex w-full max-w-[430px] flex-col items-start text-left sm:mt-12 lg:absolute lg:bottom-20 lg:left-0 lg:mt-0 lg:max-w-[390px]">
-          <h4 className="mb-3 font-sans text-[clamp(21px,5.5vw,28px)] font-semibold leading-tight tracking-tight text-black lg:text-[28px]">
+          <h4 className="mb-3 font-sans text-[clamp(21px,5.5vw,28px)] font-semibold leading-tight tracking-tight text-white lg:text-[28px]">
             Ready to make your mark?
           </h4>
 
-          <p className="mb-5 font-sans text-[clamp(14px,3.8vw,17px)] font-normal leading-relaxed text-black/60">
+          <p className="mb-5 font-sans text-[clamp(14px,3.8vw,17px)] font-normal leading-relaxed text-white/60">
             Let’s create something that gets noticed, remembered, and talked
             about.
           </p>
 
           <TransitionLink
             href="/#contact"
-            className="group inline-flex min-h-[44px] items-center gap-2 border-b border-black/30 py-1 font-sans text-base font-medium tracking-wide text-black transition-colors duration-200 lg:hover:border-[#1677FF] lg:hover:text-[#1677FF]"
+            className="group inline-flex min-h-[44px] items-center gap-2 border-b border-white/30 py-1 font-sans text-base font-medium tracking-wide text-white transition-colors duration-200 lg:hover:border-white"
           >
             <span>Let’s talk</span>
             <span className="inline-block transition-transform duration-200 lg:group-hover:translate-x-1">

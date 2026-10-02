@@ -103,7 +103,7 @@ export function ProjectCard({
                   ([entry]) => {
                     if (!entry?.isIntersecting) return;
                     timeline.play(0);
-                    observer.disconnect();
+                    observer?.disconnect();
                   },
                   {
                     threshold: 0.01,

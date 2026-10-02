@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -59,6 +59,83 @@ export default function OurUSPs() {
   const containerRef = useRef<HTMLElement>(null);
   const shapeRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const labelLineRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const content = contentRef.current;
+    const labelLine = labelLineRef.current;
+    if (!content || !labelLine) return;
+
+    const syncDesktopLayout = () => {
+      if (window.innerWidth < 1024) return;
+
+      const cards = Array.from(
+        content.querySelectorAll<HTMLElement>("[data-usp-card]")
+      );
+
+      const firstCard = cards[0];
+      const secondCard = cards[1];
+      const thirdCard = cards[2];
+
+      if (!firstCard || !secondCard || !thirdCard) return;
+
+      const contentRect = content.getBoundingClientRect();
+      const labelRect = labelLine.getBoundingClientRect();
+
+      const labelLeft = Math.max(
+        0,
+        Math.round(labelRect.left - contentRect.left)
+      );
+
+      const secondTop = Math.round(
+        firstCard.offsetTop + firstCard.offsetHeight * 0.5
+      );
+
+      secondCard.style.left = `${labelLeft}px`;
+      secondCard.style.top = `${secondTop}px`;
+
+      thirdCard.style.left = "50%";
+      thirdCard.style.right = "auto";
+    };
+
+    let frame = requestAnimationFrame(() => {
+      syncDesktopLayout();
+      ScrollTrigger.refresh();
+    });
+
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        syncDesktopLayout();
+        ScrollTrigger.refresh();
+      });
+    });
+
+    observer.observe(content);
+    if (labelLineRef.current) observer.observe(labelLineRef.current);
+
+    const cards = Array.from(
+      content.querySelectorAll<HTMLElement>("[data-usp-card]")
+    );
+    cards.slice(0, 3).forEach((card) => observer.observe(card));
+
+    window.addEventListener("resize", syncDesktopLayout, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("resize", syncDesktopLayout);
+
+      const cards = Array.from(
+        content.querySelectorAll<HTMLElement>("[data-usp-card]")
+      );
+      cards.forEach((card) => {
+        card.style.left = "";
+        card.style.right = "";
+        card.style.top = "";
+      });
+    };
+  }, []);
 
   useGSAP(
     () => {
@@ -205,7 +282,7 @@ export default function OurUSPs() {
         className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-8 px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 pr-[max(1.1rem,env(safe-area-inset-right))] sm:gap-10 sm:px-8 sm:pb-24 lg:block lg:min-h-[clamp(2860px,210vw,3220px)] lg:px-12 lg:pb-32 xl:px-16"
       >
         <header className="usp-reveal relative z-20 w-full px-6 sm:px-10 md:px-16 lg:absolute lg:inset-x-0 lg:top-4 lg:px-20">
-          <div className="mx-auto w-full max-w-[1300px]">
+          <div ref={labelLineRef} className="mx-auto w-full max-w-[1300px]">
             <span className="inline-block bg-white px-2 py-1 font-mono text-[18px] font-bold uppercase leading-none tracking-[0.06em] text-black sm:text-[20px] lg:text-[22px]">
               OUR USPs
             </span>
@@ -216,10 +293,10 @@ export default function OurUSPs() {
           {usps.map((item, index) => {
             const desktopPositions = [
               "lg:absolute lg:left-[59%] lg:top-[clamp(120px,9.6vw,160px)]",
-              "lg:absolute lg:left-0 lg:top-[clamp(560px,44vw,700px)]",
-              "lg:absolute lg:left-1/2 lg:top-[clamp(1080px,84vw,1320px)]",
-              "lg:absolute lg:left-0 lg:top-[clamp(1620px,124vw,1960px)]",
-              "lg:absolute lg:left-[59%] lg:top-[clamp(2140px,162vw,2580px)]",
+              "lg:absolute lg:top-[clamp(420px,34vw,560px)]",
+              "lg:absolute lg:left-1/2 lg:right-auto lg:top-[clamp(980px,76vw,1220px)]",
+              "lg:absolute lg:left-[8%] lg:top-[clamp(1580px,120vw,1920px)]",
+              "lg:absolute lg:left-[59%] lg:top-[clamp(2100px,158vw,2520px)]",
             ];
 
             const desktopWidths = [
@@ -244,6 +321,7 @@ export default function OurUSPs() {
             return (
               <article
                 key={item.id}
+                data-usp-card
                 className={`usp-reveal relative flex min-h-[380px] w-[88%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 text-white shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:min-h-[410px] sm:w-[82%] sm:max-w-[430px] sm:p-8 lg:min-h-[500px] lg:p-9 xl:min-h-[530px] xl:p-10 ${mobileAlignment} ${desktopPositions[index]} ${desktopWidths[index]}`}
                 style={{
                   clipPath:

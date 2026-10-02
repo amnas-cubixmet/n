@@ -49,12 +49,6 @@ export default function RootLayout({
       <head>
         <link
           rel="preload"
-          href="/images/brand/northframe-mark.webp"
-          as="image"
-          type="image/webp"
-        />
-        <link
-          rel="preload"
           href="/images/brand/northframe-icon.webp"
           as="image"
           type="image/webp"

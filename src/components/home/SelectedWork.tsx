@@ -98,14 +98,14 @@ export default function SelectedWork() {
           gsap.fromTo(
             card,
             {
-              autoAlpha: 0,
               y,
+              scale: 0.988,
             },
             {
-              autoAlpha: 1,
               y: 0,
+              scale: 1,
               duration,
-              ease: "power3.out",
+              ease: "expo.out",
               force3D: true,
               scrollTrigger: {
                 trigger: card,
@@ -135,16 +135,16 @@ export default function SelectedWork() {
 
         const shapeTween = gsap.fromTo(
           shape,
-          { yPercent: -1.5 },
+          { yPercent: -0.12 },
           {
-            yPercent: 2.5,
+            yPercent: 0.12,
             ease: "none",
             force3D: true,
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top bottom",
               end: "bottom top",
-              scrub: 2.6,
+              scrub: 6.5,
               invalidateOnRefresh: true,
             },
           }
@@ -152,16 +152,16 @@ export default function SelectedWork() {
 
         const contentTween = gsap.fromTo(
           content,
-          { yPercent: 0.1 },
+          { yPercent: 0.55 },
           {
-            yPercent: -0.25,
+            yPercent: -4.2,
             ease: "none",
             force3D: true,
             scrollTrigger: {
               trigger: sectionRef.current,
               start: "top bottom",
               end: "bottom top",
-              scrub: 2.2,
+              scrub: 0.78,
               invalidateOnRefresh: true,
             },
           }

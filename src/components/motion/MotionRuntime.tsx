@@ -9,6 +9,7 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
   ScrollTrigger.config({
     ignoreMobileResize: true,
+    limitCallbacks: true,
   });
 }
 
@@ -20,6 +21,7 @@ export default function MotionRuntime() {
     let settleFrame = 0;
     let orientationTimer = 0;
     let delayedRefreshTimer = 0;
+    let lateRefreshTimer = 0;
     let active = true;
     let lastWidth = window.innerWidth;
 
@@ -117,6 +119,7 @@ export default function MotionRuntime() {
     // keeps all ScrollTrigger start/end measurements aligned without reacting
     // continuously to toolbar height changes.
     delayedRefreshTimer = window.setTimeout(refreshAfterPaint, 420);
+    lateRefreshTimer = window.setTimeout(refreshAfterPaint, 900);
 
     return () => {
       active = false;
@@ -124,6 +127,7 @@ export default function MotionRuntime() {
       cancelAnimationFrame(settleFrame);
       window.clearTimeout(orientationTimer);
       window.clearTimeout(delayedRefreshTimer);
+      window.clearTimeout(lateRefreshTimer);
       window.removeEventListener("load", refreshAfterPaint);
       window.removeEventListener("resize", handleViewportResize);
       window.removeEventListener("orientationchange", handleOrientationChange);

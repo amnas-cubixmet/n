@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 import { useGSAP } from "@gsap/react";

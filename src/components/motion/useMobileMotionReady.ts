@@ -11,7 +11,7 @@ function isMobileLike() {
 }
 
 export function useMobileMotionReady() {
-  const [ready, setReady] = useState(() => !isMobileLike());
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
     const mobile = isMobileLike();
@@ -35,7 +35,7 @@ export function useMobileMotionReady() {
     };
 
     const finish = () => {
-      if (cancelled || ready) return;
+      if (cancelled) return;
 
       syncStableViewport();
 
@@ -89,7 +89,7 @@ export function useMobileMotionReady() {
       window.clearTimeout(fallbackTimer);
       window.removeEventListener("orientationchange", handleOrientationChange);
     };
-  }, [ready]);
+  }, []);
 
   return ready;
 }

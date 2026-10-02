@@ -82,7 +82,7 @@ export default function FoundedOnAVision() {
           gsap.set(text, {
             autoAlpha: 0,
             y: mobile ? 34 : 52,
-            filter: "blur(6px)",
+            filter: mobile ? "blur(0px)" : "blur(6px)",
             force3D: true,
           });
 

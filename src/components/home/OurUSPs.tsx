@@ -185,7 +185,7 @@ export default function OurUSPs() {
               trigger: section,
               start: "top bottom",
               end: "bottom top",
-              scrub: scrub + 4.2,
+              scrub: scrub + 7.5,
               invalidateOnRefresh: true,
             },
           }
@@ -305,8 +305,8 @@ export default function OurUSPs() {
           end: "top 58%",
           y: 22,
           scrub: 0.16,
-          shapeFrom: 0.35,
-          shapeTo: -0.35,
+          shapeFrom: 0.12,
+          shapeTo: -0.12,
         })
       );
 
@@ -316,8 +316,8 @@ export default function OurUSPs() {
           end: "top 54%",
           y: 28,
           scrub: 0.2,
-          shapeFrom: 0.45,
-          shapeTo: -0.45,
+          shapeFrom: 0.16,
+          shapeTo: -0.16,
         })
       );
 
@@ -327,23 +327,23 @@ export default function OurUSPs() {
           end: "top 46%",
           y: 42,
           scrub: 0.32,
-          shapeFrom: 0.6,
-          shapeTo: -0.6,
+          shapeFrom: 0.2,
+          shapeTo: -0.2,
         })
       );
 
       const contentParallax = gsap.fromTo(
         content,
-        { yPercent: 0.4 },
+        { yPercent: 0.8 },
         {
-          yPercent: -3.2,
+          yPercent: -6.2,
           ease: "none",
           force3D: true,
           scrollTrigger: {
             trigger: section,
             start: "top bottom",
             end: "bottom top",
-            scrub: 1.05,
+            scrub: 0.68,
             invalidateOnRefresh: true,
           },
         }

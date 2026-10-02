@@ -180,32 +180,32 @@ export default function OurUSPs() {
       <div
         ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 hidden lg:block lg:will-change-transform"
+        className="pointer-events-none absolute inset-0 z-0 block opacity-80 lg:opacity-100 lg:will-change-transform"
       >
-        <div
-          className="absolute left-[11%] top-[3%] h-[18%] w-[89%] bg-[#171717]"
-          style={{ clipPath: "polygon(7% 0,100% 0,100% 100%,0 100%,0 18%)" }}
-        />
-        <div
-          className="absolute left-0 top-[24%] h-[18%] w-[78%] bg-[#191919]"
-          style={{ clipPath: "polygon(0 0,86% 0,100% 18%,100% 100%,0 100%)" }}
-        />
-        <div
-          className="absolute right-0 top-[46%] h-[18%] w-[72%] bg-[#1B1B1B]"
-          style={{ clipPath: "polygon(13% 0,100% 0,100% 100%,0 100%,0 18%)" }}
-        />
-        <div
-          className="absolute left-[15%] top-[68%] h-[17%] w-[70%] bg-[#191919]"
-          style={{ clipPath: "polygon(0 0,78% 0,100% 18%,100% 100%,16% 100%,0 82%)" }}
-        />
+        <div className="absolute left-1/2 top-1/2 aspect-[341/220] w-[178%] -translate-x-1/2 -translate-y-1/2 sm:w-[148%] lg:w-[104%] xl:w-[96%]">
+          <div
+            className="absolute inset-0 bg-[#171717]"
+            style={{
+              clipPath:
+                "polygon(64.22% 0%, 50.44% 0%, 32.26% 21.36%, 13.49% 0%, 0% 0%, 31.96% 99.55%)",
+            }}
+          />
+          <div
+            className="absolute inset-0 bg-[#171717]"
+            style={{
+              clipPath:
+                "polygon(67.74% 0%, 35.19% 99.55%, 48.97% 99.55%, 67.45% 77.73%, 85.92% 99.55%, 99.71% 99.55%)",
+            }}
+          />
+        </div>
       </div>
 
       <div
         ref={contentRef}
         className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-8 px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 pr-[max(1.1rem,env(safe-area-inset-right))] sm:gap-10 sm:px-8 sm:pb-24 lg:block lg:min-h-[clamp(2500px,190vw,2920px)] lg:px-12 lg:pb-32 xl:px-16"
       >
-        <header className="usp-reveal relative z-20 w-full pt-4 sm:pt-5 lg:absolute lg:inset-x-0 lg:top-6 lg:mx-auto lg:max-w-[1300px] lg:px-20 lg:pt-0">
-          <span className="inline-block bg-white px-2 py-1 font-mono text-sm font-bold uppercase leading-none tracking-[0.06em] text-black sm:text-base lg:text-[16px]">
+        <header className="usp-reveal relative z-20 w-full p-0 lg:absolute lg:left-0 lg:top-4">
+          <span className="inline-block bg-white p-0 font-mono text-base font-bold uppercase leading-none tracking-[0.06em] text-black sm:text-[18px] lg:text-[20px]">
             OUR USPs
           </span>
         </header>

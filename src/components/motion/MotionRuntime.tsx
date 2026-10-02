@@ -22,6 +22,8 @@ export default function MotionRuntime() {
     let orientationTimer = 0;
     let delayedRefreshTimer = 0;
     let lateRefreshTimer = 0;
+    let mutationRefreshTimer = 0;
+    let mutationStopTimer = 0;
     let active = true;
     let lastWidth = window.innerWidth;
 
@@ -30,6 +32,7 @@ export default function MotionRuntime() {
       refreshFrame = requestAnimationFrame(() => {
         if (!active) return;
         ScrollTrigger.refresh();
+        ScrollTrigger.update();
       });
     };
 
@@ -68,6 +71,40 @@ export default function MotionRuntime() {
     // Components with late media use fixed aspect-ratio containers, so media
     // decode does not change document geometry. Avoid globally refreshing every
     // time an image/video loads; that was expensive on mobile Safari/Chrome.
+
+    const handleMotionRefresh = () => {
+      refreshAfterPaint();
+    };
+
+    const foreground = document.querySelector(".foreground");
+    const mutationObserver =
+      foreground && "MutationObserver" in window
+        ? new MutationObserver((mutations) => {
+            const addedLayoutContent = mutations.some((mutation) =>
+              Array.from(mutation.addedNodes).some(
+                (node) => node.nodeType === Node.ELEMENT_NODE
+              )
+            );
+
+            if (!addedLayoutContent) return;
+
+            window.clearTimeout(mutationRefreshTimer);
+            mutationRefreshTimer = window.setTimeout(refreshAfterPaint, 120);
+          })
+        : null;
+
+    mutationObserver?.observe(foreground as Node, {
+      childList: true,
+      subtree: true,
+    });
+
+    // Dynamic homepage chunks settle during the initial load window. Stop
+    // observing after that so normal interactions never pay observer overhead.
+    mutationStopTimer = window.setTimeout(() => {
+      mutationObserver?.disconnect();
+    }, 8000);
+
+    window.addEventListener("northframe:motion-refresh", handleMotionRefresh);
 
     window.addEventListener("load", refreshAfterPaint, { once: true });
     window.addEventListener("resize", handleViewportResize, { passive: true });
@@ -108,6 +145,10 @@ export default function MotionRuntime() {
       window.clearTimeout(orientationTimer);
       window.clearTimeout(delayedRefreshTimer);
       window.clearTimeout(lateRefreshTimer);
+      window.clearTimeout(mutationRefreshTimer);
+      window.clearTimeout(mutationStopTimer);
+      mutationObserver?.disconnect();
+      window.removeEventListener("northframe:motion-refresh", handleMotionRefresh);
       window.removeEventListener("load", refreshAfterPaint);
       window.removeEventListener("resize", handleViewportResize);
       window.removeEventListener("orientationchange", handleOrientationChange);

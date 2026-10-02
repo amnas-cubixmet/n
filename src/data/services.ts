@@ -119,9 +119,3 @@ export const services: Service[] = [
     objectPosition: "center center",
   },
 ];
-
-// Alias for backward compatibility
-export const SERVICES = services;
-
-
-

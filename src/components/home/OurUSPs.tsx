@@ -115,105 +115,116 @@ export default function OurUSPs() {
   useGSAP(
     () => {
       const section = containerRef.current;
-      if (!section) return;
+      const content = contentRef.current;
+      const shape = shapeRef.current;
+      if (!section || !content || !shape) return;
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        gsap.set(section.querySelectorAll(".usp-reveal"), {
+        gsap.set(content, {
           autoAlpha: 1,
           y: 0,
+          clearProps: "transform",
         });
         return;
       }
 
       const mm = gsap.matchMedia();
 
-      const buildReveals = (
-        y: number,
-        duration: number,
-        start: string
-      ) => {
-        const reveals = gsap.utils.toArray<HTMLElement>(
-          ".usp-reveal",
-          section
-        );
-
-        reveals.forEach((element) => {
-          gsap.fromTo(
-            element,
-            { autoAlpha: 0, y },
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration,
-              ease: "power3.out",
-              force3D: true,
-              scrollTrigger: {
-                trigger: element,
-                start,
-                once: true,
-                invalidateOnRefresh: true,
-              },
-            }
-          );
-        });
-      };
-
-      mm.add("(max-width: 768px)", () =>
-        buildReveals(12, 0.44, "top 94%")
-      );
-
-      mm.add("(min-width: 769px) and (max-width: 1023px)", () =>
-        buildReveals(16, 0.5, "top 92%")
-      );
-
-      mm.add("(min-width: 1024px)", () => {
-        buildReveals(28, 0.62, "top 88%");
-
-        const shape = shapeRef.current;
-        const content = contentRef.current;
-        if (!shape || !content) return;
-
-        const shapeTween = gsap.fromTo(
-          shape,
-          { yPercent: 3 },
+      const buildSectionAnimation = ({
+        start,
+        end,
+        y,
+        scrub,
+        shapeFrom,
+        shapeTo,
+      }: {
+        start: string;
+        end: string;
+        y: number;
+        scrub: number;
+        shapeFrom: number;
+        shapeTo: number;
+      }) => {
+        const contentTween = gsap.fromTo(
+          content,
           {
-            yPercent: -3,
+            autoAlpha: 0.15,
+            y,
+          },
+          {
+            autoAlpha: 1,
+            y: 0,
             ease: "none",
             force3D: true,
             scrollTrigger: {
               trigger: section,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 2.8,
+              start,
+              end,
+              scrub,
               invalidateOnRefresh: true,
             },
           }
         );
 
-        const contentTween = gsap.fromTo(
-          content,
-          { yPercent: 0.15 },
+        const shapeTween = gsap.fromTo(
+          shape,
           {
-            yPercent: -0.45,
+            yPercent: shapeFrom,
+          },
+          {
+            yPercent: shapeTo,
             ease: "none",
             force3D: true,
             scrollTrigger: {
               trigger: section,
               start: "top bottom",
               end: "bottom top",
-              scrub: 2,
+              scrub: scrub + 0.7,
               invalidateOnRefresh: true,
             },
           }
         );
 
         return () => {
-          shapeTween.scrollTrigger?.kill();
-          shapeTween.kill();
           contentTween.scrollTrigger?.kill();
           contentTween.kill();
+          shapeTween.scrollTrigger?.kill();
+          shapeTween.kill();
         };
-      });
+      };
+
+      mm.add("(max-width: 768px)", () =>
+        buildSectionAnimation({
+          start: "top 94%",
+          end: "top 58%",
+          y: 22,
+          scrub: 0.16,
+          shapeFrom: 1.5,
+          shapeTo: -1.5,
+        })
+      );
+
+      mm.add("(min-width: 769px) and (max-width: 1023px)", () =>
+        buildSectionAnimation({
+          start: "top 92%",
+          end: "top 54%",
+          y: 28,
+          scrub: 0.2,
+          shapeFrom: 2,
+          shapeTo: -2,
+        })
+      );
+
+      mm.add("(min-width: 1024px)", () =>
+        buildSectionAnimation({
+          start: "top 88%",
+          end: "top 46%",
+          y: 42,
+          scrub: 0.32,
+          shapeFrom: 3,
+          shapeTo: -3,
+        })
+      );
 
       return () => mm.revert();
     },
@@ -246,7 +257,7 @@ export default function OurUSPs() {
         ref={contentRef}
         className="relative z-10 mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-y-10 px-6 sm:gap-y-12 sm:px-10 md:px-16 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0 lg:px-20"
       >
-        <header className="usp-reveal lg:col-span-2 lg:col-start-1 lg:row-start-1">
+        <header className="lg:col-span-2 lg:col-start-1 lg:row-start-1">
           <span className="inline-block bg-white px-2 py-1 font-mono text-[18px] font-bold uppercase leading-none tracking-[0.06em] text-black sm:text-[20px] lg:text-[22px]">
             OUR USPs
           </span>
@@ -258,7 +269,7 @@ export default function OurUSPs() {
             ref={(element) => {
               cardRefs.current[index] = element;
             }}
-            className={`usp-reveal relative flex min-h-[350px] w-[88%] max-w-[430px] flex-col justify-between bg-[#151515] p-6 text-white shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:min-h-[380px] sm:p-8 lg:min-h-[440px] lg:w-full lg:max-w-none lg:p-9 xl:min-h-[470px] xl:p-10 ${MOBILE_ALIGNMENTS[index]} ${CARD_LAYOUTS[index]}`}
+            className={`relative flex min-h-[350px] w-[88%] max-w-[430px] flex-col justify-between bg-[#151515] p-6 text-white shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:min-h-[380px] sm:p-8 lg:min-h-[440px] lg:w-full lg:max-w-none lg:p-9 xl:min-h-[470px] xl:p-10 ${MOBILE_ALIGNMENTS[index]} ${CARD_LAYOUTS[index]}`}
             style={{
               clipPath:
                 "polygon(10% 0,100% 0,100% 100%,0 100%,0 10%)",
@@ -282,7 +293,7 @@ export default function OurUSPs() {
           </article>
         ))}
 
-        <div className="usp-reveal order-last flex w-full max-w-[390px] flex-col items-start gap-3 text-left lg:col-span-4 lg:col-start-1 lg:row-start-5 lg:self-end lg:pb-10">
+        <div className="order-last flex w-full max-w-[390px] flex-col items-start gap-3 text-left lg:col-span-4 lg:col-start-1 lg:row-start-5 lg:self-end lg:pb-10">
           <h4 className="font-montserrat text-xl font-semibold leading-snug tracking-tight text-white sm:text-2xl">
             Think your brand belongs here too?
           </h4>

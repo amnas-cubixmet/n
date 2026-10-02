@@ -16,13 +16,13 @@ const TOP_STEP_OPEN =
   "polygon(0% 100%, 0% 48%, 14% 48%, 14% 74%, 28% 74%, 28% 36%, 43% 36%, 43% 60%, 57% 60%, 57% 42%, 72% 42%, 72% 70%, 86% 70%, 86% 30%, 100% 30%, 100% 100%)";
 
 const TOP_STEP_TIGHT =
-  "polygon(0% 100%, 0% 40%, 14% 40%, 14% 45%, 28% 45%, 28% 34%, 43% 34%, 43% 42%, 57% 42%, 57% 36%, 72% 36%, 72% 44%, 86% 44%, 86% 30%, 100% 30%, 100% 100%)";
+  "polygon(0% 100%, 0% 34%, 14% 34%, 14% 38%, 28% 38%, 28% 32%, 43% 32%, 43% 37%, 57% 37%, 57% 33%, 72% 33%, 72% 38%, 86% 38%, 86% 30%, 100% 30%, 100% 100%)";
 
 const BOTTOM_STEP_OPEN =
   "polygon(0% 0%, 0% 52%, 14% 52%, 14% 26%, 28% 26%, 28% 64%, 43% 64%, 43% 40%, 57% 40%, 57% 58%, 72% 58%, 72% 30%, 86% 30%, 86% 70%, 100% 70%, 100% 0%)";
 
 const BOTTOM_STEP_TIGHT =
-  "polygon(0% 0%, 0% 60%, 14% 60%, 14% 55%, 28% 55%, 28% 66%, 43% 66%, 43% 58%, 57% 58%, 57% 64%, 72% 64%, 72% 56%, 86% 56%, 86% 70%, 100% 70%, 100% 0%)";
+  "polygon(0% 0%, 0% 66%, 14% 66%, 14% 62%, 28% 62%, 28% 68%, 43% 68%, 43% 63%, 57% 63%, 57% 67%, 72% 67%, 72% 62%, 86% 62%, 86% 70%, 100% 70%, 100% 0%)";
 
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
@@ -180,42 +180,45 @@ export default function StatementSection() {
             );
           });
 
-          // Keep the blue band at the same height and position.
-          // Only the stepped notch depth becomes shallower as the section scrolls.
-          // This avoids the previous whole-shape shrink/scale effect.
-          const edgeTimeline = gsap.timeline({
+          // Each edge has its own viewport timing.
+          // The top notch closes while the WOW overlay enters.
+          const topEdgeTimeline = gsap.timeline({
             scrollTrigger: {
-              trigger: section,
-              start: phone ? "top 94%" : tablet ? "top 92%" : "top 90%",
-              end: phone ? "top 30%" : tablet ? "top 28%" : "top 24%",
-              scrub: phone ? 0.12 : tablet ? 0.16 : 0.2,
+              trigger: topStep,
+              start: phone ? "top 100%" : tablet ? "top 100%" : "top 100%",
+              end: phone ? "bottom 48%" : tablet ? "bottom 46%" : "bottom 42%",
+              scrub: phone ? 0.1 : tablet ? 0.14 : 0.18,
               invalidateOnRefresh: true,
             },
           });
 
-          edgeTimeline
-            .to(
-              topStep,
-              {
-                clipPath: TOP_STEP_TIGHT,
-                WebkitClipPath: TOP_STEP_TIGHT,
-                duration: 1,
-                ease: "none",
-                force3D: true,
-              },
-              0
-            )
-            .to(
-              bottomStep,
-              {
-                clipPath: BOTTOM_STEP_TIGHT,
-                WebkitClipPath: BOTTOM_STEP_TIGHT,
-                duration: 1,
-                ease: "none",
-                force3D: true,
-              },
-              0
-            );
+          topEdgeTimeline.to(topStep, {
+            clipPath: TOP_STEP_TIGHT,
+            WebkitClipPath: TOP_STEP_TIGHT,
+            duration: 1,
+            ease: "none",
+            force3D: true,
+          });
+
+          // The bottom notch does not animate early anymore.
+          // It starts closing only when the bottom edge itself reaches the viewport.
+          const bottomEdgeTimeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: bottomStep,
+              start: phone ? "top 98%" : tablet ? "top 98%" : "top 96%",
+              end: phone ? "top 58%" : tablet ? "top 56%" : "top 52%",
+              scrub: phone ? 0.1 : tablet ? 0.14 : 0.18,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          bottomEdgeTimeline.to(bottomStep, {
+            clipPath: BOTTOM_STEP_TIGHT,
+            WebkitClipPath: BOTTOM_STEP_TIGHT,
+            duration: 1,
+            ease: "none",
+            force3D: true,
+          });
 
           let frameA = 0;
           let frameB = 0;
@@ -231,8 +234,10 @@ export default function StatementSection() {
             cancelAnimationFrame(frameB);
             timeline.scrollTrigger?.kill();
             timeline.kill();
-            edgeTimeline.scrollTrigger?.kill();
-            edgeTimeline.kill();
+            topEdgeTimeline.scrollTrigger?.kill();
+            topEdgeTimeline.kill();
+            bottomEdgeTimeline.scrollTrigger?.kill();
+            bottomEdgeTimeline.kill();
             gsap.set([topStep, bottomStep], {
               clearProps:
                 "transform,height,will-change,clip-path,-webkit-clip-path",
@@ -305,7 +310,7 @@ export default function StatementSection() {
       <div
         ref={topStepRef}
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-[calc(100%-2px)] left-0 z-[20] h-[18svh] min-h-[18svh] w-full bg-[#1677FF] will-change-transform md:h-[20dvh] md:min-h-[20dvh]"
+        className="pointer-events-none absolute bottom-[calc(100%-2px)] left-0 z-[50] h-[24svh] min-h-[24svh] w-full bg-[#1677FF] will-change-transform md:h-[26dvh] md:min-h-[26dvh]"
         style={{
           clipPath: TOP_STEP_OPEN,
           WebkitClipPath: TOP_STEP_OPEN,
@@ -315,7 +320,7 @@ export default function StatementSection() {
       <div
         ref={bottomStepRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-[calc(100%-2px)] z-[20] h-[18svh] min-h-[18svh] w-full bg-[#1677FF] will-change-transform md:h-[20dvh] md:min-h-[20dvh]"
+        className="pointer-events-none absolute left-0 top-[calc(100%-2px)] z-[50] h-[24svh] min-h-[24svh] w-full bg-[#1677FF] will-change-transform md:h-[26dvh] md:min-h-[26dvh]"
         style={{
           clipPath: BOTTOM_STEP_OPEN,
           WebkitClipPath: BOTTOM_STEP_OPEN,

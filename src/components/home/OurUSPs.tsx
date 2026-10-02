@@ -125,6 +125,11 @@ export default function OurUSPs() {
           y: 0,
           clearProps: "transform",
         });
+        gsap.set(section.querySelectorAll(".usp-card-text"), {
+          autoAlpha: 1,
+          y: 0,
+          clearProps: "transform,opacity,visibility",
+        });
         return;
       }
 
@@ -192,6 +197,62 @@ export default function OurUSPs() {
           shapeTween.kill();
         };
       };
+
+      const buildCardTextReveals = (
+        y: number,
+        duration: number,
+        stagger: number,
+        start: string
+      ) => {
+        const cards = cardRefs.current.filter(
+          (card): card is HTMLElement => Boolean(card)
+        );
+
+        const tweens = cards.map((card) => {
+          const textItems = card.querySelectorAll<HTMLElement>(".usp-card-text");
+
+          return gsap.fromTo(
+            textItems,
+            {
+              autoAlpha: 0,
+              y,
+            },
+            {
+              autoAlpha: 1,
+              y: 0,
+              duration,
+              stagger,
+              ease: "power3.out",
+              force3D: true,
+              scrollTrigger: {
+                trigger: card,
+                start,
+                once: true,
+                invalidateOnRefresh: true,
+              },
+            }
+          );
+        });
+
+        return () => {
+          tweens.forEach((tween) => {
+            tween.scrollTrigger?.kill();
+            tween.kill();
+          });
+        };
+      };
+
+      mm.add("(max-width: 768px)", () =>
+        buildCardTextReveals(10, 0.34, 0.055, "top 92%")
+      );
+
+      mm.add("(min-width: 769px) and (max-width: 1023px)", () =>
+        buildCardTextReveals(14, 0.4, 0.07, "top 90%")
+      );
+
+      mm.add("(min-width: 1024px)", () =>
+        buildCardTextReveals(20, 0.5, 0.09, "top 86%")
+      );
 
       mm.add("(max-width: 768px)", () =>
         buildSectionAnimation({
@@ -276,16 +337,16 @@ export default function OurUSPs() {
             }}
           >
             <div className="flex flex-col items-start">
-              <div className="mb-5 inline-block bg-[#1677FF] px-2.5 py-1 font-mono text-[11px] font-bold leading-none text-black sm:mb-6 sm:text-xs">
+              <div className="usp-card-text mb-5 inline-block bg-[#1677FF] px-2.5 py-1 font-mono text-[11px] font-bold leading-none text-black sm:mb-6 sm:text-xs">
                 {item.number}
               </div>
 
-              <h3 className="whitespace-pre-line text-left font-pixel text-[clamp(22px,6vw,30px)] font-bold uppercase leading-[1.04] tracking-[-0.02em] text-white lg:text-[clamp(24px,2vw,32px)]">
+              <h3 className="usp-card-text whitespace-pre-line text-left font-pixel text-[clamp(22px,6vw,30px)] font-bold uppercase leading-[1.04] tracking-[-0.02em] text-white lg:text-[clamp(24px,2vw,32px)]">
                 {item.title}
               </h3>
             </div>
 
-            <div className="mt-8 border-t border-white/10 pt-5 sm:pt-6">
+            <div className="usp-card-text mt-8 border-t border-white/10 pt-5 sm:pt-6">
               <p className="text-left font-sans text-[clamp(13px,3.7vw,16px)] leading-relaxed text-white/60 lg:text-base">
                 {item.description}
               </p>

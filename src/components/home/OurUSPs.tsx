@@ -282,12 +282,12 @@ export default function OurUSPs() {
           </article>
         ))}
 
-        <div className="usp-reveal order-last flex max-w-[390px] flex-col items-start gap-3 text-left lg:col-span-2 lg:col-start-1 lg:row-start-5 lg:self-end lg:pb-10">
+        <div className="usp-reveal order-last flex w-full max-w-[390px] flex-col items-start gap-3 text-left lg:col-span-4 lg:col-start-1 lg:row-start-5 lg:self-end lg:pb-10">
           <h4 className="font-montserrat text-xl font-semibold leading-snug tracking-tight text-white sm:text-2xl">
             Think your brand belongs here too?
           </h4>
 
-          <p className="font-sans text-sm leading-relaxed text-white/60 sm:text-base">
+          <p className="max-w-[390px] font-sans text-sm leading-relaxed text-white/60 sm:text-base">
             Let’s get to know your brand, your ideas, and what you’re aiming for.
             We’re here to turn good ideas into something that makes people say “wow.”
           </p>

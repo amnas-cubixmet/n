@@ -7,6 +7,9 @@ export default function ScrollProgress() {
   const rafIdRef = useRef<number | null>(null);
 
   useEffect(() => {
+    const desktopQuery = window.matchMedia("(min-width: 768px)");
+    if (!desktopQuery.matches) return;
+
     const updateProgress = () => {
       if (barRef.current) {
         const scrollTop = window.scrollY;

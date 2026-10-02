@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { services } from "@/data/services";
+import { useMobileMotionReady } from "@/components/motion/useMobileMotionReady";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -24,6 +25,7 @@ export default function WatWeDoen() {
   const panelsRef = useRef<(HTMLElement | null)[]>([]);
   const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
   const viewportWidthRef = useRef(0);
+  const motionReady = useMobileMotionReady();
 
   useEffect(() => {
     viewportWidthRef.current = window.innerWidth;
@@ -62,6 +64,8 @@ export default function WatWeDoen() {
 
   useGSAP(
     () => {
+      if (!motionReady) return;
+
       const wrapper = wrapperRef.current;
       const sticky = stickyRef.current;
       if (!wrapper || !sticky) return;
@@ -330,6 +334,8 @@ export default function WatWeDoen() {
     },
     {
       scope: wrapperRef,
+      dependencies: [motionReady],
+      revertOnUpdate: true,
     }
   );
 

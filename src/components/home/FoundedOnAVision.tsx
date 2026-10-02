@@ -14,7 +14,7 @@ const IMAGE_SHAPE =
   "polygon(12% 0, 100% 0, 100% 100%, 0 100%, 0 12%)";
 
 const BACKING_SHAPE =
-  "polygon(12% 0, 100% 0, 100% 72%, 84% 72%, 84% 100%, 62% 82%, 0 82%, 0 12%)";
+  "polygon(12% 0, 100% 0, 100% 100%, 0 100%, 0 12%)";
 
 export default function FoundedOnAVision() {
   const containerRef = useRef<HTMLElement>(null);

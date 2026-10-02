@@ -305,18 +305,20 @@ export default function StatementSection() {
       <div
         ref={topStepRef}
         aria-hidden="true"
-        className="pointer-events-none absolute bottom-[calc(100%-2px)] left-0 z-[20] h-[18svh] w-full bg-[#1677FF] will-change-transform md:h-[20dvh]"
+        className="pointer-events-none absolute bottom-[calc(100%-2px)] left-0 z-[20] h-[18svh] min-h-[18svh] w-full bg-[#1677FF] will-change-transform md:h-[20dvh] md:min-h-[20dvh]"
         style={{
           clipPath: TOP_STEP_OPEN,
+          WebkitClipPath: TOP_STEP_OPEN,
         }}
       />
 
       <div
         ref={bottomStepRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-0 top-[calc(100%-2px)] z-[20] h-[18svh] w-full bg-[#1677FF] will-change-transform md:h-[20dvh]"
+        className="pointer-events-none absolute left-0 top-[calc(100%-2px)] z-[20] h-[18svh] min-h-[18svh] w-full bg-[#1677FF] will-change-transform md:h-[20dvh] md:min-h-[20dvh]"
         style={{
           clipPath: BOTTOM_STEP_OPEN,
+          WebkitClipPath: BOTTOM_STEP_OPEN,
         }}
       />
 

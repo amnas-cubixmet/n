@@ -122,12 +122,14 @@ export default function OurUSPs() {
       if (!section || !content || !shape) return;
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        gsap.set([content, labelRef.current, ctaRef.current, ...cardRefs.current.filter(Boolean)], {
-          y: 0,
-          scale: 1,
-          clearProps: "transform",
-        });
-        gsap.set(content, {
+        const motionTargets = [
+          content,
+          labelRef.current,
+          ctaRef.current,
+          ...cardRefs.current,
+        ].filter((target): target is HTMLElement => Boolean(target));
+
+        gsap.set(motionTargets, {
           y: 0,
           scale: 1,
           clearProps: "transform",

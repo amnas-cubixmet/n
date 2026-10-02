@@ -231,7 +231,7 @@ export default function SelectedWork() {
 
         <ProjectCard
           project={workProjects[2]}
-          gridClass="lg:absolute lg:right-[5%] lg:top-[clamp(780px,62vw,940px)] lg:w-[32%]"
+          gridClass="lg:absolute lg:left-1/2 lg:right-auto lg:top-[clamp(780px,62vw,940px)] lg:w-[32%]"
         />
 
         <div ref={ctaRef} className="work-project-item flex max-w-[390px] flex-col items-start gap-3 lg:absolute lg:left-[3%] lg:top-[clamp(820px,69vw,1050px)] lg:w-[30%]">

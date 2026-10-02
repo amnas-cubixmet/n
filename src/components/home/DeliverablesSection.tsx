@@ -146,9 +146,10 @@ export default function DeliverablesSection() {
 
         if (previousIndex === activeIndex) {
           gsap.set(element, {
-            autoAlpha: 1,
-            y: 0,
+            opacity: 1,
+            yPercent: 0,
             scale: 1,
+            clipPath: "inset(0% 0% 0% 0%)",
           });
           return;
         }
@@ -156,16 +157,18 @@ export default function DeliverablesSection() {
         gsap.fromTo(
           element,
           {
-            autoAlpha: 0,
-            y: compact ? 5 : 7,
-            scale: compact ? 0.999 : 0.997,
+            opacity: 1,
+            yPercent: compact ? 24 : 34,
+            scale: compact ? 1.015 : 1.025,
+            clipPath: "inset(100% 0% 0% 0%)",
           },
           {
-            autoAlpha: 1,
-            y: 0,
+            opacity: 1,
+            yPercent: 0,
             scale: 1,
-            duration: compact ? 0.36 : 0.5,
-            ease: "power2.inOut",
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: compact ? 0.52 : 0.68,
+            ease: "expo.out",
             overwrite: "auto",
             force3D: true,
           }
@@ -176,18 +179,20 @@ export default function DeliverablesSection() {
 
       if (index === previousIndex) {
         gsap.to(element, {
-          autoAlpha: 0,
-          y: compact ? -3 : -4,
-          duration: compact ? 0.32 : 0.42,
-          ease: "power2.inOut",
+          yPercent: compact ? -8 : -12,
+          scale: compact ? 0.995 : 0.99,
+          duration: compact ? 0.42 : 0.56,
+          ease: "power3.inOut",
           overwrite: "auto",
           force3D: true,
           onComplete: () => {
             gsap.set(element, {
               visibility: "hidden",
               zIndex: 1,
-              y: 0,
+              opacity: 1,
+              yPercent: 0,
               scale: 1,
+              clipPath: "inset(0% 0% 0% 0%)",
             });
           },
         });
@@ -195,11 +200,12 @@ export default function DeliverablesSection() {
       }
 
       gsap.set(element, {
-        autoAlpha: 0,
+        opacity: 1,
         visibility: "hidden",
         zIndex: 1,
-        y: 0,
+        yPercent: 0,
         scale: 1,
+        clipPath: "inset(0% 0% 0% 0%)",
       });
     });
 
@@ -621,7 +627,7 @@ export default function DeliverablesSection() {
                         style={{
                           visibility: index === 0 ? "visible" : "hidden",
                           zIndex: index === 0 ? 20 : 1,
-                          opacity: index === 0 ? 1 : 0,
+                          opacity: 1,
                         }}
                       >
                         {item.mediaType === "video" ? (

@@ -8,12 +8,6 @@ export type Deliverable = {
   alt: string;
 };
 
-export const defaultDeliverablesIntro = {
-  title: "DELIVERABLES",
-  description:
-    "From branding and websites to campaigns, production, and content, every detail has a role to play. Great communication is built on consistency, clarity, and craft, which is why we refine every element with purpose and precision. Every detail. Every touchpoint. Unmistakably NORTHFRAME.",
-};
-
 export const deliverables: Deliverable[] = [
   {
     id: 1,

@@ -14,6 +14,7 @@ export default function SelectedWork() {
   const sectionRef = useRef<HTMLElement>(null);
   const shapeRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
@@ -29,14 +30,17 @@ export default function SelectedWork() {
 
       const secondCard = projectCards[1];
       const thirdCard = projectCards[2];
+      const cta = ctaRef.current;
       if (!secondCard || !thirdCard) return;
 
-      const contentRect = content.getBoundingClientRect();
-      const secondRect = secondCard.getBoundingClientRect();
+      const thirdTop = Math.round(secondCard.offsetTop + secondCard.offsetHeight);
+      thirdCard.style.top = `${thirdTop}px`;
 
-      const nextTop = Math.round(secondRect.bottom - contentRect.top);
-
-      thirdCard.style.top = `${nextTop}px`;
+      if (cta) {
+        const thirdBottom = thirdTop + thirdCard.offsetHeight;
+        const ctaTop = Math.max(0, Math.round(thirdBottom - cta.offsetHeight));
+        cta.style.top = `${ctaTop}px`;
+      }
     };
 
     let frame = requestAnimationFrame(() => {
@@ -57,6 +61,7 @@ export default function SelectedWork() {
     );
 
     projectCards.slice(0, 3).forEach((card) => observer.observe(card));
+    if (ctaRef.current) observer.observe(ctaRef.current);
     window.addEventListener("resize", syncThirdCard, { passive: true });
 
     return () => {
@@ -67,6 +72,9 @@ export default function SelectedWork() {
       const thirdCard = projectCards[2];
       if (thirdCard) {
         thirdCard.style.top = "";
+      }
+      if (ctaRef.current) {
+        ctaRef.current.style.top = "";
       }
     };
   }, []);
@@ -226,7 +234,7 @@ export default function SelectedWork() {
           gridClass="lg:absolute lg:right-[5%] lg:top-[clamp(780px,62vw,940px)] lg:w-[32%]"
         />
 
-        <div className="work-project-item flex max-w-[390px] flex-col items-start gap-3 lg:absolute lg:left-[3%] lg:top-[clamp(820px,69vw,1050px)] lg:w-[30%]">
+        <div ref={ctaRef} className="work-project-item flex max-w-[390px] flex-col items-start gap-3 lg:absolute lg:left-[3%] lg:top-[clamp(820px,69vw,1050px)] lg:w-[30%]">
           <h3 className="font-montserrat text-xl font-semibold leading-snug tracking-tight sm:text-2xl">
             Think your brand belongs here too?
           </h3>

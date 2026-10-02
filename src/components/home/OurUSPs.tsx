@@ -75,6 +75,8 @@ export default function OurUSPs() {
   const containerRef = useRef<HTMLElement>(null);
   const shapeRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const labelRef = useRef<HTMLElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
 
   useLayoutEffect(() => {
@@ -120,6 +122,11 @@ export default function OurUSPs() {
       if (!section || !content || !shape) return;
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        gsap.set([content, labelRef.current, ctaRef.current, ...cardRefs.current.filter(Boolean)], {
+          y: 0,
+          scale: 1,
+          clearProps: "transform",
+        });
         gsap.set(content, {
           y: 0,
           scale: 1,
@@ -216,6 +223,13 @@ export default function OurUSPs() {
 
           if (!number || !title || !body) return null;
 
+          gsap.set(card, {
+            y: titleY * 1.35,
+            scale: 0.985,
+            transformOrigin: "center bottom",
+            force3D: true,
+          });
+
           gsap.set(number, {
             scaleX: 0,
             transformOrigin: "left center",
@@ -246,6 +260,13 @@ export default function OurUSPs() {
           });
 
           timeline
+            .to(card, {
+              y: 0,
+              scale: 1,
+              duration: titleDuration + 0.12,
+              ease: "expo.out",
+              force3D: true,
+            })
             .to(number, {
               scaleX: 1,
               duration: 0.28,
@@ -261,7 +282,7 @@ export default function OurUSPs() {
                 ease: "expo.out",
                 force3D: true,
               },
-              0.08
+              0.16
             )
             .to(
               body,
@@ -272,7 +293,7 @@ export default function OurUSPs() {
                 ease: "power4.out",
                 force3D: true,
               },
-              0.24
+              0.34
             );
 
           return timeline;
@@ -286,6 +307,63 @@ export default function OurUSPs() {
           });
         };
       };
+
+      const buildStandaloneReveal = (
+        element: HTMLElement | null,
+        start: string,
+        y: number,
+        duration: number,
+        stagger = 0
+      ) => {
+        if (!element) return () => {};
+
+        const targets =
+          stagger > 0
+            ? Array.from(element.children) as HTMLElement[]
+            : [element];
+
+        gsap.set(targets, {
+          y,
+          clipPath: "inset(0% 0% 100% 0%)",
+          force3D: true,
+        });
+
+        const tween = gsap.to(targets, {
+          y: 0,
+          clipPath: "inset(0% 0% 0% 0%)",
+          duration,
+          stagger,
+          ease: "expo.out",
+          force3D: true,
+          scrollTrigger: {
+            trigger: element,
+            start,
+            once: true,
+            invalidateOnRefresh: true,
+          },
+        });
+
+        return () => {
+          tween.scrollTrigger?.kill();
+          tween.kill();
+        };
+      };
+
+      mm.add("(max-width: 768px)", () => {
+        const cleanups = [
+          buildStandaloneReveal(labelRef.current, "top 94%", 12, 0.46),
+          buildStandaloneReveal(ctaRef.current, "top 94%", 14, 0.5, 0.08),
+        ];
+        return () => cleanups.forEach((cleanup) => cleanup());
+      });
+
+      mm.add("(min-width: 769px)", () => {
+        const cleanups = [
+          buildStandaloneReveal(labelRef.current, "top 88%", 18, 0.58),
+          buildStandaloneReveal(ctaRef.current, "top 88%", 22, 0.64, 0.1),
+        ];
+        return () => cleanups.forEach((cleanup) => cleanup());
+      });
 
       mm.add("(max-width: 768px)", () =>
         buildCardTextReveals(14, 0.48, 0.42, "top 92%")
@@ -389,7 +467,7 @@ export default function OurUSPs() {
         ref={contentRef}
         className="relative z-10 mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-y-10 px-6 sm:gap-y-12 sm:px-10 md:px-16 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0 lg:px-20"
       >
-        <header className="lg:col-span-2 lg:col-start-1 lg:row-start-1">
+        <header ref={labelRef} className="lg:col-span-2 lg:col-start-1 lg:row-start-1">
           <span className="inline-block bg-white px-2 py-1 font-mono text-[18px] font-bold uppercase leading-none tracking-[0.06em] text-black sm:text-[20px] lg:text-[22px]">
             OUR USPs
           </span>
@@ -425,7 +503,7 @@ export default function OurUSPs() {
           </article>
         ))}
 
-        <div className="order-last flex w-full max-w-[390px] flex-col items-start gap-3 text-left lg:col-span-4 lg:col-start-1 lg:row-start-5 lg:self-end lg:pb-10">
+        <div ref={ctaRef} className="order-last flex w-full max-w-[390px] flex-col items-start gap-3 text-left lg:col-span-4 lg:col-start-1 lg:row-start-5 lg:self-end lg:pb-10">
           <h4 className="font-montserrat text-xl font-semibold leading-snug tracking-tight text-white sm:text-2xl">
             Think your brand belongs here too?
           </h4>

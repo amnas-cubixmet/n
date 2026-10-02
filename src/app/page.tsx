@@ -8,6 +8,13 @@ import Hero from "@/components/hero/Hero";
 import IntroSection from "@/components/intro/IntroSection";
 import WatWeDoen from "@/components/home/WatWeDoen";
 import OurExpertise from "@/components/home/OurExpertise";
+import SelectedWork from "@/components/home/SelectedWork";
+import DeliverablesSection from "@/components/home/DeliverablesSection";
+import StatementSection from "@/components/home/StatementSection";
+import OurVision from "@/components/home/OurVision";
+import OurUSPs from "@/components/home/OurUSPs";
+import FoundedOnAVision from "@/components/home/FoundedOnAVision";
+import ContactSection from "@/components/home/ContactSection";
 import FloatingContactActions from "@/components/navigation/FloatingContactActions";
 
 const Shared3DBackground = dynamic(
@@ -15,31 +22,7 @@ const Shared3DBackground = dynamic(
   { ssr: false }
 );
 
-const SelectedWork = dynamic(
-  () => import("@/components/home/SelectedWork")
-);
-const DeliverablesSection = dynamic(
-  () => import("@/components/home/DeliverablesSection")
-);
-const StatementSection = dynamic(
-  () => import("@/components/home/StatementSection")
-);
-const OurVision = dynamic(
-  () => import("@/components/home/OurVision")
-);
-const OurUSPs = dynamic(
-  () => import("@/components/home/OurUSPs")
-);
-const FoundedOnAVision = dynamic(
-  () => import("@/components/home/FoundedOnAVision")
-);
-const ContactSection = dynamic(
-  () => import("@/components/home/ContactSection")
-);
-
 export default function Home() {
-  // Keep the first server and client renders identical. BrandIntro runs on a
-  // fresh page load and still calls onComplete when an in-app remount skips it.
   const [introCompleted, setIntroCompleted] = useState(false);
 
   const handleIntroComplete = () => {
@@ -48,23 +31,17 @@ export default function Home() {
 
   return (
     <main className="page relative min-h-screen text-white flex flex-col font-sans bg-transparent">
-      {/* Brand Intro Animation Overlay */}
       <BrandIntro onComplete={handleIntroComplete} />
 
-      {/* Global Fixed Header Navigation */}
       <Header />
 
-      {/* Floating contact action appears only after the Introduction is passed */}
       <FloatingContactActions />
 
-      {/* LAYER 1 — GLOBAL FIXED BACKGROUND */}
       <div className="global-visual-background fixed inset-0 w-full h-[100svh] lg:h-[100dvh] z-0 overflow-hidden pointer-events-none bg-[#05080B]">
         <Shared3DBackground />
       </div>
 
-      {/* LAYER 2 — FOREGROUND SCROLLING CONTENT */}
       <div className="foreground relative z-10 w-full flex flex-col pointer-events-none">
-        {/* The hero and introduction share the fixed 3D background. */}
         <div className="shared-background-range relative w-full">
           <Hero introCompleted={introCompleted} />
 
@@ -76,33 +53,24 @@ export default function Home() {
           </section>
         </div>
 
-        {/* WAT WE DOEN */}
         <div className="relative w-full pointer-events-auto bg-[#030508]">
           <WatWeDoen />
         </div>
 
-        {/* OUR EXPERTISE */}
         <OurExpertise />
 
-        {/* A SELECTION OF OUR WORK */}
         <SelectedWork />
 
-        {/* DELIVERABLES */}
         <DeliverablesSection />
 
-        {/* WOOOW STATEMENT */}
         <StatementSection />
 
-        {/* OUR VISION SECTION */}
         <OurVision />
 
-        {/* OUR USPs SECTION */}
         <OurUSPs />
 
-        {/* FOUNDED ON A VISION SECTION */}
         <FoundedOnAVision />
 
-        {/* CONTACT SECTION */}
         <ContactSection />
       </div>
     </main>

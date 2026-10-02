@@ -15,7 +15,7 @@ export const deliverables: Deliverable[] = [
     title: "BRAND & EVENT DESIGN",
     description:
       "Your brand deserves to stand out. Whether it’s for a business, campaign, or event, we turn your vision into a distinctive visual identity that makes an impact. From logo design and signage to print and digital experiences, every element is crafted to work together and leave a lasting impression.",
-    media: "/images/deliverables/brand-event.webp",
+    media: "/images/services/branding.webp",
     mediaType: "image",
     alt: "Northframe brand and event design",
   },
@@ -25,7 +25,7 @@ export const deliverables: Deliverable[] = [
     title: "VIDEO & PHOTOGRAPHY",
     description:
       "Images tell stories. We make them worth remembering. From authentic photography and compelling videos to portraits, product shoots, and promotional content, we create visuals that capture attention, communicate your story, and give your brand a voice.",
-    media: "/images/deliverables/video-photography.webp",
+    media: "/images/services/creative-production.webp",
     mediaType: "image",
     alt: "Northframe video and photography",
   },
@@ -35,7 +35,7 @@ export const deliverables: Deliverable[] = [
     title: "MOTION GRAPHICS",
     description:
       "Static is fine. But motion makes brands come alive. We create engaging motion graphics, logo animations, visual effects, and dynamic content that capture attention and bring your brand to life across digital platforms.",
-    media: "/images/deliverables/motion-graphics.webp",
+    media: "/images/services/creative-production.webp",
     mediaType: "image",
     alt: "Northframe motion graphics",
   },
@@ -45,7 +45,7 @@ export const deliverables: Deliverable[] = [
     title: "3D GRAPHICS",
     description:
       "Product visualization, architectural modeling, or lifelike impressions? A picture is worth a thousand words. It tells exactly what it needs to tell.",
-    media: "/images/deliverables/3d-graphics.webp",
+    media: "/images/services/technology.webp",
     mediaType: "image",
     alt: "Northframe 3D graphics",
   },
@@ -55,7 +55,7 @@ export const deliverables: Deliverable[] = [
     title: "PRINT DESIGN & PRINTING",
     description:
       "Think print is old school? Think again. In a digital-first world, a well-crafted printed piece stands out. From business cards and brochures to packaging and marketing collateral, we create print designs that feel tangible, memorable, and built to leave a lasting impression.",
-    media: "/images/deliverables/print-design.webp",
+    media: "/images/services/strategy.webp",
     mediaType: "image",
     alt: "Northframe print design and printing",
   },
@@ -65,7 +65,7 @@ export const deliverables: Deliverable[] = [
     title: "WEB DEVELOPMENT",
     description:
       "We don’t just build websites. We build digital experiences. Combining thoughtful design, seamless interactions, and smart technology, we create high-performance websites that look exceptional, feel intuitive, and help brands stand out in the digital world.",
-    media: "/images/deliverables/web-development.webp",
+    media: "/images/services/technology.webp",
     mediaType: "image",
     alt: "Northframe web development",
   },
@@ -75,7 +75,7 @@ export const deliverables: Deliverable[] = [
     title: "DIGITAL MARKETING",
     description:
       "Being seen is one thing. Being remembered is another. We create strategic digital marketing campaigns that put your brand in front of the right audience, from social media and content marketing to SEO and performance campaigns. Every move is designed to build attention, engagement, and meaningful growth.",
-    media: "/images/deliverables/digital-marketing.webp",
+    media: "/images/services/digital-marketing.webp",
     mediaType: "image",
     alt: "Northframe digital marketing",
   },

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,6 +14,62 @@ export default function SelectedWork() {
   const sectionRef = useRef<HTMLElement>(null);
   const shapeRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const section = sectionRef.current;
+    const content = contentRef.current;
+    if (!section || !content) return;
+
+    const syncThirdCard = () => {
+      if (window.innerWidth < 1024) return;
+
+      const projectCards = Array.from(
+        content.querySelectorAll<HTMLElement>("article.work-project-item")
+      );
+
+      const secondCard = projectCards[1];
+      const thirdCard = projectCards[2];
+      if (!secondCard || !thirdCard) return;
+
+      const contentRect = content.getBoundingClientRect();
+      const secondRect = secondCard.getBoundingClientRect();
+
+      const nextTop = Math.round(secondRect.bottom - contentRect.top);
+
+      thirdCard.style.top = `${nextTop}px`;
+    };
+
+    let frame = requestAnimationFrame(() => {
+      syncThirdCard();
+      ScrollTrigger.refresh();
+    });
+
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        syncThirdCard();
+        ScrollTrigger.refresh();
+      });
+    });
+
+    const projectCards = Array.from(
+      content.querySelectorAll<HTMLElement>("article.work-project-item")
+    );
+
+    projectCards.slice(0, 3).forEach((card) => observer.observe(card));
+    window.addEventListener("resize", syncThirdCard, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("resize", syncThirdCard);
+
+      const thirdCard = projectCards[2];
+      if (thirdCard) {
+        thirdCard.style.top = "";
+      }
+    };
+  }, []);
 
   useGSAP(
     () => {
@@ -167,7 +223,7 @@ export default function SelectedWork() {
 
         <ProjectCard
           project={workProjects[2]}
-          gridClass="lg:absolute lg:left-[50%] lg:top-[clamp(540px,44vw,680px)] lg:w-[32%]"
+          gridClass="lg:absolute lg:right-[5%] lg:top-[clamp(780px,62vw,940px)] lg:w-[32%]"
         />
 
         <div className="work-project-item flex max-w-[390px] flex-col items-start gap-3 lg:absolute lg:left-[3%] lg:top-[clamp(820px,69vw,1050px)] lg:w-[30%]">

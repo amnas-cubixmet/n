@@ -125,7 +125,7 @@ export default function SelectedWork() {
       <div
         ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-[20%] top-[31%] z-0 aspect-[341/220] w-[82%] max-lg:hidden"
+        className="pointer-events-none absolute left-[22%] top-[25%] z-0 aspect-[341/220] w-[76%] max-lg:hidden"
       >
         <div
           className="absolute inset-0 bg-[#F2F3F5]"
@@ -145,7 +145,7 @@ export default function SelectedWork() {
 
       <div
         ref={contentRef}
-        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-12 sm:gap-16 lg:block lg:min-h-[clamp(1550px,125vw,1900px)] lg:translate-x-2 xl:translate-x-3"
+        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-12 sm:gap-16 lg:block lg:min-h-[clamp(1280px,104vw,1580px)] lg:translate-x-2 xl:translate-x-3"
       >
         <div className="work-project-item flex flex-col items-start gap-[2px] lg:absolute lg:left-0 lg:top-[clamp(80px,6.5vw,104px)] lg:-translate-x-[5px] xl:-translate-x-[9px]">
           <h2 className="flex flex-col items-start gap-[2px] font-montserrat text-[clamp(14px,1.35vw,19px)] font-semibold uppercase leading-[1] tracking-[0.01em]">
@@ -167,10 +167,13 @@ export default function SelectedWork() {
 
         <ProjectCard
           project={workProjects[2]}
-          gridClass="lg:absolute lg:left-[50%] lg:top-[clamp(600px,50vw,760px)] lg:w-[32%]"
+          gridClass="lg:absolute lg:left-[50%] lg:top-[clamp(540px,44vw,680px)] lg:w-[32%]"
         />
 
-        <div className="work-project-item flex max-w-[390px] flex-col items-start gap-4 lg:absolute lg:left-0 lg:top-[clamp(1100px,91vw,1390px)] lg:w-[32%]">
+        <div className="work-project-item flex max-w-[390px] flex-col items-start gap-3 lg:absolute lg:left-[3%] lg:top-[clamp(820px,69vw,1050px)] lg:w-[30%]">
+          <span className="inline-block bg-[#1677FF] px-2 py-1 font-mono text-[10px] font-bold uppercase leading-none tracking-[0.06em] text-white">
+            YOUR BRAND NEXT?
+          </span>
           <h3 className="font-montserrat text-xl font-semibold leading-snug tracking-tight sm:text-2xl">
             Think your brand belongs here too?
           </h3>
@@ -180,13 +183,14 @@ export default function SelectedWork() {
           </p>
           <TransitionLink
             href="/#contact"
-            className="inline-flex min-h-11 items-center font-sans text-sm font-medium transition-colors lg:hover:text-[#1677FF]"
+            className="group inline-flex min-h-10 items-center gap-2 border-b border-black/30 py-1 font-sans text-sm font-medium transition-colors lg:hover:border-[#1677FF] lg:hover:text-[#1677FF]"
           >
-            Let’s talk →
+            <span>Let’s talk</span>
+            <span className="transition-transform duration-200 lg:group-hover:translate-x-1">→</span>
           </TransitionLink>
         </div>
 
-        <div className="flex w-full justify-center lg:absolute lg:bottom-16 lg:left-0">
+        <div className="flex w-full justify-center lg:absolute lg:bottom-10 lg:left-0">
           <TransitionLink
             href="/work"
             className="inline-flex min-h-11 items-center justify-center bg-black px-6 py-3 font-mono text-xs uppercase tracking-wide text-white transition-colors lg:hover:bg-[#1677FF]"

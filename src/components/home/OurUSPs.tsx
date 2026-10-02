@@ -88,10 +88,15 @@ export default function OurUSPs() {
       );
 
       const secondTop = Math.round(
-        firstCard.offsetTop + firstCard.offsetHeight * 0.5
+        firstCard.offsetTop + firstCard.offsetHeight * 0.42
       );
 
-      secondCard.style.left = `${labelLeft}px`;
+      const secondInset = Math.max(
+        28,
+        Math.round(content.clientWidth * 0.06)
+      );
+
+      secondCard.style.left = `${labelLeft + secondInset}px`;
       secondCard.style.top = `${secondTop}px`;
 
       const thirdTop = Math.round(secondTop + secondCard.offsetHeight);

@@ -92,8 +92,8 @@ export default function OurUSPs() {
       );
 
       const secondInset = Math.max(
-        22,
-        Math.round(content.clientWidth * 0.045)
+        42,
+        Math.round(content.clientWidth * 0.075)
       );
 
       secondCard.style.left = `${labelLeft + secondInset}px`;
@@ -332,9 +332,7 @@ export default function OurUSPs() {
                 className={`usp-reveal relative flex min-h-[350px] w-[88%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 text-white shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:min-h-[380px] sm:w-[82%] sm:max-w-[430px] sm:p-8 lg:min-h-[460px] lg:p-9 xl:min-h-[490px] xl:p-10 ${mobileAlignment} ${desktopPositions[index]} ${desktopWidths[index]}`}
                 style={{
                   clipPath:
-                    index % 2 === 0
-                      ? "polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 10%)"
-                      : "polygon(0 0, 90% 0, 100% 10%, 100% 100%, 0 100%)",
+                    "polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 10%)",
                 }}
               >
                 <div className="flex flex-col items-start">

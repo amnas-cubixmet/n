@@ -61,103 +61,93 @@ export default function FoundedOnAVision() {
 
           if (reduced) {
             gsap.set([label, text, visual, imageInner], {
-              autoAlpha: 1,
               x: 0,
               y: 0,
               xPercent: 0,
               yPercent: 0,
               scale: 1,
-              clearProps: "transform,clipPath,filter,willChange",
+              scaleX: 1,
+              clipPath: "inset(0% 0% 0% 0%)",
+              clearProps: "transform,clip-path,willChange",
             });
             return;
           }
 
           gsap.set(label, {
-            autoAlpha: 0,
-            x: mobile ? -12 : -20,
-            y: mobile ? 6 : 8,
+            scaleX: 0,
+            transformOrigin: "left center",
             force3D: true,
           });
 
           gsap.set(text, {
-            autoAlpha: 0,
-            y: mobile ? 34 : 52,
-            filter: mobile ? "blur(0px)" : "blur(6px)",
+            y: mobile ? 24 : 42,
+            clipPath: "inset(0% 0% 100% 0%)",
             force3D: true,
           });
 
           gsap.set(visual, {
-            autoAlpha: 0,
             y: mobile ? 20 : 34,
-            xPercent: mobile ? 2 : 4,
-            scale: mobile ? 0.99 : 0.985,
+            xPercent: mobile ? 1.5 : 3,
+            scale: mobile ? 0.992 : 0.982,
             transformOrigin: "center center",
             force3D: true,
           });
 
           gsap.set(imageInner, {
-            scale: mobile ? 1.025 : 1.045,
+            scale: mobile ? 1.035 : 1.055,
             yPercent: mobile ? 1 : 2,
             transformOrigin: "center center",
             force3D: true,
           });
 
           const timeline = gsap.timeline({
-            defaults: {
-              ease: "none",
-              overwrite: "auto",
-            },
             scrollTrigger: {
               trigger: section,
-              start: mobile ? "top 92%" : "top 88%",
-              end: mobile ? "top 38%" : "top 30%",
-              scrub: mobile ? 0.35 : 0.65,
+              start: mobile ? "top 92%" : "top 86%",
+              once: true,
               invalidateOnRefresh: true,
             },
           });
 
           timeline
-            .to(
-              label,
-              {
-                autoAlpha: 1,
-                x: 0,
-                y: 0,
-                duration: 0.26,
-              },
-              0
-            )
+            .to(label, {
+              scaleX: 1,
+              duration: mobile ? 0.34 : 0.48,
+              ease: "power4.out",
+            })
             .to(
               text,
               {
-                autoAlpha: 1,
                 y: 0,
-                filter: "blur(0px)",
-                duration: 0.5,
+                clipPath: "inset(0% 0% 0% 0%)",
+                duration: mobile ? 0.62 : 0.86,
+                ease: "expo.out",
+                force3D: true,
               },
-              0.12
+              0.08
             )
             .to(
               visual,
               {
-                autoAlpha: 1,
                 y: 0,
                 xPercent: 0,
                 scale: 1,
-                duration: 0.52,
+                duration: mobile ? 0.64 : 0.88,
+                ease: "expo.out",
                 force3D: true,
               },
-              0.1
+              mobile ? 0.12 : 0.16
             )
             .to(
               imageInner,
               {
                 scale: 1,
                 yPercent: 0,
-                duration: 0.66,
+                duration: mobile ? 0.78 : 1.02,
+                ease: "power3.out",
                 force3D: true,
               },
-              0.1
+              mobile ? 0.12 : 0.16
             );
 
           return () => {

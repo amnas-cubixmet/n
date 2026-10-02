@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useLayoutEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -58,7 +58,7 @@ export const usps: USP[] = [
 const CARD_LAYOUTS = [
   "lg:col-span-4 lg:col-start-7 lg:row-start-1",
   "lg:col-span-4 lg:col-start-2 lg:row-start-2 lg:-mt-[180px] xl:-mt-[220px]",
-  "lg:col-span-4 lg:col-start-8 lg:row-start-3 lg:-translate-y-1/4",
+  "lg:col-span-4 lg:col-start-8 lg:row-start-3",
   "lg:col-span-4 lg:col-start-3 lg:row-start-4 lg:-mt-[180px] xl:-mt-[220px]",
   "lg:col-span-4 lg:col-start-8 lg:row-start-5 lg:-mt-[120px] xl:-mt-[150px]",
 ];
@@ -75,6 +75,42 @@ export default function OurUSPs() {
   const containerRef = useRef<HTMLElement>(null);
   const shapeRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const cardRefs = useRef<(HTMLElement | null)[]>([]);
+
+  useLayoutEffect(() => {
+    const syncThirdCardOverlap = () => {
+      if (window.innerWidth < 1024) return;
+
+      const secondCard = cardRefs.current[1];
+      const thirdCard = cardRefs.current[2];
+      if (!secondCard || !thirdCard) return;
+
+      const overlap = Math.round(secondCard.offsetHeight * 0.25);
+      thirdCard.style.marginTop = `-${overlap}px`;
+    };
+
+    let frame = requestAnimationFrame(syncThirdCardOverlap);
+
+    const observer = new ResizeObserver(() => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(syncThirdCardOverlap);
+    });
+
+    cardRefs.current.slice(1, 3).forEach((card) => {
+      if (card) observer.observe(card);
+    });
+
+    window.addEventListener("resize", syncThirdCardOverlap, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+      window.removeEventListener("resize", syncThirdCardOverlap);
+
+      const thirdCard = cardRefs.current[2];
+      if (thirdCard) thirdCard.style.marginTop = "";
+    };
+  }, []);
 
   useGSAP(
     () => {
@@ -219,6 +255,9 @@ export default function OurUSPs() {
         {usps.map((item, index) => (
           <article
             key={item.id}
+            ref={(element) => {
+              cardRefs.current[index] = element;
+            }}
             className={`usp-reveal relative flex min-h-[350px] w-[88%] max-w-[430px] flex-col justify-between bg-[#151515] p-6 text-white shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:min-h-[380px] sm:p-8 lg:min-h-[440px] lg:w-full lg:max-w-none lg:p-9 xl:min-h-[470px] xl:p-10 ${MOBILE_ALIGNMENTS[index]} ${CARD_LAYOUTS[index]}`}
             style={{
               clipPath:

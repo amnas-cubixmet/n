@@ -177,7 +177,7 @@ export default function ContactSection() {
           formAreaRef.current,
           contactAreaRef.current,
           brandRef.current,
-        ].filter((item): item is HTMLElement => Boolean(item));
+        ].filter((item): item is HTMLDivElement => Boolean(item));
 
         const tweens = targets.map((target) => {
           gsap.set(target, {

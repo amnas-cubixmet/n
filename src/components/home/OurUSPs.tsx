@@ -149,7 +149,7 @@ export default function OurUSPs() {
       <div
         ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 hidden lg:block lg:will-change-transform"
+        className="pointer-events-none absolute inset-0 z-0 block opacity-70 lg:opacity-100 lg:will-change-transform"
       >
         <div
           className="absolute left-[18%] top-[2%] h-[18%] w-[82%] bg-[#151515]"
@@ -196,7 +196,7 @@ export default function OurUSPs() {
           </span>
         </header>
 
-        <div className="mt-6 flex w-full flex-col gap-5 sm:mt-8 sm:gap-6 lg:mt-0 lg:block">
+        <div className="mt-6 flex w-full flex-col gap-8 sm:mt-8 sm:gap-10 lg:mt-0 lg:block">
           {usps.map((item, index) => {
             const desktopPositions = [
               "lg:absolute lg:left-[0%] lg:top-[150px]",
@@ -209,7 +209,7 @@ export default function OurUSPs() {
             return (
               <article
                 key={item.id}
-                className={`usp-reveal relative flex min-h-[350px] w-[92%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.25)] sm:min-h-[380px] sm:w-[82%] sm:max-w-[420px] sm:p-8 lg:min-h-[420px] lg:p-9 xl:min-h-[440px] xl:p-10 ${desktopPositions[index]} ${index === 0 ? "lg:w-[34%] lg:max-w-[450px]" : index === 1 ? "lg:w-[32%] lg:max-w-[430px]" : index === 2 ? "lg:w-[30%] lg:max-w-[410px]" : index === 3 ? "lg:w-[33%] lg:max-w-[440px]" : "lg:w-[31%] lg:max-w-[425px]"}`}
+                className={`usp-reveal relative flex min-h-[350px] w-[88%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.25)] sm:min-h-[380px] sm:w-[80%] sm:max-w-[420px] sm:p-8 lg:min-h-[420px] lg:p-9 xl:min-h-[440px] xl:p-10 ${index === 0 ? "max-lg:mr-auto" : index === 1 ? "max-lg:ml-auto" : index === 2 ? "max-lg:mx-auto" : index === 3 ? "max-lg:mr-auto max-lg:ml-[4%]" : "max-lg:ml-auto"} ${desktopPositions[index]} ${index === 0 ? "lg:w-[34%] lg:max-w-[450px]" : index === 1 ? "lg:w-[32%] lg:max-w-[430px]" : index === 2 ? "lg:w-[30%] lg:max-w-[410px]" : index === 3 ? "lg:w-[33%] lg:max-w-[440px]" : "lg:w-[31%] lg:max-w-[425px]"}`}
                 style={{
                   clipPath:
                     index % 2 === 0

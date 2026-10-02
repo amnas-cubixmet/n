@@ -193,7 +193,7 @@ export default function StatementSection() {
           index === 4
             ? "text-[clamp(42px,min(11vw,15svh),84px)] md:text-[clamp(68px,min(16vw,20svh),220px)]"
             : "text-[clamp(34px,min(9vw,13svh),68px)] md:text-[clamp(60px,min(14vw,18svh),205px)]"
-        } motion-reduce:!text-[clamp(36px,8vw,90px)] text-white`}
+        } motion-reduce:!text-[clamp(36px,8vw,90px)] text-black`}
       >
         <span>{index === 4 ? renderWowLetters(false) : word}</span>
         <span
@@ -223,6 +223,15 @@ export default function StatementSection() {
         style={{
           clipPath:
             "polygon(0% 100%, 0% 48%, 14% 48%, 14% 74%, 28% 74%, 28% 36%, 43% 36%, 43% 60%, 57% 60%, 57% 42%, 72% 42%, 72% 70%, 86% 70%, 86% 30%, 100% 30%, 100% 100%)",
+        }}
+      />
+
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute left-0 top-[calc(100%-2px)] z-[5] h-[9svh] w-full bg-[#1677FF] md:h-[11dvh]"
+        style={{
+          clipPath:
+            "polygon(0% 0%, 100% 0%, 100% 34%, 88% 34%, 88% 58%, 72% 58%, 72% 42%, 57% 42%, 57% 68%, 42% 68%, 42% 48%, 27% 48%, 27% 72%, 13% 72%, 13% 44%, 0% 44%)",
         }}
       />
 

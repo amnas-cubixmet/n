@@ -65,16 +65,7 @@ export function ProjectCard({
           clipPath: "inset(0% 0% 100% 0%)",
         });
 
-        const timeline = gsap.timeline({
-          paused: true,
-          scrollTrigger: {
-            trigger: card,
-            start: mobile ? "top 93%" : "top 87%",
-            once: true,
-            invalidateOnRefresh: true,
-            onEnter: () => timeline.play(),
-          },
-        });
+        const timeline = gsap.timeline({ paused: true });
 
         timeline
           .to(imageReveal, {
@@ -105,8 +96,41 @@ export function ProjectCard({
             mobile ? 0.22 : 0.3
           );
 
+        if (mobile) {
+          const observer =
+            "IntersectionObserver" in window
+              ? new IntersectionObserver(
+                  ([entry]) => {
+                    if (!entry?.isIntersecting) return;
+                    timeline.play(0);
+                    observer.disconnect();
+                  },
+                  {
+                    threshold: 0.01,
+                    rootMargin: "0px 0px -5% 0px",
+                  }
+                )
+              : null;
+
+          if (observer) observer.observe(card);
+          else timeline.play(0);
+
+          return () => {
+            observer?.disconnect();
+            timeline.kill();
+          };
+        }
+
+        const trigger = ScrollTrigger.create({
+          trigger: card,
+          start: "top 87%",
+          once: true,
+          invalidateOnRefresh: true,
+          onEnter: () => timeline.play(0),
+        });
+
         return () => {
-          timeline.scrollTrigger?.kill();
+          trigger.kill();
           timeline.kill();
         };
       };

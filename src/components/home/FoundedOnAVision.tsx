@@ -31,15 +31,7 @@ export default function FoundedOnAVision() {
       const visual = visualRef.current;
       const imageInner = imageInnerRef.current;
 
-      if (
-        !section ||
-        !label ||
-        !text ||
-        !visual ||
-        !imageInner
-      ) {
-        return;
-      }
+      if (!section || !label || !text || !visual || !imageInner) return;
 
       const mm = gsap.matchMedia();
 
@@ -76,83 +68,92 @@ export default function FoundedOnAVision() {
           gsap.set(label, {
             scaleX: 0,
             transformOrigin: "left center",
-            force3D: true,
           });
 
           gsap.set(text, {
-            y: mobile ? 24 : 42,
+            y: mobile ? 32 : 52,
             clipPath: "inset(0% 0% 100% 0%)",
             force3D: true,
           });
 
           gsap.set(visual, {
-            y: mobile ? 20 : 34,
-            xPercent: mobile ? 1.5 : 3,
-            scale: mobile ? 0.992 : 0.982,
-            transformOrigin: "center center",
+            y: mobile ? 46 : 72,
+            scale: mobile ? 0.99 : 0.98,
+            clipPath: "inset(100% 0% 0% 0%)",
+            transformOrigin: "center bottom",
             force3D: true,
           });
 
           gsap.set(imageInner, {
-            scale: mobile ? 1.035 : 1.055,
-            yPercent: mobile ? 1 : 2,
+            yPercent: mobile ? 5 : 8,
+            scale: mobile ? 1.04 : 1.06,
             transformOrigin: "center center",
             force3D: true,
           });
 
-          const timeline = gsap.timeline({
+          const labelTween = gsap.to(label, {
+            scaleX: 1,
+            duration: mobile ? 0.38 : 0.52,
+            ease: "power4.out",
             scrollTrigger: {
-              trigger: section,
+              trigger: label,
+              start: mobile ? "top 94%" : "top 90%",
+              once: true,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          const textTween = gsap.to(text, {
+            y: 0,
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: mobile ? 0.72 : 0.96,
+            ease: "expo.out",
+            force3D: true,
+            scrollTrigger: {
+              trigger: text,
               start: mobile ? "top 92%" : "top 86%",
               once: true,
               invalidateOnRefresh: true,
             },
           });
 
-          timeline
-            .to(label, {
-              scaleX: 1,
-              duration: mobile ? 0.34 : 0.48,
-              ease: "power4.out",
+          const visualTimeline = gsap.timeline({
+            scrollTrigger: {
+              trigger: visual,
+              start: mobile ? "top 94%" : "top 88%",
+              once: true,
+              invalidateOnRefresh: true,
+            },
+          });
+
+          visualTimeline
+            .to(visual, {
+              y: 0,
+              scale: 1,
+              clipPath: "inset(0% 0% 0% 0%)",
+              duration: mobile ? 0.72 : 0.94,
+              ease: "expo.out",
+              force3D: true,
             })
-            .to(
-              text,
-              {
-                y: 0,
-                clipPath: "inset(0% 0% 0% 0%)",
-                duration: mobile ? 0.62 : 0.86,
-                ease: "expo.out",
-                force3D: true,
-              },
-              0.08
-            )
-            .to(
-              visual,
-              {
-                y: 0,
-                xPercent: 0,
-                scale: 1,
-                duration: mobile ? 0.64 : 0.88,
-                ease: "expo.out",
-                force3D: true,
-              },
-              mobile ? 0.12 : 0.16
-            )
             .to(
               imageInner,
               {
-                scale: 1,
                 yPercent: 0,
-                duration: mobile ? 0.78 : 1.02,
+                scale: 1,
+                duration: mobile ? 0.82 : 1.04,
                 ease: "power3.out",
                 force3D: true,
               },
-              mobile ? 0.12 : 0.16
+              0
             );
 
           return () => {
-            timeline.scrollTrigger?.kill();
-            timeline.kill();
+            labelTween.scrollTrigger?.kill();
+            labelTween.kill();
+            textTween.scrollTrigger?.kill();
+            textTween.kill();
+            visualTimeline.scrollTrigger?.kill();
+            visualTimeline.kill();
           };
         }
       );

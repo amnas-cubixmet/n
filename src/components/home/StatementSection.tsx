@@ -73,9 +73,7 @@ export default function StatementSection() {
           if (reduced) {
             gsap.set(heading, { autoAlpha: 1 });
             gsap.set([topStep, bottomStep], {
-              yPercent: 0,
-              scaleY: 1,
-              clearProps: "transform",
+              clearProps: "transform,height",
             });
             gsap.set(blackFillRefs.current, {
               clipPath: "inset(0 0% 0 0)",
@@ -94,18 +92,8 @@ export default function StatementSection() {
             clipPath: "inset(0 100% 0 0)",
           });
 
-          gsap.set(topStep, {
-            yPercent: 0,
-            scaleY: 1,
-            transformOrigin: "bottom center",
-            force3D: true,
-          });
-
-          gsap.set(bottomStep, {
-            yPercent: 0,
-            scaleY: 1,
-            transformOrigin: "top center",
-            force3D: true,
+          gsap.set([topStep, bottomStep], {
+            clearProps: "transform,height",
           });
 
           const wowBox = wow.getBoundingClientRect();
@@ -163,42 +151,34 @@ export default function StatementSection() {
             );
           });
 
-          // Top and bottom steps use the same scroll system.
-          // They gently retract toward the section edges so the protruding
-          // stepped gap becomes smaller without ever snapping or locking.
+          // Keep the exact stepped shape, but shrink the visible gap itself.
+          // Top stays anchored to the WOW section edge and contracts downward.
+          // Bottom stays anchored to the edge and contracts upward.
+          const collapsedStepHeight = () =>
+            Math.max(
+              phone ? 24 : tablet ? 30 : 36,
+              stage.clientHeight * (phone ? 0.045 : tablet ? 0.05 : 0.055)
+            );
+
           const edgeTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: section,
               start: phone ? "top 90%" : tablet ? "top 88%" : "top 86%",
               end: phone ? "bottom 12%" : tablet ? "bottom 14%" : "bottom 16%",
-              scrub: phone ? 0.18 : tablet ? 0.22 : 0.28,
+              scrub: phone ? 0.16 : tablet ? 0.2 : 0.24,
               invalidateOnRefresh: true,
             },
           });
 
-          edgeTimeline
-            .to(
-              topStep,
-              {
-                yPercent: phone ? 8 : tablet ? 10 : 12,
-                scaleY: phone ? 0.86 : tablet ? 0.82 : 0.78,
-                duration: 1,
-                ease: "none",
-                force3D: true,
-              },
-              0
-            )
-            .to(
-              bottomStep,
-              {
-                yPercent: phone ? -8 : tablet ? -10 : -12,
-                scaleY: phone ? 0.86 : tablet ? 0.82 : 0.78,
-                duration: 1,
-                ease: "none",
-                force3D: true,
-              },
-              0
-            );
+          edgeTimeline.to(
+            [topStep, bottomStep],
+            {
+              height: collapsedStepHeight,
+              duration: 1,
+              ease: "none",
+            },
+            0
+          );
 
           let frameA = 0;
           let frameB = 0;
@@ -217,7 +197,7 @@ export default function StatementSection() {
             edgeTimeline.scrollTrigger?.kill();
             edgeTimeline.kill();
             gsap.set([topStep, bottomStep], {
-              clearProps: "transform,will-change",
+              clearProps: "transform,height,will-change",
             });
             gsap.set(heading, { clearProps: "will-change" });
           };

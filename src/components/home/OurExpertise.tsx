@@ -27,9 +27,10 @@ export default function OurExpertise() {
 
       if (reduced) {
         gsap.set([label, copy], {
-          autoAlpha: 1,
           y: 0,
-          clearProps: "transform",
+          scaleX: 1,
+          clipPath: "inset(0% 0% 0% 0%)",
+          clearProps: "transform,clip-path",
         });
         return;
       }
@@ -38,14 +39,14 @@ export default function OurExpertise() {
 
       const buildReveal = (mobile: boolean) => {
         gsap.set(label, {
-          autoAlpha: 0,
-          y: mobile ? 6 : 8,
+          scaleX: 0,
+          transformOrigin: "left center",
           force3D: true,
         });
 
         gsap.set(copy, {
-          autoAlpha: 0,
-          y: mobile ? 14 : 24,
+          y: mobile ? 18 : 30,
+          clipPath: "inset(0% 0% 100% 0%)",
           force3D: true,
         });
 
@@ -64,16 +65,17 @@ export default function OurExpertise() {
 
         timeline
           .to(label, {
-            autoAlpha: 1,
-            y: 0,
-            duration: mobile ? 0.34 : 0.5,
+            scaleX: 1,
+            duration: mobile ? 0.34 : 0.48,
+            ease: "power4.out",
           })
           .to(
             copy,
             {
-              autoAlpha: 1,
               y: 0,
-              duration: mobile ? 0.5 : 0.66,
+              clipPath: "inset(0% 0% 0% 0%)",
+              duration: mobile ? 0.56 : 0.74,
+              ease: "expo.out",
             },
             mobile ? "-=0.12" : "-=0.18"
           );

@@ -25,6 +25,7 @@ export default function DeliverablesSection() {
   const mobileProgressFillRef = useRef<HTMLDivElement>(null);
 
   const mediaRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const descRef = useRef<HTMLDivElement>(null);
 
   const prevIndexRef = useRef(0);
@@ -65,7 +66,7 @@ export default function DeliverablesSection() {
 
     gsap.to(track, {
       x: targetX,
-      duration: 0.42,
+      duration: window.innerWidth < 1024 ? 0.3 : 0.42,
       ease: "power2.out",
       overwrite: "auto",
       force3D: true,
@@ -74,6 +75,17 @@ export default function DeliverablesSection() {
 
   useEffect(() => {
     updateMobileNavigation();
+
+    videoRefs.current.forEach((video, index) => {
+      if (!video) return;
+
+      if (index === activeIndex) {
+        const playPromise = video.play();
+        playPromise?.catch(() => undefined);
+      } else {
+        video.pause();
+      }
+    });
   }, [activeIndex, updateMobileNavigation]);
 
   useEffect(() => {
@@ -265,7 +277,7 @@ export default function DeliverablesSection() {
             Math.round(
               Math.max(320, sticky.clientHeight || window.innerHeight) *
                 (total + exitHold) *
-                (phone ? 0.58 : tablet ? 0.68 : 0.88)
+                (phone ? 0.68 : tablet ? 0.76 : 0.88)
             );
 
           const syncStageHeight = () => {
@@ -281,7 +293,7 @@ export default function DeliverablesSection() {
               end: () => `+=${getPinDistance()}`,
               pin: false,
               pinSpacing: false,
-              scrub: phone ? true : tablet ? 0.08 : 0.45,
+              scrub: phone ? 0.14 : tablet ? 0.18 : 0.45,
               anticipatePin: 0,
               invalidateOnRefresh: true,
               fastScrollEnd: false,
@@ -614,11 +626,15 @@ export default function DeliverablesSection() {
                       >
                         {item.mediaType === "video" ? (
                           <video
+                            ref={(element) => {
+                              videoRefs.current[index] = element;
+                            }}
                             src={item.media}
-                            autoPlay
+                            autoPlay={index === 0}
                             loop
                             muted
                             playsInline
+                            preload={index === 0 ? "auto" : "metadata"}
                             className="h-full w-full object-cover"
                           />
                         ) : isError || !item.media ? (

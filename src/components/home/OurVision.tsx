@@ -40,12 +40,17 @@ export default function OurVision() {
         });
 
         const timeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: mobile ? "top 92%" : "top 84%",
-            once: true,
-            invalidateOnRefresh: true,
-          },
+          paused: mobile,
+          ...(mobile
+            ? {}
+            : {
+                scrollTrigger: {
+                  trigger: containerRef.current,
+                  start: "top 84%",
+                  once: true,
+                  invalidateOnRefresh: true,
+                },
+              }),
         });
 
         timeline
@@ -66,8 +71,34 @@ export default function OurVision() {
             mobile ? 0.08 : 0.12
           );
 
+        if (!mobile) {
+          return () => {
+            timeline.scrollTrigger?.kill();
+            timeline.kill();
+          };
+        }
+
+        const target = containerRef.current;
+        const observer =
+          target && "IntersectionObserver" in window
+            ? new IntersectionObserver(
+                ([entry]) => {
+                  if (!entry?.isIntersecting) return;
+                  timeline.play(0);
+                  observer.disconnect();
+                },
+                {
+                  threshold: 0.01,
+                  rootMargin: "0px 0px -6% 0px",
+                }
+              )
+            : null;
+
+        if (observer && target) observer.observe(target);
+        else timeline.play(0);
+
         return () => {
-          timeline.scrollTrigger?.kill();
+          observer?.disconnect();
           timeline.kill();
         };
       };

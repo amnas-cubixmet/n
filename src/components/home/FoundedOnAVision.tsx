@@ -92,38 +92,53 @@ export default function FoundedOnAVision() {
           });
 
           const labelTween = gsap.to(label, {
+            paused: mobile,
             scaleX: 1,
             duration: mobile ? 0.38 : 0.52,
             ease: "power4.out",
-            scrollTrigger: {
-              trigger: label,
-              start: mobile ? "top 94%" : "top 90%",
-              once: true,
-              invalidateOnRefresh: true,
-            },
+            ...(mobile
+              ? {}
+              : {
+                  scrollTrigger: {
+                    trigger: label,
+                    start: "top 90%",
+                    once: true,
+                    invalidateOnRefresh: true,
+                  },
+                }),
           });
 
           const textTween = gsap.to(text, {
+            paused: mobile,
             y: 0,
             clipPath: "inset(0% 0% 0% 0%)",
             duration: mobile ? 0.72 : 0.96,
             ease: "expo.out",
             force3D: true,
-            scrollTrigger: {
-              trigger: text,
-              start: mobile ? "top 92%" : "top 86%",
-              once: true,
-              invalidateOnRefresh: true,
-            },
+            ...(mobile
+              ? {}
+              : {
+                  scrollTrigger: {
+                    trigger: text,
+                    start: "top 86%",
+                    once: true,
+                    invalidateOnRefresh: true,
+                  },
+                }),
           });
 
           const visualTimeline = gsap.timeline({
-            scrollTrigger: {
-              trigger: visual,
-              start: mobile ? "top 94%" : "top 88%",
-              once: true,
-              invalidateOnRefresh: true,
-            },
+            paused: mobile,
+            ...(mobile
+              ? {}
+              : {
+                  scrollTrigger: {
+                    trigger: visual,
+                    start: "top 88%",
+                    once: true,
+                    invalidateOnRefresh: true,
+                  },
+                }),
           });
 
           visualTimeline
@@ -147,7 +162,46 @@ export default function FoundedOnAVision() {
               0
             );
 
+          const observers: IntersectionObserver[] = [];
+
+          if (mobile) {
+            const observeOnce = (
+              target: Element,
+              play: () => void,
+              rootMargin: string
+            ) => {
+              if (!("IntersectionObserver" in window)) {
+                play();
+                return;
+              }
+
+              const observer = new IntersectionObserver(
+                ([entry]) => {
+                  if (!entry?.isIntersecting) return;
+                  play();
+                  observer.disconnect();
+                },
+                {
+                  threshold: 0.01,
+                  rootMargin,
+                }
+              );
+
+              observer.observe(target);
+              observers.push(observer);
+            };
+
+            observeOnce(label, () => labelTween.play(0), "0px 0px -4% 0px");
+            observeOnce(text, () => textTween.play(0), "0px 0px -6% 0px");
+            observeOnce(
+              visual,
+              () => visualTimeline.play(0),
+              "0px 0px -5% 0px"
+            );
+          }
+
           return () => {
+            observers.forEach((observer) => observer.disconnect());
             labelTween.scrollTrigger?.kill();
             labelTween.kill();
             textTween.scrollTrigger?.kill();

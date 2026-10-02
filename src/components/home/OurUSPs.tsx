@@ -204,8 +204,8 @@ export default function OurUSPs() {
         ref={contentRef}
         className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-8 px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 pr-[max(1.1rem,env(safe-area-inset-right))] sm:gap-10 sm:px-8 sm:pb-24 lg:block lg:min-h-[clamp(2500px,190vw,2920px)] lg:px-12 lg:pb-32 xl:px-16"
       >
-        <header className="usp-reveal pt-0 lg:absolute lg:left-0 lg:top-[clamp(80px,6.5vw,104px)]">
-          <span className="inline-block bg-white px-[3px] py-[2px] font-mono text-xs font-bold uppercase leading-none tracking-[0.06em] text-black sm:text-sm">
+        <header className="usp-reveal relative z-20 w-full pt-4 sm:pt-5 lg:absolute lg:inset-x-0 lg:top-6 lg:mx-auto lg:max-w-[1300px] lg:px-20 lg:pt-0">
+          <span className="inline-block bg-white px-2 py-1 font-mono text-sm font-bold uppercase leading-none tracking-[0.06em] text-black sm:text-base lg:text-[16px]">
             OUR USPs
           </span>
         </header>

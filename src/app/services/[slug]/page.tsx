@@ -1,4 +1,3 @@
-import React from "react";
 import { notFound } from "next/navigation";
 import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 import Image from "next/image";

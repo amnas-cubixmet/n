@@ -46,20 +46,6 @@ export default function RootLayout({
       lang="en"
       className={`${montserrat.variable} ${poppins.variable} ${pixelifySans.variable} h-full antialiased`}
     >
-      <head>
-        <link
-          rel="preload"
-          href="/images/brand/northframe-icon.webp"
-          as="image"
-          type="image/webp"
-        />
-        <link
-          rel="preload"
-          href="/images/brand/northframe-logo.webp"
-          as="image"
-          type="image/webp"
-        />
-      </head>
       <body className="min-h-full flex flex-col bg-[#05070B] text-white">
         <PageTransitionProvider>
           <MotionRuntime />

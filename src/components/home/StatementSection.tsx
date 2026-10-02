@@ -12,6 +12,18 @@ if (typeof window !== "undefined") {
 const words = ["WE", "MAKE", "BRANDS", "GO", "WOW"];
 const extraOs = Array.from({ length: 20 }, (_, index) => index);
 
+const TOP_STEP_OPEN =
+  "polygon(0% 100%, 0% 48%, 14% 48%, 14% 74%, 28% 74%, 28% 36%, 43% 36%, 43% 60%, 57% 60%, 57% 42%, 72% 42%, 72% 70%, 86% 70%, 86% 30%, 100% 30%, 100% 100%)";
+
+const TOP_STEP_TIGHT =
+  "polygon(0% 100%, 0% 40%, 14% 40%, 14% 45%, 28% 45%, 28% 34%, 43% 34%, 43% 42%, 57% 42%, 57% 36%, 72% 36%, 72% 44%, 86% 44%, 86% 30%, 100% 30%, 100% 100%)";
+
+const BOTTOM_STEP_OPEN =
+  "polygon(0% 0%, 0% 52%, 14% 52%, 14% 26%, 28% 26%, 28% 64%, 43% 64%, 43% 40%, 57% 40%, 57% 58%, 72% 58%, 72% 30%, 86% 30%, 86% 70%, 100% 70%, 100% 0%)";
+
+const BOTTOM_STEP_TIGHT =
+  "polygon(0% 0%, 0% 60%, 14% 60%, 14% 55%, 28% 55%, 28% 66%, 43% 66%, 43% 58%, 57% 58%, 57% 64%, 72% 64%, 72% 56%, 86% 56%, 86% 70%, 100% 70%, 100% 0%)";
+
 export default function StatementSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
@@ -72,7 +84,14 @@ export default function StatementSection() {
 
           if (reduced) {
             gsap.set(heading, { autoAlpha: 1 });
-            gsap.set([topStep, bottomStep], {
+            gsap.set(topStep, {
+              clipPath: TOP_STEP_OPEN,
+              WebkitClipPath: TOP_STEP_OPEN,
+              clearProps: "transform,height",
+            });
+            gsap.set(bottomStep, {
+              clipPath: BOTTOM_STEP_OPEN,
+              WebkitClipPath: BOTTOM_STEP_OPEN,
               clearProps: "transform,height",
             });
             gsap.set(blackFillRefs.current, {
@@ -92,20 +111,19 @@ export default function StatementSection() {
             clipPath: "inset(0 100% 0 0)",
           });
 
-          gsap.set([topStep, bottomStep], {
+          gsap.set(topStep, {
+            clipPath: TOP_STEP_OPEN,
+            WebkitClipPath: TOP_STEP_OPEN,
             clearProps: "transform,height",
+            force3D: true,
           });
 
-          if (phone || tablet) {
-            gsap.set(topStep, {
-              transformOrigin: "bottom center",
-              force3D: true,
-            });
-            gsap.set(bottomStep, {
-              transformOrigin: "top center",
-              force3D: true,
-            });
-          }
+          gsap.set(bottomStep, {
+            clipPath: BOTTOM_STEP_OPEN,
+            WebkitClipPath: BOTTOM_STEP_OPEN,
+            clearProps: "transform,height",
+            force3D: true,
+          });
 
           const wowBox = wow.getBoundingClientRect();
           const blackOs = blackORefs.current as HTMLSpanElement[];
@@ -162,47 +180,42 @@ export default function StatementSection() {
             );
           });
 
-          // Keep the exact stepped shape, but shrink the visible gap itself.
-          // Top stays anchored to the WOW section edge and contracts downward.
-          // Bottom stays anchored to the edge and contracts upward.
-          const collapsedStepHeight = () =>
-            Math.max(
-              phone ? 24 : tablet ? 30 : 36,
-              stage.clientHeight * (phone ? 0.045 : tablet ? 0.05 : 0.055)
-            );
-
+          // Keep the blue band at the same height and position.
+          // Only the stepped notch depth becomes shallower as the section scrolls.
+          // This avoids the previous whole-shape shrink/scale effect.
           const edgeTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: section,
-              start: phone ? "top 90%" : tablet ? "top 88%" : "top 86%",
-              end: phone ? "bottom 12%" : tablet ? "bottom 14%" : "bottom 16%",
-              scrub: phone ? 0.16 : tablet ? 0.2 : 0.24,
+              start: phone ? "top 94%" : tablet ? "top 92%" : "top 90%",
+              end: phone ? "top 30%" : tablet ? "top 28%" : "top 24%",
+              scrub: phone ? 0.12 : tablet ? 0.16 : 0.2,
               invalidateOnRefresh: true,
             },
           });
 
-          if (phone || tablet) {
-            edgeTimeline.to(
-              [topStep, bottomStep],
+          edgeTimeline
+            .to(
+              topStep,
               {
-                scaleY: phone ? 0.28 : 0.32,
+                clipPath: TOP_STEP_TIGHT,
+                WebkitClipPath: TOP_STEP_TIGHT,
+                duration: 1,
+                ease: "none",
+                force3D: true,
+              },
+              0
+            )
+            .to(
+              bottomStep,
+              {
+                clipPath: BOTTOM_STEP_TIGHT,
+                WebkitClipPath: BOTTOM_STEP_TIGHT,
                 duration: 1,
                 ease: "none",
                 force3D: true,
               },
               0
             );
-          } else {
-            edgeTimeline.to(
-              [topStep, bottomStep],
-              {
-                height: collapsedStepHeight,
-                duration: 1,
-                ease: "none",
-              },
-              0
-            );
-          }
 
           let frameA = 0;
           let frameB = 0;
@@ -221,7 +234,8 @@ export default function StatementSection() {
             edgeTimeline.scrollTrigger?.kill();
             edgeTimeline.kill();
             gsap.set([topStep, bottomStep], {
-              clearProps: "transform,height,will-change",
+              clearProps:
+                "transform,height,will-change,clip-path,-webkit-clip-path",
             });
             gsap.set(heading, { clearProps: "will-change" });
           };
@@ -293,8 +307,7 @@ export default function StatementSection() {
         aria-hidden="true"
         className="pointer-events-none absolute bottom-[calc(100%-2px)] left-0 z-[20] h-[18svh] w-full bg-[#1677FF] will-change-transform md:h-[20dvh]"
         style={{
-          clipPath:
-            "polygon(0% 100%, 0% 48%, 14% 48%, 14% 74%, 28% 74%, 28% 36%, 43% 36%, 43% 60%, 57% 60%, 57% 42%, 72% 42%, 72% 70%, 86% 70%, 86% 30%, 100% 30%, 100% 100%)",
+          clipPath: TOP_STEP_OPEN,
         }}
       />
 
@@ -303,8 +316,7 @@ export default function StatementSection() {
         aria-hidden="true"
         className="pointer-events-none absolute left-0 top-[calc(100%-2px)] z-[20] h-[18svh] w-full bg-[#1677FF] will-change-transform md:h-[20dvh]"
         style={{
-          clipPath:
-            "polygon(0% 0%, 0% 52%, 14% 52%, 14% 26%, 28% 26%, 28% 64%, 43% 64%, 43% 40%, 57% 40%, 57% 58%, 72% 58%, 72% 30%, 86% 30%, 86% 70%, 100% 70%, 100% 0%)",
+          clipPath: BOTTOM_STEP_OPEN,
         }}
       />
 

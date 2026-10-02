@@ -165,7 +165,7 @@ export default function OurUSPs() {
         <div className="absolute right-[9%] top-[20%] h-[28%] w-[18%] bg-[#1E1E1E]" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1500px] px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-16 pr-[max(1.1rem,env(safe-area-inset-right))] sm:px-8 sm:pb-24 sm:pt-20 lg:px-12 lg:pb-32 lg:pt-24 xl:px-16">
+      <div className="relative z-10 mx-auto w-full max-w-[1300px] px-6 pb-[max(5rem,env(safe-area-inset-bottom))] pt-16 sm:px-10 sm:pb-24 sm:pt-20 md:px-16 lg:px-20 lg:pb-32 lg:pt-24">
         <header className="usp-reveal mt-2 mb-10 sm:mt-3 sm:mb-14 lg:mt-4 lg:mb-16">
           <div className="flex flex-col items-start gap-[2px]">
             <span className="inline-block bg-white px-2 py-[2px] font-mono text-[clamp(18px,5vw,28px)] font-bold uppercase leading-none tracking-[0.04em] text-black">

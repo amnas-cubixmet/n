@@ -255,7 +255,7 @@ export default function DeliverablesSection() {
           const desktop = Boolean(conditions.desktop);
           const reduced = Boolean(conditions.reduced);
           const compact = phone || tablet;
-          const exitHold = desktop ? 0.9 : tablet ? 0.55 : 0.4;
+          const exitHold = desktop ? 0.9 : tablet ? 0.32 : 0.22;
 
           if (reduced) {
             master.style.height = "";
@@ -277,7 +277,7 @@ export default function DeliverablesSection() {
             Math.round(
               Math.max(320, sticky.clientHeight || window.innerHeight) *
                 (total + exitHold) *
-                (phone ? 0.68 : tablet ? 0.76 : 0.88)
+                (phone ? 0.46 : tablet ? 0.56 : 0.88)
             );
 
           const syncStageHeight = () => {
@@ -293,7 +293,7 @@ export default function DeliverablesSection() {
               end: () => `+=${getPinDistance()}`,
               pin: false,
               pinSpacing: false,
-              scrub: phone ? 0.14 : tablet ? 0.18 : 0.45,
+              scrub: phone ? true : tablet ? 0.08 : 0.45,
               anticipatePin: 0,
               invalidateOnRefresh: true,
               fastScrollEnd: false,

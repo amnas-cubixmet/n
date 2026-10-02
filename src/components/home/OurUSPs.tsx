@@ -322,7 +322,7 @@ export default function OurUSPs() {
               <article
                 key={item.id}
                 data-usp-card
-                className={`usp-reveal relative flex min-h-[380px] w-[88%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 text-white shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:min-h-[410px] sm:w-[82%] sm:max-w-[430px] sm:p-8 lg:min-h-[500px] lg:p-9 xl:min-h-[530px] xl:p-10 ${mobileAlignment} ${desktopPositions[index]} ${desktopWidths[index]}`}
+                className={`usp-reveal relative flex min-h-[350px] w-[88%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 text-white shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:min-h-[380px] sm:w-[82%] sm:max-w-[430px] sm:p-8 lg:min-h-[460px] lg:p-9 xl:min-h-[490px] xl:p-10 ${mobileAlignment} ${desktopPositions[index]} ${desktopWidths[index]}`}
                 style={{
                   clipPath:
                     index % 2 === 0

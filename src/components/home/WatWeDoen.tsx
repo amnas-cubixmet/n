@@ -149,7 +149,21 @@ export default function WatWeDoen() {
               });
             }
 
-            if (index === 0) {
+            const mobileText = panel.querySelectorAll<HTMLElement>(
+              ".service-mobile-text"
+            );
+
+            if (mobile && !reduced) {
+              gsap.set(mobileText, {
+                y: phone ? 18 : 22,
+                clipPath: "inset(0% 0% 100% 0%)",
+                WebkitClipPath: "inset(0% 0% 100% 0%)",
+                force3D: true,
+                willChange: "transform,clip-path",
+              });
+            }
+
+            if (index === 0 && !mobile) {
               const introText = panel.querySelectorAll(".first-service-intro");
               gsap.set(introText, {
                 y: reduced ? 0 : 22,
@@ -185,6 +199,9 @@ export default function WatWeDoen() {
 
             if (index === 0) {
               const introText = panel.querySelectorAll(".first-service-intro");
+              const mobileText = panel.querySelectorAll<HTMLElement>(
+                ".service-mobile-text"
+              );
 
               if (!reduced) {
                 if (image) {
@@ -200,17 +217,33 @@ export default function WatWeDoen() {
                   );
                 }
 
-                timeline.to(
-                  introText,
-                  {
-                    y: 0,
-                    autoAlpha: 1,
-                    duration: 0.48,
-                    ease: "power3.out",
-                    force3D: true,
-                  },
-                  0.08
-                );
+                if (mobile) {
+                  timeline.to(
+                    mobileText,
+                    {
+                      y: 0,
+                      clipPath: "inset(0% 0% 0% 0%)",
+                      WebkitClipPath: "inset(0% 0% 0% 0%)",
+                      duration: phone ? 0.42 : 0.5,
+                      stagger: phone ? 0.045 : 0.055,
+                      ease: "power3.out",
+                      force3D: true,
+                    },
+                    0.06
+                  );
+                } else {
+                  timeline.to(
+                    introText,
+                    {
+                      y: 0,
+                      autoAlpha: 1,
+                      duration: 0.48,
+                      ease: "power3.out",
+                      force3D: true,
+                    },
+                    0.08
+                  );
+                }
               }
 
               // Reserve the first scroll movement for the BRAND IDENTITY intro.
@@ -244,6 +277,26 @@ export default function WatWeDoen() {
                   force3D: true,
                 },
                 segmentStart
+              );
+            }
+
+            if (!reduced && mobile) {
+              const mobileText = panel.querySelectorAll<HTMLElement>(
+                ".service-mobile-text"
+              );
+
+              timeline.to(
+                mobileText,
+                {
+                  y: 0,
+                  clipPath: "inset(0% 0% 0% 0%)",
+                  WebkitClipPath: "inset(0% 0% 0% 0%)",
+                  duration: phone ? 0.4 : 0.48,
+                  stagger: phone ? 0.04 : 0.05,
+                  ease: "power3.out",
+                  force3D: true,
+                },
+                segmentStart + revealDuration * 0.26
               );
             }
 
@@ -292,6 +345,16 @@ export default function WatWeDoen() {
                 gsap.set(panel, {
                   clearProps:
                     "will-change,transform,opacity,visibility,clip-path,-webkit-clip-path",
+                });
+              }
+
+              const mobileText = panel?.querySelectorAll<HTMLElement>(
+                ".service-mobile-text"
+              );
+              if (mobileText?.length) {
+                gsap.set(mobileText, {
+                  clearProps:
+                    "will-change,transform,clip-path,-webkit-clip-path",
                 });
               }
 
@@ -363,7 +426,7 @@ export default function WatWeDoen() {
               <div
                 className={`absolute left-[max(1.1rem,env(safe-area-inset-left))] right-[max(4.5rem,env(safe-area-inset-right))] top-[max(1.1rem,env(safe-area-inset-top))] z-20 flex items-start gap-4 pointer-events-none md:left-8 md:right-24 md:top-[max(2rem,env(safe-area-inset-top))] md:gap-12 ${index === 0 ? "first-service-intro" : ""}`}
               >
-                <span className="shrink-0 bg-black px-1.5 py-0.5 font-montserrat text-[9px] font-semibold uppercase leading-none tracking-[0.04em] text-white sm:text-[10px] md:text-[16px]">
+                <span className="service-mobile-text shrink-0 bg-black px-1.5 py-0.5 font-montserrat text-[9px] font-semibold uppercase leading-none tracking-[0.04em] text-white sm:text-[10px] md:text-[16px]">
                   WHAT WE DO
                 </span>
 
@@ -371,7 +434,7 @@ export default function WatWeDoen() {
                   {service.items.map((item) => (
                     <span
                       key={item}
-                      className="inline-block bg-black px-1 py-[1px] font-montserrat text-[8px] font-medium uppercase leading-none tracking-[0.03em] text-white sm:text-[9px] md:text-[16px]"
+                      className="service-mobile-text inline-block bg-black px-1 py-[1px] font-montserrat text-[8px] font-medium uppercase leading-none tracking-[0.03em] text-white sm:text-[9px] md:text-[16px]"
                     >
                       {item}
                     </span>
@@ -390,7 +453,7 @@ export default function WatWeDoen() {
                     {service.displayLines.map((line) => (
                       <span
                         key={line}
-                        className="block w-fit bg-black px-[0.06em] py-[0.01em] leading-[0.94] text-white lg:leading-[0.96]"
+                        className="service-mobile-text block w-fit bg-black px-[0.06em] py-[0.01em] leading-[0.94] text-white lg:leading-[0.96]"
                       >
                         {line}
                       </span>
@@ -399,7 +462,7 @@ export default function WatWeDoen() {
                 </div>
 
                 <div
-                  className={`absolute bottom-[max(1rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] inline-flex items-center gap-2 bg-black px-2 py-1 font-pixel text-[10px] tracking-wider text-white md:left-auto md:right-8 md:bottom-[max(2rem,env(safe-area-inset-bottom))] md:font-mono md:text-xs lg:right-12 ${index === 0 ? "first-service-intro" : ""}`}
+                  className={`service-mobile-text absolute bottom-[max(1rem,env(safe-area-inset-bottom))] left-[max(1.1rem,env(safe-area-inset-left))] inline-flex items-center gap-2 bg-black px-2 py-1 font-pixel text-[10px] tracking-wider text-white md:left-auto md:right-8 md:bottom-[max(2rem,env(safe-area-inset-bottom))] md:font-mono md:text-xs lg:right-12 ${index === 0 ? "first-service-intro" : ""}`}
                 >
                   <span>{String(index + 1).padStart(2, "0")}</span>
                   <span className="relative h-[2px] w-7 overflow-hidden bg-white/30">

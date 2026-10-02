@@ -94,8 +94,10 @@ export default function OurUSPs() {
       secondCard.style.left = `${labelLeft}px`;
       secondCard.style.top = `${secondTop}px`;
 
+      const thirdTop = Math.round(secondTop + secondCard.offsetHeight);
       thirdCard.style.left = "50%";
       thirdCard.style.right = "auto";
+      thirdCard.style.top = `${thirdTop}px`;
     };
 
     let frame = requestAnimationFrame(() => {

@@ -1,4 +1,3 @@
-import React from "react";
 import WorkPageClient from "./WorkPageClient";
 
 export const metadata = {

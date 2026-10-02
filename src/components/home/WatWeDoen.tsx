@@ -94,14 +94,14 @@ export default function WatWeDoen() {
           const mobile = phone || tablet;
           const reduced = Boolean(conditions.reduced);
           const panelCount = services.length;
-          const revealDuration = phone ? 0.62 : tablet ? 0.7 : 0.86;
+          const revealDuration = phone ? 0.68 : tablet ? 0.74 : 0.86;
           const introSegment = reduced ? 0.2 : phone ? 1.05 : tablet ? 1.1 : 1.2;
 
           const getScrollDistance = () =>
             Math.round(
               sticky.clientHeight *
                 (panelCount + introSegment - 1) *
-                (reduced ? 0.72 : phone ? 0.74 : tablet ? 0.86 : 1.22)
+                (reduced ? 0.72 : phone ? 0.82 : tablet ? 0.92 : 1.22)
             );
 
           const syncMobileStageHeight = () => {
@@ -184,7 +184,7 @@ export default function WatWeDoen() {
               end: () => `+=${getScrollDistance()}`,
               pin: mobile ? false : sticky,
               pinSpacing: mobile ? false : true,
-              scrub: reduced ? true : phone ? true : tablet ? 0.08 : 0.5,
+              scrub: reduced ? true : phone ? 0.14 : tablet ? 0.18 : 0.5,
               anticipatePin: mobile ? 0 : 1,
               invalidateOnRefresh: true,
               fastScrollEnd: false,
@@ -277,7 +277,7 @@ export default function WatWeDoen() {
               timeline.to(
                 image,
                 {
-                  scale: phone ? 1.012 : tablet ? 1.018 : 1.095,
+                  scale: phone ? 1.022 : tablet ? 1.032 : 1.095,
                   duration: 1,
                   ease: "none",
                   force3D: true,

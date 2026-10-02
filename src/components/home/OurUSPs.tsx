@@ -99,7 +99,10 @@ export default function OurUSPs() {
       secondCard.style.left = `${labelLeft + secondInset}px`;
       secondCard.style.top = `${secondTop}px`;
 
-      const thirdTop = Math.round(secondTop + secondCard.offsetHeight);
+      const thirdTop = Math.round(
+        secondTop + secondCard.offsetHeight * 0.75
+      );
+
       thirdCard.style.left = "50%";
       thirdCard.style.right = "auto";
       thirdCard.style.top = `${thirdTop}px`;

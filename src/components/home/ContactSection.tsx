@@ -43,10 +43,13 @@ interface FormErrors {
   services?: string;
   name?: string;
   phone?: string;
+  email?: string;
 }
 
 export default function ContactSection() {
   const sectionRef = useRef<HTMLElement>(null);
+  const backgroundRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const formAreaRef = useRef<HTMLDivElement>(null);
@@ -58,10 +61,12 @@ export default function ContactSection() {
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [projectDetails, setProjectDetails] = useState("");
+  const [website, setWebsite] = useState("");
 
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionNotice, setSubmissionNotice] = useState<string | null>(null);
+  const [submissionState, setSubmissionState] = useState<"success" | "error" | null>(null);
   const [videoError, setVideoError] = useState(false);
   const [isReducedMotion, setIsReducedMotion] = useState(() =>
     typeof window !== "undefined"
@@ -154,11 +159,16 @@ export default function ContactSection() {
       if (
         typeof window === "undefined" ||
         !sectionRef.current ||
+        !backgroundRef.current ||
+        !contentRef.current ||
         isReducedMotion
       ) {
         return;
       }
 
+      const section = sectionRef.current;
+      const background = backgroundRef.current;
+      const content = contentRef.current;
       const mm = gsap.matchMedia();
 
       const buildReveal = (mobile: boolean) => {
@@ -167,58 +177,86 @@ export default function ContactSection() {
           formAreaRef.current,
           contactAreaRef.current,
           brandRef.current,
-        ].filter(Boolean);
+        ].filter((item): item is HTMLElement => Boolean(item));
 
-        gsap.set(targets, {
-          autoAlpha: 0,
-          y: mobile ? 10 : 14,
-          force3D: true,
-        });
+        const tweens = targets.map((target) => {
+          gsap.set(target, {
+            y: mobile ? 18 : 30,
+            clipPath: "inset(0% 0% 100% 0%)",
+            force3D: true,
+          });
 
-        const timeline = gsap.timeline({
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: mobile ? "top 92%" : "top 84%",
-            once: true,
-            invalidateOnRefresh: true,
-          },
-          defaults: {
-            ease: "power3.out",
-            overwrite: "auto",
-          },
-        });
-
-        timeline
-          .to(introRef.current, {
-            autoAlpha: 1,
+          return gsap.to(target, {
             y: 0,
-            duration: mobile ? 0.34 : 0.42,
-          })
-          .to(
-            [formAreaRef.current, contactAreaRef.current],
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: mobile ? 0.4 : 0.48,
-              stagger: mobile ? 0.04 : 0.06,
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: mobile ? 0.58 : 0.78,
+            ease: "expo.out",
+            force3D: true,
+            scrollTrigger: {
+              trigger: target,
+              start: mobile ? "top 94%" : "top 88%",
+              once: true,
+              invalidateOnRefresh: true,
             },
-            mobile ? "-=0.18" : "-=0.24"
-          )
-          .to(
-            brandRef.current,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: mobile ? 0.42 : 0.5,
-            },
-            mobile ? "-=0.22" : "-=0.28"
-          );
+          });
+        });
 
-        return () => timeline.kill();
+        return () => {
+          tweens.forEach((tween) => {
+            tween.scrollTrigger?.kill();
+            tween.kill();
+          });
+        };
       };
 
       mm.add("(max-width: 768px)", () => buildReveal(true));
       mm.add("(min-width: 769px)", () => buildReveal(false));
+
+      mm.add(
+        "(min-width: 1024px) and (hover: hover) and (pointer: fine)",
+        () => {
+          const backgroundTween = gsap.fromTo(
+            background,
+            { yPercent: -0.12 },
+            {
+              yPercent: 0.12,
+              ease: "none",
+              force3D: true,
+              scrollTrigger: {
+                trigger: section,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 6.5,
+                invalidateOnRefresh: true,
+              },
+            }
+          );
+
+          const contentTween = gsap.fromTo(
+            content,
+            { yPercent: 0.35 },
+            {
+              yPercent: -2.4,
+              ease: "none",
+              force3D: true,
+              scrollTrigger: {
+                trigger: section,
+                start: "top bottom",
+                end: "bottom top",
+                scrub: 0.9,
+                invalidateOnRefresh: true,
+              },
+            }
+          );
+
+          return () => {
+            backgroundTween.scrollTrigger?.kill();
+            backgroundTween.kill();
+            contentTween.scrollTrigger?.kill();
+            contentTween.kill();
+          };
+        }
+      );
 
       return () => mm.revert();
     },
@@ -261,6 +299,10 @@ export default function ContactSection() {
       nextErrors.phone = "Please enter a valid phone number.";
     }
 
+    if (email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      nextErrors.email = "Please enter a valid email address.";
+    }
+
     setErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
   };
@@ -268,17 +310,60 @@ export default function ContactSection() {
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     setSubmissionNotice(null);
+    setSubmissionState(null);
 
     if (!validate()) return;
 
     setIsSubmitting(true);
 
-    window.setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          services: selectedServices,
+          name: name.trim(),
+          phone: phone.trim(),
+          email: email.trim(),
+          projectDetails: projectDetails.trim(),
+          website,
+        }),
+      });
+
+      const result = (await response.json()) as {
+        ok?: boolean;
+        message?: string;
+      };
+
+      if (!response.ok || !result.ok) {
+        throw new Error(
+          result.message || "Unable to send your enquiry right now."
+        );
+      }
+
+      setSubmissionState("success");
       setSubmissionNotice(
-        "Notice: Form input validated successfully. We will get back to you shortly."
+        "Enquiry sent successfully. We’ll get back to you shortly."
       );
-    }, 800);
+      setSelectedServices([]);
+      setName("");
+      setPhone("");
+      setEmail("");
+      setProjectDetails("");
+      setWebsite("");
+      setErrors({});
+    } catch (error) {
+      setSubmissionState("error");
+      setSubmissionNotice(
+        error instanceof Error
+          ? error.message
+          : "Unable to send your enquiry right now. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -288,6 +373,7 @@ export default function ContactSection() {
       className="relative z-30 m-0 min-h-[100svh] w-full overflow-hidden bg-[#040507] px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-16 pr-[max(1.1rem,env(safe-area-inset-right))] text-white pointer-events-auto sm:px-10 sm:pt-20 lg:px-16 lg:pt-24"
     >
       <div
+        ref={backgroundRef}
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       >
@@ -319,7 +405,7 @@ export default function ContactSection() {
         <div className="absolute bottom-[12%] right-[6%] h-[22%] w-[30%] bg-white/[0.025]" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1400px]">
+      <div ref={contentRef} className="relative z-10 mx-auto w-full max-w-[1400px]">
         <div
           ref={introRef}
           className="mb-12 w-full max-w-[1050px] sm:mb-16"
@@ -352,6 +438,19 @@ export default function ContactSection() {
         <div className="grid grid-cols-1 items-start gap-12 border-b border-white/10 pb-14 lg:grid-cols-12 lg:gap-16 lg:pb-16">
           <div ref={formAreaRef} className="lg:col-span-7">
             <form onSubmit={handleSubmit} noValidate className="space-y-8">
+              <div className="absolute -left-[9999px] top-auto h-px w-px overflow-hidden" aria-hidden="true">
+                <label htmlFor="contact-website">Website</label>
+                <input
+                  id="contact-website"
+                  name="website"
+                  type="text"
+                  tabIndex={-1}
+                  autoComplete="off"
+                  value={website}
+                  onChange={(event) => setWebsite(event.target.value)}
+                />
+              </div>
+
               <div>
                 <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
                   {SERVICE_CHIPS.map((chip) => {
@@ -445,10 +544,25 @@ export default function ContactSection() {
                       id="contact-email"
                       type="email"
                       value={email}
-                      onChange={(event) => setEmail(event.target.value)}
+                      onChange={(event) => {
+                        setEmail(event.target.value);
+                        if (errors.email) {
+                          setErrors((previous) => ({
+                            ...previous,
+                            email: undefined,
+                          }));
+                        }
+                      }}
                       placeholder="Email ID"
-                      className="w-full rounded-none border-b border-white/20 bg-transparent py-3.5 text-base text-white outline-none transition-colors placeholder:text-white/25 focus:border-[#1677FF]"
+                      className={`w-full rounded-none border-b bg-transparent py-3.5 text-base text-white outline-none transition-colors placeholder:text-white/25 focus:border-[#1677FF] ${
+                        errors.email ? "border-red-500" : "border-white/20"
+                      }`}
                     />
+                    {errors.email && (
+                      <span className="mt-1 font-mono text-xs text-red-400">
+                        {errors.email}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -467,7 +581,15 @@ export default function ContactSection() {
               </div>
 
               {submissionNotice && (
-                <div className="border border-[#1677FF]/50 bg-[#1677FF]/15 p-4 font-sans text-xs leading-relaxed text-white sm:text-sm">
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className={`border p-4 font-sans text-xs leading-relaxed text-white sm:text-sm ${
+                    submissionState === "error"
+                      ? "border-red-500/50 bg-red-500/10"
+                      : "border-[#1677FF]/50 bg-[#1677FF]/15"
+                  }`}
+                >
                   {submissionNotice}
                 </div>
               )}

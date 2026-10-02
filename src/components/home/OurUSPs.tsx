@@ -282,24 +282,22 @@ export default function OurUSPs() {
           </article>
         ))}
 
-        <div className="usp-reveal order-last flex max-w-[390px] flex-col items-start text-left lg:col-span-2 lg:col-start-1 lg:row-start-5 lg:self-end lg:pb-10">
-          <h4 className="mb-3 font-sans text-[clamp(21px,5.5vw,28px)] font-semibold leading-tight tracking-tight text-white lg:text-[28px]">
-            Ready to make your mark?
+        <div className="usp-reveal order-last flex max-w-[390px] flex-col items-start gap-3 text-left lg:col-span-2 lg:col-start-1 lg:row-start-5 lg:self-end lg:pb-10">
+          <h4 className="font-montserrat text-xl font-semibold leading-snug tracking-tight text-white sm:text-2xl">
+            Think your brand belongs here too?
           </h4>
 
-          <p className="mb-5 font-sans text-[clamp(14px,3.8vw,17px)] leading-relaxed text-white/60">
-            Let’s create something that gets noticed, remembered, and talked
-            about.
+          <p className="font-sans text-sm leading-relaxed text-white/60 sm:text-base">
+            Let’s get to know your brand, your ideas, and what you’re aiming for.
+            We’re here to turn good ideas into something that makes people say “wow.”
           </p>
 
           <TransitionLink
             href="/#contact"
-            className="group inline-flex min-h-[44px] items-center gap-2 border-b border-white/30 py-1 font-sans text-base font-medium tracking-wide text-white transition-colors duration-200 lg:hover:border-white"
+            className="group inline-flex min-h-10 items-center gap-2 border-b border-white/30 py-1 font-sans text-sm font-medium text-white transition-colors lg:hover:border-[#1677FF] lg:hover:text-[#1677FF]"
           >
             <span>Let’s talk</span>
-            <span className="inline-block transition-transform duration-200 lg:group-hover:translate-x-1">
-              →
-            </span>
+            <span className="transition-transform duration-200 lg:group-hover:translate-x-1">→</span>
           </TransitionLink>
         </div>
       </div>

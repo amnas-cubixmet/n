@@ -13,7 +13,6 @@ import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
-  { label: "Work", href: "/work" },
   { label: "About", href: "/#intro" },
   { label: "Who We Are", href: "/#founded-on-a-vision" },
   { label: "Let's talk →", href: "/#contact", isAccent: true },

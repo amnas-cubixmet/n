@@ -58,7 +58,7 @@ export const usps: USP[] = [
 const CARD_LAYOUTS = [
   "lg:col-span-4 lg:col-start-7 lg:row-start-1",
   "lg:col-span-4 lg:col-start-2 lg:row-start-2 lg:-mt-[180px] xl:-mt-[220px]",
-  "lg:col-span-4 lg:col-start-8 lg:row-start-3 lg:mt-[90px] xl:mt-[120px]",
+  "lg:col-span-4 lg:col-start-8 lg:row-start-3 lg:-translate-y-1/4",
   "lg:col-span-4 lg:col-start-3 lg:row-start-4 lg:-mt-[180px] xl:-mt-[220px]",
   "lg:col-span-4 lg:col-start-8 lg:row-start-5 lg:-mt-[120px] xl:-mt-[150px]",
 ];

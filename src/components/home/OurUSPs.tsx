@@ -149,7 +149,7 @@ export default function OurUSPs() {
     <section
       id="our-usps"
       ref={containerRef}
-      className="relative z-30 m-0 w-full overflow-hidden bg-black text-white pointer-events-auto"
+      className="relative z-30 mt-10 w-full overflow-hidden bg-black text-white pointer-events-auto sm:mt-14 lg:mt-20"
     >
       <div
         ref={shapeRef}

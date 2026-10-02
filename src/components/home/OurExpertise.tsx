@@ -51,16 +51,21 @@ export default function OurExpertise() {
         });
 
         const timeline = gsap.timeline({
+          paused: mobile,
           defaults: {
             ease: "power3.out",
             overwrite: "auto",
           },
-          scrollTrigger: {
-            trigger: container,
-            start: mobile ? "top 90%" : "top 82%",
-            once: true,
-            invalidateOnRefresh: true,
-          },
+          ...(mobile
+            ? {}
+            : {
+                scrollTrigger: {
+                  trigger: container,
+                  start: "top 82%",
+                  once: true,
+                  invalidateOnRefresh: true,
+                },
+              }),
         });
 
         timeline
@@ -80,7 +85,35 @@ export default function OurExpertise() {
             mobile ? "-=0.12" : "-=0.18"
           );
 
-        return () => timeline.kill();
+        if (!mobile) {
+          return () => {
+            timeline.scrollTrigger?.kill();
+            timeline.kill();
+          };
+        }
+
+        const observer =
+          "IntersectionObserver" in window
+            ? new IntersectionObserver(
+                ([entry]) => {
+                  if (!entry?.isIntersecting) return;
+                  timeline.play(0);
+                  observer.disconnect();
+                },
+                {
+                  threshold: 0.01,
+                  rootMargin: "0px 0px -6% 0px",
+                }
+              )
+            : null;
+
+        if (observer) observer.observe(container);
+        else timeline.play(0);
+
+        return () => {
+          observer?.disconnect();
+          timeline.kill();
+        };
       };
 
       mm.add("(max-width: 768px)", () => buildReveal(true));

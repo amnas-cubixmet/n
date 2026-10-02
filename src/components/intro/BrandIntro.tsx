@@ -25,7 +25,7 @@ interface SavedScrollStyles {
 let hasPlayedInRuntime = false;
 
 export default function BrandIntro({ onComplete }: BrandIntroProps) {
-  const [isVisible, setIsVisible] = useState(() => !hasPlayedInRuntime);
+  const [isVisible, setIsVisible] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const markRef = useRef<HTMLDivElement>(null);
   const coverRef = useRef<HTMLDivElement>(null);
@@ -195,7 +195,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
           className="block h-full w-full object-contain"
         />
       </div>
-      <div ref={coverRef} aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 bg-[#1677FF] opacity-0 will-change-opacity" />
+      <div ref={coverRef} aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 bg-[#1677FF] opacity-0 will-change-[opacity]" />
     </div>
   );
 }

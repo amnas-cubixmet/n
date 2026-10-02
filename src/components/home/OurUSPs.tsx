@@ -152,35 +152,35 @@ export default function OurUSPs() {
         className="pointer-events-none absolute inset-0 z-0 hidden lg:block lg:will-change-transform"
       >
         <div
-          className="absolute left-[20%] top-[2%] h-[18%] w-[80%] bg-[#151515]"
+          className="absolute left-[18%] top-[2%] h-[18%] w-[82%] bg-[#151515]"
           style={{
             clipPath:
               "polygon(8% 0, 100% 0, 100% 100%, 0 100%, 0 18%)",
           }}
         />
         <div
-          className="absolute left-0 top-[23%] h-[19%] w-[78%] bg-[#171717]"
+          className="absolute left-0 top-[22%] h-[20%] w-[74%] bg-[#171717]"
           style={{
             clipPath:
               "polygon(0 0, 86% 0, 100% 18%, 100% 100%, 0 100%)",
           }}
         />
         <div
-          className="absolute right-0 top-[43%] h-[18%] w-[66%] bg-[#181818]"
+          className="absolute right-0 top-[40%] h-[19%] w-[70%] bg-[#181818]"
           style={{
             clipPath:
               "polygon(12% 0, 100% 0, 100% 100%, 0 100%, 0 18%)",
           }}
         />
         <div
-          className="absolute left-[13%] top-[63%] h-[18%] w-[70%] bg-[#171717]"
+          className="absolute left-[8%] top-[60%] h-[19%] w-[72%] bg-[#171717]"
           style={{
             clipPath:
               "polygon(0 0, 78% 0, 100% 20%, 100% 100%, 16% 100%, 0 82%)",
           }}
         />
         <div
-          className="absolute right-0 top-[80%] h-[15%] w-[52%] bg-[#151515]"
+          className="absolute right-0 top-[79%] h-[16%] w-[58%] bg-[#151515]"
           style={{
             clipPath:
               "polygon(16% 0, 100% 0, 100% 100%, 0 100%, 0 22%)",
@@ -189,32 +189,27 @@ export default function OurUSPs() {
 
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1300px] px-6 pb-[max(5rem,env(safe-area-inset-bottom))] sm:px-10 sm:pb-24 md:px-16 lg:min-h-[3100px] lg:px-20 lg:pb-40 xl:min-h-[3300px]">
-        <header className="usp-reveal pt-0 lg:absolute lg:left-20 lg:top-12">
-          <div className="flex flex-col items-start gap-[2px]">
-            <span className="inline-block bg-white p-0 font-mono text-[clamp(18px,5vw,28px)] font-bold uppercase leading-none tracking-[0.04em] text-black">
-              OUR
-            </span>
-            <span className="inline-block bg-white p-0 font-mono text-[clamp(18px,5vw,28px)] font-bold uppercase leading-none tracking-[0.04em] text-black">
-              USPs
-            </span>
-          </div>
+      <div className="relative z-10 mx-auto w-full max-w-[1300px] px-6 pb-[max(5rem,env(safe-area-inset-bottom))] sm:px-10 sm:pb-24 md:px-16 lg:min-h-[2420px] lg:px-20 lg:pb-40 xl:min-h-[2580px]">
+        <header className="usp-reveal pt-0 lg:absolute lg:left-0 lg:top-10">
+          <span className="inline-block bg-white p-0 font-mono text-xs font-bold uppercase leading-none tracking-[0.06em] text-black sm:text-sm">
+            OUR USPs
+          </span>
         </header>
 
         <div className="mt-6 flex w-full flex-col gap-5 sm:mt-8 sm:gap-6 lg:mt-0 lg:block">
           {usps.map((item, index) => {
             const desktopPositions = [
-              "lg:absolute lg:right-[2%] lg:top-[110px]",
-              "lg:absolute lg:left-[3%] lg:top-[700px]",
-              "lg:absolute lg:right-[11%] lg:top-[1290px]",
-              "lg:absolute lg:left-[15%] lg:top-[1880px]",
-              "lg:absolute lg:right-[4%] lg:top-[2470px]",
+              "lg:absolute lg:left-[0%] lg:top-[150px]",
+              "lg:absolute lg:right-[4%] lg:top-[390px]",
+              "lg:absolute lg:right-[18%] lg:top-[820px]",
+              "lg:absolute lg:left-[2%] lg:top-[1260px]",
+              "lg:absolute lg:right-[9%] lg:top-[1710px]",
             ];
 
             return (
               <article
                 key={item.id}
-                className={`usp-reveal relative flex min-h-[350px] w-[92%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.25)] sm:min-h-[380px] sm:w-[82%] sm:max-w-[420px] sm:p-8 lg:min-h-[420px] lg:w-[33%] lg:max-w-[440px] lg:p-9 xl:min-h-[440px] xl:max-w-[460px] xl:p-10 ${desktopPositions[index]} ${index % 2 === 0 ? "ml-auto" : "mr-auto"}`}
+                className={`usp-reveal relative flex min-h-[350px] w-[92%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.25)] sm:min-h-[380px] sm:w-[82%] sm:max-w-[420px] sm:p-8 lg:min-h-[420px] lg:p-9 xl:min-h-[440px] xl:p-10 ${desktopPositions[index]} ${index === 0 ? "lg:w-[34%] lg:max-w-[450px]" : index === 1 ? "lg:w-[32%] lg:max-w-[430px]" : index === 2 ? "lg:w-[30%] lg:max-w-[410px]" : index === 3 ? "lg:w-[33%] lg:max-w-[440px]" : "lg:w-[31%] lg:max-w-[425px]"}`}
                 style={{
                   clipPath:
                     index % 2 === 0
@@ -242,7 +237,7 @@ export default function OurUSPs() {
           })}
         </div>
 
-        <div className="usp-reveal mt-10 flex w-full max-w-[430px] flex-col items-start text-left sm:mt-12 lg:absolute lg:bottom-20 lg:left-20 lg:mt-0 lg:max-w-[390px]">
+        <div className="usp-reveal mt-10 flex w-full max-w-[430px] flex-col items-start text-left sm:mt-12 lg:absolute lg:bottom-16 lg:left-0 lg:mt-0 lg:max-w-[390px]">
           <h4 className="mb-3 font-sans text-[clamp(21px,5.5vw,28px)] font-semibold leading-tight tracking-tight text-white lg:text-[28px]">
             Ready to make your mark?
           </h4>

@@ -37,15 +37,6 @@ export default function DeliverablesSection() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
 
-  useEffect(() => {
-    deliverables.forEach((item) => {
-      if (item.media && item.mediaType === "image") {
-        const image = new window.Image();
-        image.src = item.media;
-      }
-    });
-  }, []);
-
   const handleImageError = (id: number) => {
     setImageErrors((previous) => ({
       ...previous,

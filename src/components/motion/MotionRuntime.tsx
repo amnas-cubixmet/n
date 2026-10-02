@@ -88,8 +88,18 @@ export default function MotionRuntime() {
     // again after their top/bottom browser chrome settles. One delayed refresh
     // keeps all ScrollTrigger start/end measurements aligned without reacting
     // continuously to toolbar height changes.
-    delayedRefreshTimer = window.setTimeout(refreshAfterPaint, 420);
-    lateRefreshTimer = window.setTimeout(refreshAfterPaint, 900);
+    const mobileLike = window.matchMedia(
+      "(max-width: 768px), (pointer: coarse)"
+    ).matches;
+
+    if (mobileLike) {
+      // One settle pass is enough on touch browsers. BrandIntro performs the
+      // final refresh again when its overlay hands control to the page.
+      lateRefreshTimer = window.setTimeout(refreshAfterPaint, 720);
+    } else {
+      delayedRefreshTimer = window.setTimeout(refreshAfterPaint, 420);
+      lateRefreshTimer = window.setTimeout(refreshAfterPaint, 900);
+    }
 
     return () => {
       active = false;

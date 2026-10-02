@@ -1,21 +1,41 @@
 "use client";
 
 import React, { useState } from "react";
+import dynamic from "next/dynamic";
 import BrandIntro from "@/components/intro/BrandIntro";
 import Header from "@/components/navigation/Header";
-import Shared3DBackground from "@/components/hero/Shared3DBackground";
 import Hero from "@/components/hero/Hero";
 import IntroSection from "@/components/intro/IntroSection";
 import WatWeDoen from "@/components/home/WatWeDoen";
 import OurExpertise from "@/components/home/OurExpertise";
-import SelectedWork from "@/components/home/SelectedWork";
-import DeliverablesSection from "@/components/home/DeliverablesSection";
-import StatementSection from "@/components/home/StatementSection";
-import OurVision from "@/components/home/OurVision";
-import OurUSPs from "@/components/home/OurUSPs";
-import FoundedOnAVision from "@/components/home/FoundedOnAVision";
-import ContactSection from "@/components/home/ContactSection";
 import FloatingContactActions from "@/components/navigation/FloatingContactActions";
+
+const Shared3DBackground = dynamic(
+  () => import("@/components/hero/Shared3DBackground"),
+  { ssr: false }
+);
+
+const SelectedWork = dynamic(
+  () => import("@/components/home/SelectedWork")
+);
+const DeliverablesSection = dynamic(
+  () => import("@/components/home/DeliverablesSection")
+);
+const StatementSection = dynamic(
+  () => import("@/components/home/StatementSection")
+);
+const OurVision = dynamic(
+  () => import("@/components/home/OurVision")
+);
+const OurUSPs = dynamic(
+  () => import("@/components/home/OurUSPs")
+);
+const FoundedOnAVision = dynamic(
+  () => import("@/components/home/FoundedOnAVision")
+);
+const ContactSection = dynamic(
+  () => import("@/components/home/ContactSection")
+);
 
 export default function Home() {
   // Keep the first server and client renders identical. BrandIntro runs on a
@@ -55,7 +75,7 @@ export default function Home() {
             <IntroSection />
           </section>
         </div>
-        
+
         {/* WAT WE DOEN */}
         <div className="relative w-full pointer-events-auto bg-[#030508]">
           <WatWeDoen />

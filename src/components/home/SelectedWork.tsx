@@ -19,7 +19,7 @@ export default function SelectedWork() {
   useLayoutEffect(() => {
     const section = sectionRef.current;
     const content = contentRef.current;
-    if (!section || !content) return;
+    if (!section || !content || window.innerWidth < 1024) return;
 
     const syncThirdCard = () => {
       if (window.innerWidth < 1024) return;

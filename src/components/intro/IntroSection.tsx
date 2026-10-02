@@ -96,8 +96,8 @@ export default function IntroSection() {
             play();
           },
           {
-            threshold: 0.06,
-            rootMargin: "0px 0px -8% 0px",
+            threshold: 0.01,
+            rootMargin: "0px 0px 0px 0px",
           }
         );
 
@@ -110,8 +110,8 @@ export default function IntroSection() {
 
             const rect = container.getBoundingClientRect();
             if (
-              rect.top < window.innerHeight * 0.92 &&
-              rect.bottom > window.innerHeight * 0.08
+              rect.top < window.innerHeight * 0.98 &&
+              rect.bottom > window.innerHeight * 0.02
             ) {
               observer.disconnect();
               play();

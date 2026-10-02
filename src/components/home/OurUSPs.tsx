@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -55,108 +55,26 @@ export const usps: USP[] = [
   },
 ];
 
+const CARD_LAYOUTS = [
+  "lg:col-span-4 lg:col-start-7 lg:row-start-1",
+  "lg:col-span-4 lg:col-start-2 lg:row-start-2 lg:-mt-[180px] xl:-mt-[220px]",
+  "lg:col-span-4 lg:col-start-8 lg:row-start-3 lg:mt-[90px] xl:mt-[120px]",
+  "lg:col-span-4 lg:col-start-3 lg:row-start-4 lg:-mt-[180px] xl:-mt-[220px]",
+  "lg:col-span-4 lg:col-start-8 lg:row-start-5 lg:-mt-[120px] xl:-mt-[150px]",
+];
+
+const MOBILE_ALIGNMENTS = [
+  "mr-auto",
+  "ml-auto",
+  "mx-auto",
+  "mr-auto",
+  "ml-auto",
+];
+
 export default function OurUSPs() {
   const containerRef = useRef<HTMLElement>(null);
   const shapeRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const labelLineRef = useRef<HTMLDivElement>(null);
-
-  useLayoutEffect(() => {
-    const content = contentRef.current;
-    const labelLine = labelLineRef.current;
-    if (!content || !labelLine) return;
-
-    const syncDesktopLayout = () => {
-      if (window.innerWidth < 1024) return;
-
-      const cards = Array.from(
-        content.querySelectorAll<HTMLElement>("[data-usp-card]")
-      );
-
-      const firstCard = cards[0];
-      const secondCard = cards[1];
-      const thirdCard = cards[2];
-
-      if (!firstCard || !secondCard || !thirdCard) return;
-
-      const contentRect = content.getBoundingClientRect();
-      const labelRect = labelLine.getBoundingClientRect();
-
-      const labelLeft = Math.max(
-        0,
-        Math.round(labelRect.left - contentRect.left)
-      );
-
-      const firstLeft = Math.round(
-        (content.clientWidth - firstCard.offsetWidth) / 2
-      );
-
-      firstCard.style.left = `${firstLeft}px`;
-      firstCard.style.right = "auto";
-
-      const secondTop = Math.round(
-        firstCard.offsetTop + firstCard.offsetHeight * 0.5
-      );
-
-      const secondInset = Math.max(
-        42,
-        Math.round(content.clientWidth * 0.075)
-      );
-
-      secondCard.style.left = `${labelLeft + secondInset}px`;
-      secondCard.style.top = `${secondTop}px`;
-
-      const thirdTop = Math.round(
-        secondTop + secondCard.offsetHeight * 0.85
-      );
-
-      const thirdLeft = Math.round(
-        firstCard.offsetLeft + firstCard.offsetWidth * 0.5
-      );
-
-      thirdCard.style.left = `${thirdLeft}px`;
-      thirdCard.style.right = "auto";
-      thirdCard.style.top = `${thirdTop}px`;
-    };
-
-    let frame = requestAnimationFrame(() => {
-      syncDesktopLayout();
-      ScrollTrigger.refresh();
-    });
-
-    const observer = new ResizeObserver(() => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(() => {
-        syncDesktopLayout();
-        ScrollTrigger.refresh();
-      });
-    });
-
-    observer.observe(content);
-    if (labelLineRef.current) observer.observe(labelLineRef.current);
-
-    const cards = Array.from(
-      content.querySelectorAll<HTMLElement>("[data-usp-card]")
-    );
-    cards.slice(0, 3).forEach((card) => observer.observe(card));
-
-    window.addEventListener("resize", syncDesktopLayout, { passive: true });
-
-    return () => {
-      cancelAnimationFrame(frame);
-      observer.disconnect();
-      window.removeEventListener("resize", syncDesktopLayout);
-
-      const cards = Array.from(
-        content.querySelectorAll<HTMLElement>("[data-usp-card]")
-      );
-      cards.forEach((card) => {
-        card.style.left = "";
-        card.style.right = "";
-        card.style.top = "";
-      });
-    };
-  }, []);
 
   useGSAP(
     () => {
@@ -173,7 +91,7 @@ export default function OurUSPs() {
 
       const mm = gsap.matchMedia();
 
-      const buildCardReveals = (
+      const buildReveals = (
         y: number,
         duration: number,
         start: string
@@ -186,10 +104,7 @@ export default function OurUSPs() {
         reveals.forEach((element) => {
           gsap.fromTo(
             element,
-            {
-              autoAlpha: 0,
-              y,
-            },
+            { autoAlpha: 0, y },
             {
               autoAlpha: 1,
               y: 0,
@@ -208,15 +123,15 @@ export default function OurUSPs() {
       };
 
       mm.add("(max-width: 768px)", () =>
-        buildCardReveals(12, 0.44, "top 94%")
+        buildReveals(12, 0.44, "top 94%")
       );
 
       mm.add("(min-width: 769px) and (max-width: 1023px)", () =>
-        buildCardReveals(16, 0.5, "top 92%")
+        buildReveals(16, 0.5, "top 92%")
       );
 
       mm.add("(min-width: 1024px)", () => {
-        buildCardReveals(28, 0.62, "top 88%");
+        buildReveals(28, 0.62, "top 88%");
 
         const shape = shapeRef.current;
         const content = contentRef.current;
@@ -224,16 +139,16 @@ export default function OurUSPs() {
 
         const shapeTween = gsap.fromTo(
           shape,
-          { yPercent: -0.45 },
+          { yPercent: 3 },
           {
-            yPercent: 0.75,
+            yPercent: -3,
             ease: "none",
             force3D: true,
             scrollTrigger: {
               trigger: section,
               start: "top bottom",
               end: "bottom top",
-              scrub: 3.2,
+              scrub: 2.8,
               invalidateOnRefresh: true,
             },
           }
@@ -241,16 +156,16 @@ export default function OurUSPs() {
 
         const contentTween = gsap.fromTo(
           content,
-          { yPercent: 0.35 },
+          { yPercent: 0.15 },
           {
-            yPercent: -1.15,
+            yPercent: -0.45,
             ease: "none",
             force3D: true,
             scrollTrigger: {
               trigger: section,
               start: "top bottom",
               end: "bottom top",
-              scrub: 1.7,
+              scrub: 2,
               invalidateOnRefresh: true,
             },
           }
@@ -273,108 +188,67 @@ export default function OurUSPs() {
     <section
       id="our-usps"
       ref={containerRef}
-      className="relative isolate z-30 m-0 w-full overflow-hidden bg-black text-white pointer-events-auto"
+      className="relative isolate z-30 w-full overflow-hidden bg-black pb-20 text-white pointer-events-auto sm:pb-24 lg:pb-32"
     >
       <div
         ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 block opacity-80 lg:opacity-100 lg:will-change-transform"
+        className="pointer-events-none absolute left-1/2 top-1/2 z-0 w-[190%] -translate-x-1/2 -translate-y-1/2 opacity-10 sm:w-[160%] lg:left-auto lg:right-[-12%] lg:top-[8%] lg:w-[118%] lg:translate-x-0 lg:translate-y-0"
       >
-        <div className="absolute left-1/2 top-1/2 aspect-[341/220] w-[145%] -translate-x-1/2 -translate-y-1/2 sm:w-[120%] lg:w-[80%] xl:w-[74%]">
-          <div
-            className="absolute inset-0 bg-[#171717]"
-            style={{
-              clipPath:
-                "polygon(64.22% 0%, 50.44% 0%, 32.26% 21.36%, 13.49% 0%, 0% 0%, 31.96% 99.55%)",
-            }}
-          />
-          <div
-            className="absolute inset-0 bg-[#171717]"
-            style={{
-              clipPath:
-                "polygon(67.74% 0%, 35.19% 99.55%, 48.97% 99.55%, 67.45% 77.73%, 85.92% 99.55%, 99.71% 99.55%)",
-            }}
-          />
-        </div>
+        <svg
+          viewBox="0 0 1620 1080"
+          className="h-auto w-full fill-white"
+          aria-hidden="true"
+        >
+          <path d="m1350 0-270 270h540V0Z" />
+          <path d="M270 270 0 540v540h270l270-270H270V540h540l270-270Z" />
+          <path d="m540 810 270-270h540v270Z" />
+        </svg>
       </div>
 
       <div
         ref={contentRef}
-        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-8 px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 pr-[max(1.1rem,env(safe-area-inset-right))] sm:gap-10 sm:px-8 sm:pb-24 lg:block lg:min-h-[clamp(2860px,210vw,3220px)] lg:px-12 lg:pb-32 xl:px-16"
+        className="relative z-10 mx-auto grid w-full max-w-[1500px] grid-cols-1 gap-y-10 px-6 sm:gap-y-12 sm:px-10 md:px-16 lg:grid-cols-12 lg:gap-x-8 lg:gap-y-0 lg:px-20"
       >
-        <header className="usp-reveal relative z-20 w-full px-6 sm:px-10 md:px-16 lg:absolute lg:inset-x-0 lg:top-4 lg:px-20">
-          <div ref={labelLineRef} className="mx-auto w-full max-w-[1300px]">
-            <span className="inline-block bg-white px-2 py-1 font-mono text-[18px] font-bold uppercase leading-none tracking-[0.06em] text-black sm:text-[20px] lg:text-[22px]">
-              OUR USPs
-            </span>
-          </div>
+        <header className="usp-reveal lg:col-span-2 lg:col-start-1 lg:row-start-1">
+          <span className="inline-block bg-white px-2 py-1 font-mono text-[18px] font-bold uppercase leading-none tracking-[0.06em] text-black sm:text-[20px] lg:text-[22px]">
+            OUR USPs
+          </span>
         </header>
 
-        <div className="mt-8 flex w-full flex-col gap-10 sm:mt-10 sm:gap-12 lg:mt-0 lg:block">
-          {usps.map((item, index) => {
-            const desktopPositions = [
-              "lg:absolute lg:left-[59%] lg:top-[clamp(120px,9.6vw,160px)]",
-              "lg:absolute lg:top-[clamp(420px,34vw,560px)]",
-              "lg:absolute lg:left-1/2 lg:right-auto lg:top-[clamp(980px,76vw,1220px)]",
-              "lg:absolute lg:left-[8%] lg:top-[clamp(1580px,120vw,1920px)]",
-              "lg:absolute lg:left-[59%] lg:top-[clamp(2100px,158vw,2520px)]",
-            ];
+        {usps.map((item, index) => (
+          <article
+            key={item.id}
+            className={`usp-reveal relative flex min-h-[350px] w-[88%] max-w-[430px] flex-col justify-between bg-[#151515] p-6 text-white shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:min-h-[380px] sm:p-8 lg:min-h-[440px] lg:w-full lg:max-w-none lg:p-9 xl:min-h-[470px] xl:p-10 ${MOBILE_ALIGNMENTS[index]} ${CARD_LAYOUTS[index]}`}
+            style={{
+              clipPath:
+                "polygon(10% 0,100% 0,100% 100%,0 100%,0 10%)",
+            }}
+          >
+            <div className="flex flex-col items-start">
+              <div className="mb-5 inline-block bg-[#1677FF] px-2.5 py-1 font-mono text-[11px] font-bold leading-none text-black sm:mb-6 sm:text-xs">
+                {item.number}
+              </div>
 
-            const desktopWidths = [
-              "lg:w-[32%] lg:max-w-[455px]",
-              "lg:w-[32%] lg:max-w-[455px]",
-              "lg:w-[32%] lg:max-w-[455px]",
-              "lg:w-[32%] lg:max-w-[455px]",
-              "lg:w-[32%] lg:max-w-[455px]",
-            ];
+              <h3 className="whitespace-pre-line text-left font-pixel text-[clamp(22px,6vw,30px)] font-bold uppercase leading-[1.04] tracking-[-0.02em] text-white lg:text-[clamp(24px,2vw,32px)]">
+                {item.title}
+              </h3>
+            </div>
 
-            const mobileAlignment =
-              index === 0
-                ? "mr-auto"
-                : index === 1
-                  ? "ml-auto"
-                  : index === 2
-                    ? "mx-auto"
-                    : index === 3
-                      ? "mr-auto"
-                      : "ml-auto";
+            <div className="mt-8 border-t border-white/10 pt-5 sm:pt-6">
+              <p className="text-left font-sans text-[clamp(13px,3.7vw,16px)] leading-relaxed text-white/60 lg:text-base">
+                {item.description}
+              </p>
+            </div>
+          </article>
+        ))}
 
-            return (
-              <article
-                key={item.id}
-                data-usp-card
-                className={`usp-reveal relative flex min-h-[350px] w-[88%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 text-white shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:min-h-[380px] sm:w-[82%] sm:max-w-[430px] sm:p-8 lg:min-h-[460px] lg:p-9 xl:min-h-[490px] xl:p-10 ${mobileAlignment} ${desktopPositions[index]} ${desktopWidths[index]}`}
-                style={{
-                  clipPath:
-                    "polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 10%)",
-                }}
-              >
-                <div className="flex flex-col items-start">
-                  <div className="mb-5 inline-block bg-[#1677FF] px-2.5 py-1 font-mono text-[11px] font-bold leading-none text-black sm:mb-6 sm:text-xs">
-                    {item.number}
-                  </div>
-
-                  <h3 className="whitespace-pre-line text-left font-pixel text-[clamp(22px,6vw,30px)] font-bold uppercase leading-[1.04] tracking-[-0.02em] text-white lg:text-[clamp(24px,2vw,32px)]">
-                    {item.title}
-                  </h3>
-                </div>
-
-                <div className="mt-8 border-t border-white/10 pt-5 sm:pt-6">
-                  <p className="text-left font-sans text-[clamp(13px,3.7vw,16px)] font-normal leading-relaxed text-white/70 lg:text-base">
-                    {item.description}
-                  </p>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-
-        <div className="usp-reveal mt-10 flex w-full max-w-[430px] flex-col items-start text-left sm:mt-12 lg:absolute lg:bottom-20 lg:left-0 lg:mt-0 lg:max-w-[390px]">
+        <div className="usp-reveal order-last flex max-w-[390px] flex-col items-start text-left lg:col-span-2 lg:col-start-1 lg:row-start-5 lg:self-end lg:pb-10">
           <h4 className="mb-3 font-sans text-[clamp(21px,5.5vw,28px)] font-semibold leading-tight tracking-tight text-white lg:text-[28px]">
             Ready to make your mark?
           </h4>
 
-          <p className="mb-5 font-sans text-[clamp(14px,3.8vw,17px)] font-normal leading-relaxed text-white/60">
+          <p className="mb-5 font-sans text-[clamp(14px,3.8vw,17px)] leading-relaxed text-white/60">
             Let’s create something that gets noticed, remembered, and talked
             about.
           </p>

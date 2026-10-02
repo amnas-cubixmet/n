@@ -58,28 +58,31 @@ export const usps: USP[] = [
 export default function OurUSPs() {
   const containerRef = useRef<HTMLElement>(null);
   const shapeRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
-      if (typeof window === "undefined" || !containerRef.current) return;
+      const section = containerRef.current;
+      if (!section) return;
 
-      const reducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)"
-      ).matches;
-
-      if (reducedMotion) return;
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        gsap.set(section.querySelectorAll(".usp-reveal"), {
+          autoAlpha: 1,
+          y: 0,
+        });
+        return;
+      }
 
       const mm = gsap.matchMedia();
 
-      const buildMotion = (
+      const buildCardReveals = (
         y: number,
         duration: number,
-        start: string,
-        desktop: boolean
+        start: string
       ) => {
         const reveals = gsap.utils.toArray<HTMLElement>(
           ".usp-reveal",
-          containerRef.current
+          section
         );
 
         reveals.forEach((element) => {
@@ -104,36 +107,64 @@ export default function OurUSPs() {
             }
           );
         });
-
-        if (desktop && shapeRef.current) {
-          gsap.fromTo(
-            shapeRef.current,
-            { yPercent: -1.5 },
-            {
-              yPercent: 2.5,
-              ease: "none",
-              force3D: true,
-              scrollTrigger: {
-                trigger: containerRef.current,
-                start: "top bottom",
-                end: "bottom top",
-                scrub: 2.2,
-                invalidateOnRefresh: true,
-              },
-            }
-          );
-        }
       };
 
       mm.add("(max-width: 768px)", () =>
-        buildMotion(12, 0.44, "top 94%", false)
+        buildCardReveals(12, 0.44, "top 94%")
       );
+
       mm.add("(min-width: 769px) and (max-width: 1023px)", () =>
-        buildMotion(16, 0.48, "top 92%", false)
+        buildCardReveals(16, 0.5, "top 92%")
       );
-      mm.add("(min-width: 1024px)", () =>
-        buildMotion(24, 0.56, "top 88%", true)
-      );
+
+      mm.add("(min-width: 1024px)", () => {
+        buildCardReveals(28, 0.62, "top 88%");
+
+        const shape = shapeRef.current;
+        const content = contentRef.current;
+        if (!shape || !content) return;
+
+        const shapeTween = gsap.fromTo(
+          shape,
+          { yPercent: -1.5 },
+          {
+            yPercent: 2.5,
+            ease: "none",
+            force3D: true,
+            scrollTrigger: {
+              trigger: section,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 2.6,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+
+        const contentTween = gsap.fromTo(
+          content,
+          { yPercent: 0.1 },
+          {
+            yPercent: -0.25,
+            ease: "none",
+            force3D: true,
+            scrollTrigger: {
+              trigger: section,
+              start: "top bottom",
+              end: "bottom top",
+              scrub: 2.2,
+              invalidateOnRefresh: true,
+            },
+          }
+        );
+
+        return () => {
+          shapeTween.scrollTrigger?.kill();
+          shapeTween.kill();
+          contentTween.scrollTrigger?.kill();
+          contentTween.kill();
+        };
+      });
 
       return () => mm.revert();
     },
@@ -144,72 +175,73 @@ export default function OurUSPs() {
     <section
       id="our-usps"
       ref={containerRef}
-      className="relative z-30 m-0 w-full overflow-hidden bg-black text-white pointer-events-auto"
+      className="relative isolate z-30 m-0 w-full overflow-hidden bg-white text-black pointer-events-auto"
     >
+      {/* Same NORTHFRAME background mark used in Selected Work */}
       <div
         ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-0 z-0 block opacity-70 lg:opacity-100 lg:will-change-transform"
+        className="pointer-events-none absolute left-[10%] top-[12%] z-0 aspect-[341/220] w-[100%] opacity-80 max-lg:left-[-30%] max-lg:top-[15%] max-lg:w-[165%] max-lg:opacity-45 lg:will-change-transform"
       >
         <div
-          className="absolute left-[18%] top-[2%] h-[18%] w-[82%] bg-[#151515]"
+          className="absolute inset-0 bg-[#F2F3F5]"
           style={{
             clipPath:
-              "polygon(8% 0, 100% 0, 100% 100%, 0 100%, 0 18%)",
+              "polygon(64.22% 0%, 50.44% 0%, 32.26% 21.36%, 13.49% 0%, 0% 0%, 31.96% 99.55%)",
           }}
         />
         <div
-          className="absolute left-0 top-[22%] h-[20%] w-[74%] bg-[#171717]"
+          className="absolute inset-0 bg-[#F2F3F5]"
           style={{
             clipPath:
-              "polygon(0 0, 86% 0, 100% 18%, 100% 100%, 0 100%)",
+              "polygon(67.74% 0%, 35.19% 99.55%, 48.97% 99.55%, 67.45% 77.73%, 85.92% 99.55%, 99.71% 99.55%)",
           }}
         />
-        <div
-          className="absolute right-0 top-[40%] h-[19%] w-[70%] bg-[#181818]"
-          style={{
-            clipPath:
-              "polygon(12% 0, 100% 0, 100% 100%, 0 100%, 0 18%)",
-          }}
-        />
-        <div
-          className="absolute left-[8%] top-[60%] h-[19%] w-[72%] bg-[#171717]"
-          style={{
-            clipPath:
-              "polygon(0 0, 78% 0, 100% 20%, 100% 100%, 16% 100%, 0 82%)",
-          }}
-        />
-        <div
-          className="absolute right-0 top-[79%] h-[16%] w-[58%] bg-[#151515]"
-          style={{
-            clipPath:
-              "polygon(16% 0, 100% 0, 100% 100%, 0 100%, 0 22%)",
-          }}
-        />
-
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1300px] px-6 pb-[max(5rem,env(safe-area-inset-bottom))] sm:px-10 sm:pb-24 md:px-16 lg:min-h-[2420px] lg:px-20 lg:pb-40 xl:min-h-[2580px]">
-        <header className="usp-reveal pt-0 lg:absolute lg:left-0 lg:top-10">
-          <span className="inline-block bg-white p-0 font-mono text-xs font-bold uppercase leading-none tracking-[0.06em] text-black sm:text-sm">
+      <div
+        ref={contentRef}
+        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-8 px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 pr-[max(1.1rem,env(safe-area-inset-right))] sm:gap-10 sm:px-8 sm:pb-24 lg:block lg:min-h-[clamp(2250px,176vw,2680px)] lg:px-12 lg:pb-32 xl:px-16"
+      >
+        <header className="usp-reveal pt-0 lg:absolute lg:left-0 lg:top-[clamp(80px,6.5vw,104px)]">
+          <span className="inline-block bg-black px-[3px] py-[2px] font-mono text-xs font-bold uppercase leading-none tracking-[0.06em] text-white sm:text-sm">
             OUR USPs
           </span>
         </header>
 
-        <div className="mt-6 flex w-full flex-col gap-8 sm:mt-8 sm:gap-10 lg:mt-0 lg:block">
+        <div className="mt-8 flex w-full flex-col gap-10 sm:mt-10 sm:gap-12 lg:mt-0 lg:block">
           {usps.map((item, index) => {
             const desktopPositions = [
-              "lg:absolute lg:left-[0%] lg:top-[150px]",
-              "lg:absolute lg:right-[4%] lg:top-[390px]",
-              "lg:absolute lg:right-[18%] lg:top-[820px]",
-              "lg:absolute lg:left-[2%] lg:top-[1260px]",
-              "lg:absolute lg:right-[9%] lg:top-[1710px]",
+              "lg:absolute lg:left-[59%] lg:top-[clamp(120px,10vw,160px)]",
+              "lg:absolute lg:left-0 lg:top-[clamp(500px,41vw,640px)]",
+              "lg:absolute lg:left-1/2 lg:top-[clamp(900px,74vw,1130px)]",
+              "lg:absolute lg:left-[8%] lg:top-[clamp(1320px,108vw,1630px)]",
+              "lg:absolute lg:right-[4%] lg:top-[clamp(1740px,142vw,2140px)]",
             ];
+
+            const desktopWidths = [
+              "lg:w-[32%] lg:max-w-[455px]",
+              "lg:w-[32%] lg:max-w-[455px]",
+              "lg:w-[31%] lg:max-w-[440px]",
+              "lg:w-[32%] lg:max-w-[455px]",
+              "lg:w-[31%] lg:max-w-[440px]",
+            ];
+
+            const mobileAlignment =
+              index === 0
+                ? "mr-auto"
+                : index === 1
+                  ? "ml-auto"
+                  : index === 2
+                    ? "mx-auto"
+                    : index === 3
+                      ? "mr-auto"
+                      : "ml-auto";
 
             return (
               <article
                 key={item.id}
-                className={`usp-reveal relative flex min-h-[350px] w-[88%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.25)] sm:min-h-[380px] sm:w-[80%] sm:max-w-[420px] sm:p-8 lg:min-h-[420px] lg:p-9 xl:min-h-[440px] xl:p-10 ${index === 0 ? "max-lg:mr-auto" : index === 1 ? "max-lg:ml-auto" : index === 2 ? "max-lg:mx-auto" : index === 3 ? "max-lg:mr-auto max-lg:ml-[4%]" : "max-lg:ml-auto"} ${desktopPositions[index]} ${index === 0 ? "lg:w-[34%] lg:max-w-[450px]" : index === 1 ? "lg:w-[32%] lg:max-w-[430px]" : index === 2 ? "lg:w-[30%] lg:max-w-[410px]" : index === 3 ? "lg:w-[33%] lg:max-w-[440px]" : "lg:w-[31%] lg:max-w-[425px]"}`}
+                className={`usp-reveal relative flex min-h-[350px] w-[88%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 text-white shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:min-h-[380px] sm:w-[82%] sm:max-w-[430px] sm:p-8 lg:min-h-[420px] lg:p-9 xl:min-h-[440px] xl:p-10 ${mobileAlignment} ${desktopPositions[index]} ${desktopWidths[index]}`}
                 style={{
                   clipPath:
                     index % 2 === 0
@@ -237,19 +269,19 @@ export default function OurUSPs() {
           })}
         </div>
 
-        <div className="usp-reveal mt-10 flex w-full max-w-[430px] flex-col items-start text-left sm:mt-12 lg:absolute lg:bottom-16 lg:left-0 lg:mt-0 lg:max-w-[390px]">
-          <h4 className="mb-3 font-sans text-[clamp(21px,5.5vw,28px)] font-semibold leading-tight tracking-tight text-white lg:text-[28px]">
+        <div className="usp-reveal mt-10 flex w-full max-w-[430px] flex-col items-start text-left sm:mt-12 lg:absolute lg:bottom-20 lg:left-0 lg:mt-0 lg:max-w-[390px]">
+          <h4 className="mb-3 font-sans text-[clamp(21px,5.5vw,28px)] font-semibold leading-tight tracking-tight text-black lg:text-[28px]">
             Ready to make your mark?
           </h4>
 
-          <p className="mb-5 font-sans text-[clamp(14px,3.8vw,17px)] font-normal leading-relaxed text-white/60">
+          <p className="mb-5 font-sans text-[clamp(14px,3.8vw,17px)] font-normal leading-relaxed text-black/60">
             Let’s create something that gets noticed, remembered, and talked
             about.
           </p>
 
           <TransitionLink
             href="/#contact"
-            className="group inline-flex min-h-[44px] items-center gap-2 border-b border-white/40 py-1 font-sans text-base font-medium tracking-wide text-white transition-colors duration-200 lg:hover:border-white"
+            className="group inline-flex min-h-[44px] items-center gap-2 border-b border-black/30 py-1 font-sans text-base font-medium tracking-wide text-black transition-colors duration-200 lg:hover:border-[#1677FF] lg:hover:text-[#1677FF]"
           >
             <span>Let’s talk</span>
             <span className="inline-block transition-transform duration-200 lg:group-hover:translate-x-1">

@@ -82,7 +82,7 @@ export default function OurUSPs() {
           containerRef.current
         );
 
-        reveals.forEach((element, index) => {
+        reveals.forEach((element) => {
           gsap.fromTo(
             element,
             {
@@ -101,7 +101,6 @@ export default function OurUSPs() {
                 once: true,
                 invalidateOnRefresh: true,
               },
-              delay: index === 0 ? 0 : 0.01,
             }
           );
         });
@@ -109,18 +108,16 @@ export default function OurUSPs() {
         if (desktop && shapeRef.current) {
           gsap.fromTo(
             shapeRef.current,
+            { yPercent: -1.5 },
             {
-              yPercent: -9,
-            },
-            {
-              yPercent: 22,
+              yPercent: 2.5,
               ease: "none",
               force3D: true,
               scrollTrigger: {
                 trigger: containerRef.current,
                 start: "top bottom",
                 end: "bottom top",
-                scrub: 0.9,
+                scrub: 2.2,
                 invalidateOnRefresh: true,
               },
             }
@@ -135,14 +132,12 @@ export default function OurUSPs() {
         buildMotion(16, 0.48, "top 92%", false)
       );
       mm.add("(min-width: 1024px)", () =>
-        buildMotion(28, 0.52, "top 86%", true)
+        buildMotion(24, 0.56, "top 88%", true)
       );
 
       return () => mm.revert();
     },
-    {
-      scope: containerRef,
-    }
+    { scope: containerRef }
   );
 
   return (
@@ -154,18 +149,51 @@ export default function OurUSPs() {
       <div
         ref={shapeRef}
         aria-hidden="true"
-        className="pointer-events-none absolute left-[6%] top-[8%] z-0 h-[88%] w-[88%] bg-[#151515] sm:left-[10%] lg:will-change-transform sm:w-[82%] lg:left-[18%] lg:top-[6%] lg:h-[90%] lg:w-[70%]"
-        style={{
-          clipPath:
-            "polygon(11% 0, 100% 0, 100% 22%, 91% 22%, 91% 48%, 100% 48%, 100% 100%, 14% 100%, 14% 90%, 0 90%, 0 16%, 11% 16%)",
-        }}
+        className="pointer-events-none absolute inset-0 z-0 hidden lg:block lg:will-change-transform"
       >
-        <div className="absolute bottom-[10%] right-0 h-[2px] w-[28%] bg-white/10" />
-        <div className="absolute right-[9%] top-[20%] h-[28%] w-[18%] bg-[#1E1E1E]" />
+        <div
+          className="absolute left-[20%] top-[2%] h-[18%] w-[80%] bg-[#151515]"
+          style={{
+            clipPath:
+              "polygon(8% 0, 100% 0, 100% 100%, 0 100%, 0 18%)",
+          }}
+        />
+        <div
+          className="absolute left-0 top-[23%] h-[19%] w-[78%] bg-[#171717]"
+          style={{
+            clipPath:
+              "polygon(0 0, 86% 0, 100% 18%, 100% 100%, 0 100%)",
+          }}
+        />
+        <div
+          className="absolute right-0 top-[43%] h-[18%] w-[66%] bg-[#181818]"
+          style={{
+            clipPath:
+              "polygon(12% 0, 100% 0, 100% 100%, 0 100%, 0 18%)",
+          }}
+        />
+        <div
+          className="absolute left-[13%] top-[63%] h-[18%] w-[70%] bg-[#171717]"
+          style={{
+            clipPath:
+              "polygon(0 0, 78% 0, 100% 20%, 100% 100%, 16% 100%, 0 82%)",
+          }}
+        />
+        <div
+          className="absolute right-0 top-[80%] h-[15%] w-[52%] bg-[#151515]"
+          style={{
+            clipPath:
+              "polygon(16% 0, 100% 0, 100% 100%, 0 100%, 0 22%)",
+          }}
+        />
+
+        <span className="absolute left-[43%] top-[31%] h-2.5 w-2.5 bg-[#1677FF]" />
+        <span className="absolute left-[46%] top-[54%] h-2.5 w-2.5 bg-[#1677FF]" />
+        <span className="absolute left-[45%] top-[76%] h-2.5 w-2.5 bg-[#1677FF]" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1300px] px-6 pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 sm:px-10 sm:pb-24 sm:pt-0 md:px-16 lg:px-20 lg:pb-32 lg:pt-0">
-        <header className="usp-reveal mb-6 sm:mb-8 lg:mb-10">
+      <div className="relative z-10 mx-auto w-full max-w-[1300px] px-6 pb-[max(5rem,env(safe-area-inset-bottom))] sm:px-10 sm:pb-24 md:px-16 lg:min-h-[2500px] lg:px-20 lg:pb-40 xl:min-h-[2750px]">
+        <header className="usp-reveal pt-0 lg:absolute lg:left-20 lg:top-12">
           <div className="flex flex-col items-start gap-[2px]">
             <span className="inline-block bg-white p-0 font-mono text-[clamp(18px,5vw,28px)] font-bold uppercase leading-none tracking-[0.04em] text-black">
               OUR
@@ -176,23 +204,25 @@ export default function OurUSPs() {
           </div>
         </header>
 
-        <div className="flex w-full flex-col gap-5 sm:gap-6 lg:gap-0">
+        <div className="mt-6 flex w-full flex-col gap-5 sm:mt-8 sm:gap-6 lg:mt-0 lg:block">
           {usps.map((item, index) => {
-            const alignRight = index % 2 === 0;
+            const desktopPositions = [
+              "lg:absolute lg:right-[5%] lg:top-[70px]",
+              "lg:absolute lg:left-[9%] lg:top-[520px]",
+              "lg:absolute lg:right-[8%] lg:top-[930px]",
+              "lg:absolute lg:left-[18%] lg:top-[1360px]",
+              "lg:absolute lg:right-[7%] lg:top-[1810px]",
+            ];
 
             return (
               <article
                 key={item.id}
-                className={`usp-reveal relative flex min-h-[350px] w-[92%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.22)] sm:min-h-[380px] sm:w-[82%] sm:max-w-[420px] sm:p-8 lg:min-h-[430px] lg:w-[36%] lg:max-w-[450px] lg:p-9 xl:min-h-[450px] xl:w-[34%] xl:max-w-[460px] xl:p-10 ${
-                  alignRight
-                    ? `ml-auto ${index > 0 ? "lg:-mt-[180px] xl:-mt-[200px]" : ""}`
-                    : `mr-auto lg:ml-[4%] ${index > 0 ? "lg:-mt-[180px] xl:-mt-[200px]" : ""}`
-                }`}
+                className={`usp-reveal relative flex min-h-[350px] w-[92%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.25)] sm:min-h-[380px] sm:w-[82%] sm:max-w-[420px] sm:p-8 lg:min-h-[420px] lg:w-[33%] lg:max-w-[440px] lg:p-9 xl:min-h-[440px] xl:max-w-[460px] xl:p-10 ${desktopPositions[index]} ${index % 2 === 0 ? "ml-auto" : "mr-auto"}`}
                 style={{
                   clipPath:
                     index % 2 === 0
-                      ? "polygon(11% 0, 100% 0, 100% 100%, 0 100%, 0 11%)"
-                      : "polygon(0 0, 89% 0, 100% 11%, 100% 100%, 0 100%)",
+                      ? "polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 10%)"
+                      : "polygon(0 0, 90% 0, 100% 10%, 100% 100%, 0 100%)",
                 }}
               >
                 <div className="flex flex-col items-start">
@@ -215,7 +245,7 @@ export default function OurUSPs() {
           })}
         </div>
 
-        <div className="usp-reveal mt-10 flex w-full max-w-[430px] flex-col items-start text-left sm:mt-12 lg:ml-[8%] lg:mt-16 lg:max-w-[390px]">
+        <div className="usp-reveal mt-10 flex w-full max-w-[430px] flex-col items-start text-left sm:mt-12 lg:absolute lg:bottom-28 lg:left-20 lg:mt-0 lg:max-w-[390px]">
           <h4 className="mb-3 font-sans text-[clamp(21px,5.5vw,28px)] font-semibold leading-tight tracking-tight text-white lg:text-[28px]">
             Ready to make your mark?
           </h4>

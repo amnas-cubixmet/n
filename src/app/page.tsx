@@ -18,8 +18,8 @@ import ContactSection from "@/components/home/ContactSection";
 import FloatingContactActions from "@/components/navigation/FloatingContactActions";
 
 export default function Home() {
-  // Keep the first server and client renders identical. BrandIntro checks
-  // sessionStorage after hydration and calls onComplete when it is done.
+  // Keep the first server and client renders identical. BrandIntro runs on a
+  // fresh page load and still calls onComplete when an in-app remount skips it.
   const [introCompleted, setIntroCompleted] = useState(false);
 
   const handleIntroComplete = () => {

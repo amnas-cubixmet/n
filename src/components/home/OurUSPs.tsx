@@ -149,7 +149,7 @@ export default function OurUSPs() {
     <section
       id="our-usps"
       ref={containerRef}
-      className="relative z-30 mt-10 w-full overflow-hidden bg-black text-white pointer-events-auto sm:mt-14 lg:mt-20"
+      className="relative z-30 m-0 w-full overflow-hidden bg-black text-white pointer-events-auto"
     >
       <div
         ref={shapeRef}
@@ -165,8 +165,8 @@ export default function OurUSPs() {
         <div className="absolute right-[9%] top-[20%] h-[28%] w-[18%] bg-[#1E1E1E]" />
       </div>
 
-      <div className="relative z-10 mx-auto w-full max-w-[1300px] px-6 pb-[max(5rem,env(safe-area-inset-bottom))] pt-16 sm:px-10 sm:pb-24 sm:pt-20 md:px-16 lg:px-20 lg:pb-32 lg:pt-24">
-        <header className="usp-reveal mb-10 sm:mb-14 lg:mb-16">
+      <div className="relative z-10 mx-auto w-full max-w-[1300px] px-6 pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 sm:px-10 sm:pb-24 sm:pt-0 md:px-16 lg:px-20 lg:pb-32 lg:pt-0">
+        <header className="usp-reveal mb-6 sm:mb-8 lg:mb-10">
           <div className="flex flex-col items-start gap-[2px]">
             <span className="inline-block bg-white p-0 font-mono text-[clamp(18px,5vw,28px)] font-bold uppercase leading-none tracking-[0.04em] text-black">
               OUR
@@ -177,7 +177,7 @@ export default function OurUSPs() {
           </div>
         </header>
 
-        <div className="flex w-full flex-col gap-7 sm:gap-9 lg:gap-10">
+        <div className="flex w-full flex-col gap-5 sm:gap-6 lg:gap-0">
           {usps.map((item, index) => {
             const alignRight = index % 2 === 0;
 
@@ -186,8 +186,8 @@ export default function OurUSPs() {
                 key={item.id}
                 className={`usp-reveal relative flex min-h-[350px] w-[92%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.22)] sm:min-h-[380px] sm:w-[82%] sm:max-w-[420px] sm:p-8 lg:min-h-[430px] lg:w-[36%] lg:max-w-[450px] lg:p-9 xl:min-h-[450px] xl:w-[34%] xl:max-w-[460px] xl:p-10 ${
                   alignRight
-                    ? "ml-auto"
-                    : "mr-auto lg:ml-[4%]"
+                    ? `ml-auto ${index > 0 ? "lg:-mt-[180px] xl:-mt-[200px]" : ""}`
+                    : `mr-auto lg:ml-[4%] ${index > 0 ? "lg:-mt-[180px] xl:-mt-[200px]" : ""}`
                 }`}
                 style={{
                   clipPath:

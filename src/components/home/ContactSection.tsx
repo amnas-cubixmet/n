@@ -114,29 +114,60 @@ export default function ContactSection() {
           brandRef.current,
         ].filter((item): item is HTMLDivElement => Boolean(item));
 
-        const tweens = targets.map((target) => {
+        const tweens: gsap.core.Tween[] = [];
+        const observers: IntersectionObserver[] = [];
+
+        targets.forEach((target) => {
           gsap.set(target, {
             y: mobile ? 18 : 30,
             clipPath: "inset(0% 0% 100% 0%)",
             force3D: true,
           });
 
-          return gsap.to(target, {
+          const tween = gsap.to(target, {
+            paused: mobile,
             y: 0,
             clipPath: "inset(0% 0% 0% 0%)",
             duration: mobile ? 0.58 : 0.78,
             ease: "expo.out",
             force3D: true,
-            scrollTrigger: {
-              trigger: target,
-              start: mobile ? "top 94%" : "top 88%",
-              once: true,
-              invalidateOnRefresh: true,
-            },
+            ...(mobile
+              ? {}
+              : {
+                  scrollTrigger: {
+                    trigger: target,
+                    start: "top 88%",
+                    once: true,
+                    invalidateOnRefresh: true,
+                  },
+                }),
           });
+
+          tweens.push(tween);
+
+          if (!mobile) return;
+
+          if ("IntersectionObserver" in window) {
+            const observer = new IntersectionObserver(
+              ([entry]) => {
+                if (!entry?.isIntersecting) return;
+                tween.play(0);
+                observer.disconnect();
+              },
+              {
+                threshold: 0.01,
+                rootMargin: "0px 0px -5% 0px",
+              }
+            );
+            observer.observe(target);
+            observers.push(observer);
+          } else {
+            tween.play(0);
+          }
         });
 
         return () => {
+          observers.forEach((observer) => observer.disconnect());
           tweens.forEach((tween) => {
             tween.scrollTrigger?.kill();
             tween.kill();

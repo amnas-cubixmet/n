@@ -184,7 +184,7 @@ export default function OurUSPs() {
             return (
               <article
                 key={item.id}
-                className={`usp-reveal relative flex min-h-[330px] w-[94%] max-w-[430px] flex-col justify-between bg-[#111111] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.22)] sm:min-h-[350px] sm:w-[88%] sm:p-8 lg:min-h-[390px] lg:w-[42%] lg:max-w-[500px] lg:p-9 xl:p-10 ${
+                className={`usp-reveal relative flex min-h-[350px] w-[92%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 shadow-[0_22px_60px_rgba(0,0,0,0.22)] sm:min-h-[380px] sm:w-[82%] sm:max-w-[420px] sm:p-8 lg:min-h-[430px] lg:w-[36%] lg:max-w-[450px] lg:p-9 xl:min-h-[450px] xl:w-[34%] xl:max-w-[460px] xl:p-10 ${
                   alignRight
                     ? "ml-auto"
                     : "mr-auto lg:ml-[4%]"

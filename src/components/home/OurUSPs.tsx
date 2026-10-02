@@ -80,6 +80,8 @@ export default function OurUSPs() {
   const cardRefs = useRef<(HTMLElement | null)[]>([]);
 
   useLayoutEffect(() => {
+    if (window.innerWidth < 1024) return;
+
     const syncThirdCardOverlap = () => {
       if (window.innerWidth < 1024) return;
 

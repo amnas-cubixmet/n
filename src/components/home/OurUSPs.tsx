@@ -160,7 +160,6 @@ export default function OurUSPs() {
             "polygon(11% 0, 100% 0, 100% 22%, 91% 22%, 91% 48%, 100% 48%, 100% 100%, 14% 100%, 14% 90%, 0 90%, 0 16%, 11% 16%)",
         }}
       >
-        <div className="absolute left-[11%] top-0 h-[2px] w-[34%] bg-[#1677FF]/80" />
         <div className="absolute bottom-[10%] right-0 h-[2px] w-[28%] bg-white/10" />
         <div className="absolute right-[9%] top-[20%] h-[28%] w-[18%] bg-[#1E1E1E]" />
       </div>

@@ -121,14 +121,15 @@ export default function OurUSPs() {
 
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
         gsap.set(content, {
-          autoAlpha: 1,
           y: 0,
+          scale: 1,
           clearProps: "transform",
         });
-        gsap.set(section.querySelectorAll(".usp-card-text"), {
-          autoAlpha: 1,
+        gsap.set(section.querySelectorAll(".usp-card-number, .usp-card-title, .usp-card-body"), {
           y: 0,
-          clearProps: "transform,opacity,visibility",
+          scaleX: 1,
+          clipPath: "inset(0% 0% 0% 0%)",
+          clearProps: "transform,clip-path",
         });
         return;
       }
@@ -153,12 +154,12 @@ export default function OurUSPs() {
         const contentTween = gsap.fromTo(
           content,
           {
-            autoAlpha: 0.15,
             y,
+            scale: 0.992,
           },
           {
-            autoAlpha: 1,
             y: 0,
+            scale: 1,
             ease: "none",
             force3D: true,
             scrollTrigger: {
@@ -199,59 +200,103 @@ export default function OurUSPs() {
       };
 
       const buildCardTextReveals = (
-        y: number,
-        duration: number,
-        stagger: number,
+        titleY: number,
+        titleDuration: number,
+        bodyDuration: number,
         start: string
       ) => {
         const cards = cardRefs.current.filter(
           (card): card is HTMLElement => Boolean(card)
         );
 
-        const tweens = cards.map((card) => {
-          const textItems = card.querySelectorAll<HTMLElement>(".usp-card-text");
+        const timelines = cards.map((card) => {
+          const number = card.querySelector<HTMLElement>(".usp-card-number");
+          const title = card.querySelector<HTMLElement>(".usp-card-title");
+          const body = card.querySelector<HTMLElement>(".usp-card-body");
 
-          return gsap.fromTo(
-            textItems,
-            {
-              autoAlpha: 0,
-              y,
+          if (!number || !title || !body) return null;
+
+          gsap.set(number, {
+            scaleX: 0,
+            transformOrigin: "left center",
+          });
+
+          gsap.set(title, {
+            y: titleY,
+            clipPath: "inset(0% 0% 100% 0%)",
+          });
+
+          gsap.set(body, {
+            y: Math.round(titleY * 0.7),
+            clipPath: "inset(0% 0% 100% 0%)",
+          });
+
+          const timeline = gsap.timeline({
+            paused: true,
+            defaults: {
+              overwrite: "auto",
             },
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration,
-              stagger,
-              ease: "power3.out",
+            scrollTrigger: {
+              trigger: card,
+              start,
+              once: true,
+              invalidateOnRefresh: true,
+              onEnter: () => timeline.play(),
+            },
+          });
+
+          timeline
+            .to(number, {
+              scaleX: 1,
+              duration: 0.28,
+              ease: "power4.out",
               force3D: true,
-              scrollTrigger: {
-                trigger: card,
-                start,
-                once: true,
-                invalidateOnRefresh: true,
+            })
+            .to(
+              title,
+              {
+                y: 0,
+                clipPath: "inset(0% 0% 0% 0%)",
+                duration: titleDuration,
+                ease: "expo.out",
+                force3D: true,
               },
-            }
-          );
+              0.08
+            )
+            .to(
+              body,
+              {
+                y: 0,
+                clipPath: "inset(0% 0% 0% 0%)",
+                duration: bodyDuration,
+                ease: "power4.out",
+                force3D: true,
+              },
+              0.24
+            );
+
+          return timeline;
         });
 
         return () => {
-          tweens.forEach((tween) => {
-            tween.scrollTrigger?.kill();
-            tween.kill();
+          timelines.forEach((timeline) => {
+            if (!timeline) return;
+            timeline.scrollTrigger?.kill();
+            timeline.kill();
           });
         };
       };
 
       mm.add("(max-width: 768px)", () =>
-        buildCardTextReveals(10, 0.34, 0.055, "top 92%")
+        buildCardTextReveals(14, 0.48, 0.42, "top 92%")
       );
 
       mm.add("(min-width: 769px) and (max-width: 1023px)", () =>
-        buildCardTextReveals(14, 0.4, 0.07, "top 90%")
+        buildCardTextReveals(20, 0.58, 0.5, "top 90%")
       );
 
       mm.add("(min-width: 1024px)", () =>
-        buildCardTextReveals(20, 0.5, 0.09, "top 86%")
+        buildCardTextReveals(30, 0.72, 0.62, "top 86%")
       );
 
       mm.add("(max-width: 768px)", () =>
@@ -337,16 +382,16 @@ export default function OurUSPs() {
             }}
           >
             <div className="flex flex-col items-start">
-              <div className="usp-card-text mb-5 inline-block bg-[#1677FF] px-2.5 py-1 font-mono text-[11px] font-bold leading-none text-black sm:mb-6 sm:text-xs">
+              <div className="usp-card-number mb-5 inline-block bg-[#1677FF] px-2.5 py-1 font-mono text-[11px] font-bold leading-none text-black sm:mb-6 sm:text-xs">
                 {item.number}
               </div>
 
-              <h3 className="usp-card-text whitespace-pre-line text-left font-pixel text-[clamp(22px,6vw,30px)] font-bold uppercase leading-[1.04] tracking-[-0.02em] text-white lg:text-[clamp(24px,2vw,32px)]">
+              <h3 className="usp-card-title whitespace-pre-line text-left font-pixel text-[clamp(22px,6vw,30px)] font-bold uppercase leading-[1.04] tracking-[-0.02em] text-white lg:text-[clamp(24px,2vw,32px)]">
                 {item.title}
               </h3>
             </div>
 
-            <div className="usp-card-text mt-8 border-t border-white/10 pt-5 sm:pt-6">
+            <div className="usp-card-body mt-8 border-t border-white/10 pt-5 sm:pt-6">
               <p className="text-left font-sans text-[clamp(13px,3.7vw,16px)] leading-relaxed text-white/60 lg:text-base">
                 {item.description}
               </p>

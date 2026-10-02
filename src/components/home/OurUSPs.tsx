@@ -212,7 +212,8 @@ export default function OurUSPs() {
         titleY: number,
         titleDuration: number,
         bodyDuration: number,
-        start: string
+        start: string,
+        useObserver = false
       ) => {
         const cards = cardRefs.current.filter(
           (card): card is HTMLElement => Boolean(card)
@@ -252,14 +253,37 @@ export default function OurUSPs() {
             defaults: {
               overwrite: "auto",
             },
-            scrollTrigger: {
+          });
+
+          let observer: IntersectionObserver | null = null;
+          let trigger: ScrollTrigger | null = null;
+
+          if (useObserver) {
+            if ("IntersectionObserver" in window) {
+              observer = new IntersectionObserver(
+                ([entry]) => {
+                  if (!entry?.isIntersecting) return;
+                  timeline.play(0);
+                  observer?.disconnect();
+                },
+                {
+                  threshold: 0.01,
+                  rootMargin: "0px 0px -5% 0px",
+                }
+              );
+              observer.observe(card);
+            } else {
+              timeline.play(0);
+            }
+          } else {
+            trigger = ScrollTrigger.create({
               trigger: card,
               start,
               once: true,
               invalidateOnRefresh: true,
-              onEnter: () => timeline.play(),
-            },
-          });
+              onEnter: () => timeline.play(0),
+            });
+          }
 
           timeline
             .to(card, {
@@ -298,14 +322,15 @@ export default function OurUSPs() {
               0.34
             );
 
-          return timeline;
+          return { timeline, observer, trigger };
         });
 
         return () => {
-          timelines.forEach((timeline) => {
-            if (!timeline) return;
-            timeline.scrollTrigger?.kill();
-            timeline.kill();
+          timelines.forEach((item) => {
+            if (!item) return;
+            item.observer?.disconnect();
+            item.trigger?.kill();
+            item.timeline.kill();
           });
         };
       };
@@ -315,7 +340,8 @@ export default function OurUSPs() {
         start: string,
         y: number,
         duration: number,
-        stagger = 0
+        stagger = 0,
+        useObserver = false
       ) => {
         if (!element) return () => {};
 
@@ -331,21 +357,48 @@ export default function OurUSPs() {
         });
 
         const tween = gsap.to(targets, {
+          paused: useObserver,
           y: 0,
           clipPath: "inset(0% 0% 0% 0%)",
           duration,
           stagger,
           ease: "expo.out",
           force3D: true,
-          scrollTrigger: {
-            trigger: element,
-            start,
-            once: true,
-            invalidateOnRefresh: true,
-          },
+          ...(useObserver
+            ? {}
+            : {
+                scrollTrigger: {
+                  trigger: element,
+                  start,
+                  once: true,
+                  invalidateOnRefresh: true,
+                },
+              }),
         });
 
+        let observer: IntersectionObserver | null = null;
+
+        if (useObserver) {
+          if ("IntersectionObserver" in window) {
+            observer = new IntersectionObserver(
+              ([entry]) => {
+                if (!entry?.isIntersecting) return;
+                tween.play(0);
+                observer?.disconnect();
+              },
+              {
+                threshold: 0.01,
+                rootMargin: "0px 0px -5% 0px",
+              }
+            );
+            observer.observe(element);
+          } else {
+            tween.play(0);
+          }
+        }
+
         return () => {
+          observer?.disconnect();
           tween.scrollTrigger?.kill();
           tween.kill();
         };
@@ -353,8 +406,8 @@ export default function OurUSPs() {
 
       mm.add("(max-width: 768px)", () => {
         const cleanups = [
-          buildStandaloneReveal(labelRef.current, "top 94%", 12, 0.46),
-          buildStandaloneReveal(ctaRef.current, "top 94%", 14, 0.5, 0.08),
+          buildStandaloneReveal(labelRef.current, "top 94%", 12, 0.46, 0, true),
+          buildStandaloneReveal(ctaRef.current, "top 94%", 14, 0.5, 0.08, true),
         ];
         return () => cleanups.forEach((cleanup) => cleanup());
       });
@@ -368,7 +421,7 @@ export default function OurUSPs() {
       });
 
       mm.add("(max-width: 768px)", () =>
-        buildCardTextReveals(14, 0.48, 0.42, "top 92%")
+        buildCardTextReveals(14, 0.48, 0.42, "top 92%", true)
       );
 
       mm.add("(min-width: 769px) and (max-width: 1023px)", () =>

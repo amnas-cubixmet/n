@@ -233,8 +233,6 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
           width={1254}
           height={1254}
           priority
-          loading="eager"
-          fetchPriority="high"
           sizes="(max-width: 640px) 72px, 92px"
           className="block h-full w-full object-contain"
         />

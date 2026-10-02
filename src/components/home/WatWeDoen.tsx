@@ -126,19 +126,6 @@ export default function WatWeDoen() {
                 force3D: true,
                 willChange: "opacity",
               });
-            } else if (mobile) {
-              // iOS Safari / in-app browsers are much more reliable with a
-              // transform-based cover than an animated polygon clip-path.
-              gsap.set(panel, {
-                inset: 0,
-                clipPath: "inset(0)",
-                WebkitClipPath: "inset(0)",
-                yPercent: index === 0 ? 0 : 100,
-                autoAlpha: 1,
-                zIndex: 10 + index,
-                force3D: true,
-                willChange: "transform",
-              });
             } else {
               gsap.set(panel, {
                 inset: 0,
@@ -243,17 +230,6 @@ export default function WatWeDoen() {
                   autoAlpha: 1,
                   duration: 0.12,
                   ease: "none",
-                },
-                segmentStart
-              );
-            } else if (mobile) {
-              timeline.to(
-                panel,
-                {
-                  yPercent: 0,
-                  duration: revealDuration,
-                  ease: "none",
-                  force3D: true,
                 },
                 segmentStart
               );
@@ -409,7 +385,7 @@ export default function WatWeDoen() {
                 >
                   <TransitionLink
                     href={`/services/${service.slug}`}
-                    className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(30px,8vw,42px)] font-bold uppercase leading-[0.91] tracking-normal text-white sm:text-[clamp(34px,8.2vw,46px)] md:text-[clamp(42px,6.4vw,58px)] lg:text-[106px] lg:leading-[0.94]"
+                    className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(36px,9.5vw,48px)] font-bold uppercase leading-[0.91] tracking-normal text-white sm:text-[clamp(40px,9vw,52px)] md:text-[clamp(46px,6.6vw,62px)] lg:text-[106px] lg:leading-[0.94]"
                   >
                     {service.displayLines.map((line) => (
                       <span

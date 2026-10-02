@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import { createNorthframeGeometry } from "@/components/three/NorthframeGeometry";
@@ -17,6 +17,37 @@ if (typeof window !== "undefined") {
     }
     _warn.apply(console, args);
   };
+}
+
+function MobileFrameScheduler({
+  active,
+}: {
+  active: boolean;
+}) {
+  const invalidate = useThree((state) => state.invalidate);
+
+  useEffect(() => {
+    if (!active) return;
+
+    let frame = 0;
+    let lastPaint = 0;
+    const frameInterval = 1000 / 30;
+
+    const tick = (time: number) => {
+      if (time - lastPaint >= frameInterval) {
+        lastPaint = time;
+        invalidate();
+      }
+
+      frame = window.requestAnimationFrame(tick);
+    };
+
+    frame = window.requestAnimationFrame(tick);
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [active, invalidate]);
+
+  return null;
 }
 
 function LivingStudioLighting({
@@ -438,7 +469,7 @@ export default function Shared3DBackground() {
           <div className="hero-a-object h-full w-full">
             <Canvas
               dpr={isMobile ? 1 : [1, 1.5]}
-              frameloop={isHidden ? "never" : "always"}
+              frameloop={isHidden ? "never" : isMobile ? "demand" : "always"}
               gl={{
                 antialias: !isMobile,
                 alpha: true,
@@ -457,6 +488,8 @@ export default function Shared3DBackground() {
               }}
               className="relative z-10 h-full w-full pointer-events-none"
             >
+              <MobileFrameScheduler active={isMobile && !isHidden} />
+
               <fog attach="fog" args={["#05080B", 4.5, 14]} />
 
               <LivingStudioLighting

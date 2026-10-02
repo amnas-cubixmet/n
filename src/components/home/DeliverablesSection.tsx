@@ -24,6 +24,7 @@ export default function DeliverablesSection() {
   const progressFillRef = useRef<HTMLDivElement>(null);
   const mobileProgressFillRef = useRef<HTMLDivElement>(null);
 
+  const mediaStageRef = useRef<HTMLDivElement>(null);
   const mediaRefs = useRef<(HTMLDivElement | null)[]>([]);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
   const descRef = useRef<HTMLDivElement>(null);
@@ -263,6 +264,42 @@ export default function DeliverablesSection() {
           const compact = phone || tablet;
           const exitHold = desktop ? 0.9 : tablet ? 0.32 : 0.22;
 
+          const mediaStage = mediaStageRef.current;
+          let mediaIntroTrigger: ScrollTrigger | null = null;
+
+          if (!reduced && mediaStage) {
+            mediaIntroTrigger = ScrollTrigger.create({
+              trigger: mediaStage,
+              start: compact ? "top 94%" : "top 88%",
+              once: true,
+              invalidateOnRefresh: true,
+              onEnter: () => {
+                const currentMedia = mediaRefs.current[activeIndexRef.current];
+                if (!currentMedia) return;
+
+                gsap.fromTo(
+                  currentMedia,
+                  {
+                    opacity: 1,
+                    yPercent: compact ? 22 : 32,
+                    scale: compact ? 1.015 : 1.025,
+                    clipPath: "inset(100% 0% 0% 0%)",
+                  },
+                  {
+                    opacity: 1,
+                    yPercent: 0,
+                    scale: 1,
+                    clipPath: "inset(0% 0% 0% 0%)",
+                    duration: compact ? 0.58 : 0.76,
+                    ease: "expo.out",
+                    overwrite: "auto",
+                    force3D: true,
+                  }
+                );
+              },
+            });
+          }
+
           if (reduced) {
             master.style.height = "";
             scrollTriggerRef.current = null;
@@ -412,6 +449,7 @@ export default function DeliverablesSection() {
           return () => {
             cancelAnimationFrame(frameA);
             cancelAnimationFrame(frameB);
+            mediaIntroTrigger?.kill();
             timeline.scrollTrigger?.kill();
             timeline.kill();
             master.style.height = "";
@@ -613,7 +651,7 @@ export default function DeliverablesSection() {
 
               {/* Shared Media Container & Description */}
               <div className="flex w-full flex-col items-center justify-center max-w-[540px] lg:max-w-[650px] mx-auto">
-                <div className="relative w-full aspect-[16/10] overflow-hidden bg-black shadow-[0_24px_70px_rgba(0,0,0,0.14)]">
+                <div ref={mediaStageRef} className="relative w-full aspect-[16/10] overflow-hidden bg-black shadow-[0_24px_70px_rgba(0,0,0,0.14)]">
                   {deliverables.map((item, index) => {
                     const isError = imageErrors[item.id];
 

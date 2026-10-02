@@ -167,7 +167,7 @@ export default function SelectedWork() {
 
         <ProjectCard
           project={workProjects[2]}
-          gridClass="lg:absolute lg:left-[50%] lg:top-[clamp(820px,68vw,1040px)] lg:w-[32%]"
+          gridClass="lg:absolute lg:left-[50%] lg:top-[clamp(600px,50vw,760px)] lg:w-[32%]"
         />
 
         <div className="work-project-item flex max-w-[390px] flex-col items-start gap-4 lg:absolute lg:left-0 lg:top-[clamp(1100px,91vw,1390px)] lg:w-[32%]">

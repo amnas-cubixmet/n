@@ -92,7 +92,7 @@ export default function OurVision() {
         <div className="relative w-full max-w-[1300px] mx-auto flex flex-col items-start text-left">
         {/* SMALL EDITORIAL LABEL IN UPPER-LEFT: WHITE BG, BLACK TEXT */}
         <div ref={labelRef} className="flex items-center mb-8 md:mb-12">
-          <span className="font-pixel inline-block bg-[#FFFFFF] text-[#000000] px-2 py-1 text-xs sm:text-sm font-bold uppercase tracking-wider leading-none">
+          <span className="font-mono inline-block bg-[#FFFFFF] text-[#000000] px-2 py-1 text-xs sm:text-sm font-bold uppercase tracking-wider leading-none">
             OUR VISION
           </span>
         </div>

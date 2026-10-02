@@ -202,7 +202,7 @@ export default function OurUSPs() {
 
       <div
         ref={contentRef}
-        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-8 px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 pr-[max(1.1rem,env(safe-area-inset-right))] sm:gap-10 sm:px-8 sm:pb-24 lg:block lg:min-h-[clamp(2920px,218vw,3300px)] lg:px-12 lg:pb-32 xl:px-16"
+        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-8 px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 pr-[max(1.1rem,env(safe-area-inset-right))] sm:gap-10 sm:px-8 sm:pb-24 lg:block lg:min-h-[clamp(2860px,210vw,3220px)] lg:px-12 lg:pb-32 xl:px-16"
       >
         <header className="usp-reveal relative z-20 w-full px-6 sm:px-10 md:px-16 lg:absolute lg:inset-x-0 lg:top-4 lg:px-20">
           <div className="mx-auto w-full max-w-[1300px]">
@@ -215,19 +215,19 @@ export default function OurUSPs() {
         <div className="mt-8 flex w-full flex-col gap-10 sm:mt-10 sm:gap-12 lg:mt-0 lg:block">
           {usps.map((item, index) => {
             const desktopPositions = [
-              "lg:absolute lg:left-[2%] lg:top-[clamp(140px,10vw,180px)]",
-              "lg:absolute lg:right-[5%] lg:top-[clamp(650px,49vw,800px)]",
-              "lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:top-[clamp(1160px,88vw,1420px)]",
-              "lg:absolute lg:left-[8%] lg:top-[clamp(1680px,126vw,2050px)]",
-              "lg:absolute lg:right-[7%] lg:top-[clamp(2190px,164vw,2670px)]",
+              "lg:absolute lg:left-[59%] lg:top-[clamp(120px,9.6vw,160px)]",
+              "lg:absolute lg:left-0 lg:top-[clamp(560px,44vw,700px)]",
+              "lg:absolute lg:left-1/2 lg:top-[clamp(1080px,84vw,1320px)]",
+              "lg:absolute lg:left-0 lg:top-[clamp(1620px,124vw,1960px)]",
+              "lg:absolute lg:left-[59%] lg:top-[clamp(2140px,162vw,2580px)]",
             ];
 
             const desktopWidths = [
               "lg:w-[32%] lg:max-w-[455px]",
               "lg:w-[32%] lg:max-w-[455px]",
-              "lg:w-[31%] lg:max-w-[440px]",
               "lg:w-[32%] lg:max-w-[455px]",
-              "lg:w-[31%] lg:max-w-[440px]",
+              "lg:w-[32%] lg:max-w-[455px]",
+              "lg:w-[32%] lg:max-w-[455px]",
             ];
 
             const mobileAlignment =

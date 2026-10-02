@@ -169,6 +169,7 @@ export function ProjectCard({
               sizes="(max-width: 767px) 88vw, (max-width: 1023px) 92vw, 30vw"
               className="object-cover scale-[1.035] transition-transform duration-700 ease-out lg:group-hover:scale-[1.055]"
             />
+            </div>
           </div>
 
           {/* PROJECT METADATA DIRECTLY ATTACHED BELOW IMAGE */}

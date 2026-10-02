@@ -16,6 +16,7 @@
   --mouse-y-norm: 0;
   --mouse-x-b: 50vw;
   --mouse-y-b: 50vh;
+  --nf-mobile-vh: 100svh;
 }
 
 /* Touch optimization for mobile buttons */
@@ -686,5 +687,20 @@ video {
   .brand-intro-mark,
   .brand-intro-cover {
     animation: none !important;
+  }
+}
+
+
+/* MOBILE STABLE VIEWPORT
+   Capture the real initial viewport height in JS and keep scroll-story stages
+   stable while the browser URL bar expands/collapses. Orientation updates it. */
+@media (max-width: 1023px) {
+  .hero,
+  .shared-3d-background,
+  .wat-we-doen-sticky,
+  #deliverables > .mobile-scroll-sticky,
+  .statement-stage {
+    height: var(--nf-mobile-vh, 100svh);
+    min-height: var(--nf-mobile-vh, 100svh);
   }
 }

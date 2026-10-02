@@ -88,12 +88,12 @@ export default function OurUSPs() {
       );
 
       const secondTop = Math.round(
-        firstCard.offsetTop + firstCard.offsetHeight * 0.42
+        firstCard.offsetTop + firstCard.offsetHeight * 0.5
       );
 
       const secondInset = Math.max(
-        28,
-        Math.round(content.clientWidth * 0.06)
+        22,
+        Math.round(content.clientWidth * 0.045)
       );
 
       secondCard.style.left = `${labelLeft + secondInset}px`;

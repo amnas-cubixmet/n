@@ -50,7 +50,6 @@ export default function ContactSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const backgroundRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const introRef = useRef<HTMLDivElement>(null);
   const formAreaRef = useRef<HTMLDivElement>(null);
   const contactAreaRef = useRef<HTMLDivElement>(null);
@@ -67,8 +66,6 @@ export default function ContactSection() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionNotice, setSubmissionNotice] = useState<string | null>(null);
   const [submissionState, setSubmissionState] = useState<"success" | "error" | null>(null);
-  const [videoError, setVideoError] = useState(false);
-  const [isMediaNear, setIsMediaNear] = useState(false);
   const [isReducedMotion, setIsReducedMotion] = useState(() =>
     typeof window !== "undefined"
       ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -91,98 +88,6 @@ export default function ContactSection() {
     motionQuery.addListener(handleMotionChange);
     return () => motionQuery.removeListener(handleMotionChange);
   }, []);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    if (!section || isMediaNear) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return;
-        setIsMediaNear(true);
-        observer.disconnect();
-      },
-      {
-        rootMargin: "700px 0px",
-        threshold: 0,
-      }
-    );
-
-    observer.observe(section);
-
-    return () => observer.disconnect();
-  }, [isMediaNear]);
-
-  useEffect(() => {
-    const section = sectionRef.current;
-    const video = videoRef.current;
-
-    if (
-      !section ||
-      !video ||
-      !isMediaNear ||
-      isReducedMotion ||
-      videoError
-    ) {
-      return;
-    }
-
-    const pauseVideo = () => {
-      if (!video.paused) {
-        video.pause();
-      }
-    };
-
-    const playVideo = () => {
-      if (document.visibilityState !== "visible") return;
-
-      const promise = video.play();
-      if (promise) {
-        promise.catch(() => {
-          setVideoError(true);
-        });
-      }
-    };
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry?.isIntersecting) {
-          playVideo();
-        } else {
-          pauseVideo();
-        }
-      },
-      {
-        threshold: 0.06,
-      }
-    );
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === "visible") {
-        const rect = section.getBoundingClientRect();
-        const isVisible =
-          rect.bottom > 0 && rect.top < window.innerHeight;
-
-        if (isVisible) {
-          playVideo();
-        }
-      } else {
-        pauseVideo();
-      }
-    };
-
-    observer.observe(section);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    return () => {
-      observer.disconnect();
-      document.removeEventListener(
-        "visibilitychange",
-        handleVisibilityChange
-      );
-      pauseVideo();
-    };
-  }, [isMediaNear, isReducedMotion, videoError]);
 
   useGSAP(
     () => {
@@ -407,29 +312,14 @@ export default function ContactSection() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       >
-        {isMediaNear && !isReducedMotion && !videoError ? (
-          <video
-            ref={videoRef}
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            poster="/images/studio_materials_bg.jpg"
-            onError={() => setVideoError(true)}
-            className="absolute inset-0 h-full w-full object-cover object-center opacity-[0.2]"
-          >
-            <source src="/videos/northframe-hero.webm" type="video/webm" />
-            <source src="/videos/northframe-hero.mp4" type="video/mp4" />
-          </video>
-        ) : (
-          <Image
-            src="/images/studio_materials_bg.jpg"
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover object-center opacity-[0.16]"
-          />
-        )}
+        <Image
+          src="/images/studio_materials_bg.jpg"
+          alt=""
+          fill
+          sizes="100vw"
+          loading="lazy"
+          className="object-cover object-center opacity-[0.16]"
+        />
 
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,5,7,0.76)_0%,rgba(4,5,7,0.91)_48%,#040507_100%)]" />
         <div className="absolute bottom-[12%] right-[6%] h-[22%] w-[30%] bg-white/[0.025]" />

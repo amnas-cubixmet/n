@@ -65,45 +65,15 @@ export default function MotionRuntime() {
       }
     };
 
-    const handleLateAssetReady = (event: Event) => {
-      const target = event.target;
-      if (
-        target instanceof HTMLImageElement ||
-        target instanceof HTMLVideoElement
-      ) {
-        refreshAfterPaint();
-      }
-    };
-
-    const mediaCleanups: Array<() => void> = [];
-
-    document.querySelectorAll<HTMLImageElement>("img").forEach((image) => {
-      if (image.complete) return;
-      const onReady = () => refreshAfterPaint();
-      image.addEventListener("load", onReady, { once: true });
-      image.addEventListener("error", onReady, { once: true });
-      mediaCleanups.push(() => {
-        image.removeEventListener("load", onReady);
-        image.removeEventListener("error", onReady);
-      });
-    });
-
-    document.querySelectorAll<HTMLVideoElement>("video").forEach((video) => {
-      if (video.readyState >= 1) return;
-      const onReady = () => refreshAfterPaint();
-      video.addEventListener("loadedmetadata", onReady, { once: true });
-      mediaCleanups.push(() => {
-        video.removeEventListener("loadedmetadata", onReady);
-      });
-    });
+    // Components with late media use fixed aspect-ratio containers, so media
+    // decode does not change document geometry. Avoid globally refreshing every
+    // time an image/video loads; that was expensive on mobile Safari/Chrome.
 
     window.addEventListener("load", refreshAfterPaint, { once: true });
     window.addEventListener("resize", handleViewportResize, { passive: true });
     window.addEventListener("orientationchange", handleOrientationChange);
     window.addEventListener("pageshow", handlePageShow);
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    document.addEventListener("load", handleLateAssetReady, true);
-    document.addEventListener("loadedmetadata", handleLateAssetReady, true);
     window.visualViewport?.addEventListener("resize", handleViewportResize);
 
     if (document.fonts?.ready) {
@@ -133,10 +103,7 @@ export default function MotionRuntime() {
       window.removeEventListener("orientationchange", handleOrientationChange);
       window.removeEventListener("pageshow", handlePageShow);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      document.removeEventListener("load", handleLateAssetReady, true);
-      document.removeEventListener("loadedmetadata", handleLateAssetReady, true);
       window.visualViewport?.removeEventListener("resize", handleViewportResize);
-      mediaCleanups.forEach((cleanup) => cleanup());
     };
   }, [pathname]);
 

@@ -6,12 +6,14 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { deliverables } from "@/data/deliverables";
+import { useMobileMotionReady } from "@/components/motion/useMobileMotionReady";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 export default function DeliverablesSection() {
+  const motionReady = useMobileMotionReady();
   const masterRef = useRef<HTMLElement>(null);
   const stickyRef = useRef<HTMLDivElement>(null);
 
@@ -227,6 +229,8 @@ export default function DeliverablesSection() {
 
   useGSAP(
     () => {
+      if (!motionReady) return;
+
       const master = masterRef.current;
       const sticky = stickyRef.current;
       if (!master || !sticky) return;
@@ -458,6 +462,8 @@ export default function DeliverablesSection() {
     },
     {
       scope: masterRef,
+      dependencies: [motionReady],
+      revertOnUpdate: true,
     }
   );
 

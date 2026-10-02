@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useMobileMotionReady } from "@/components/motion/useMobileMotionReady";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -25,6 +26,7 @@ const BOTTOM_STEP_TIGHT =
   "polygon(0% 0%, 0% 66%, 14% 66%, 14% 62%, 28% 62%, 28% 68%, 43% 68%, 43% 63%, 57% 63%, 57% 67%, 72% 67%, 72% 62%, 86% 62%, 86% 70%, 100% 70%, 100% 0%)";
 
 export default function StatementSection() {
+  const motionReady = useMobileMotionReady();
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const topStepRef = useRef<HTMLDivElement>(null);
@@ -37,6 +39,8 @@ export default function StatementSection() {
 
   useGSAP(
     () => {
+      if (!motionReady) return;
+
       const section = sectionRef.current;
       const stage = stageRef.current;
       const topStep = topStepRef.current;
@@ -251,7 +255,11 @@ export default function StatementSection() {
         mm.revert();
       };
     },
-    { scope: sectionRef }
+    {
+      scope: sectionRef,
+      dependencies: [motionReady],
+      revertOnUpdate: true,
+    }
   );
 
   const headingClass = "m-0 flex w-full flex-col items-center justify-center gap-[clamp(6px,1.4svh,14px)] text-center font-pixel font-bold uppercase leading-[0.86] tracking-[-0.035em]";
@@ -329,7 +337,7 @@ export default function StatementSection() {
 
       <div
         ref={stageRef}
-        className="relative z-10 flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 lg:h-[100dvh] lg:min-h-[100dvh]"
+        className="statement-stage relative z-10 flex h-[100svh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#1677FF] px-3 py-[clamp(1.5rem,4svh,3rem)] select-none motion-reduce:h-auto motion-reduce:min-h-0 motion-reduce:overflow-visible motion-reduce:py-16 lg:h-[100dvh] lg:min-h-[100dvh]"
       >
         <h2 ref={headingRef} aria-label="We make brands go wow" className={`relative z-10 ${headingClass}`}>{renderWords()}</h2>
 

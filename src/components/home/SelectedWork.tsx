@@ -251,14 +251,6 @@ export default function SelectedWork() {
           </TransitionLink>
         </div>
 
-        <div className="flex w-full justify-center lg:absolute lg:bottom-10 lg:left-0">
-          <TransitionLink
-            href="/work"
-            className="inline-flex min-h-11 items-center justify-center bg-black px-6 py-3 font-mono text-xs uppercase tracking-wide text-white transition-colors lg:hover:bg-[#1677FF]"
-          >
-            SEE MORE WORK →
-          </TransitionLink>
-        </div>
       </div>
     </section>
   );

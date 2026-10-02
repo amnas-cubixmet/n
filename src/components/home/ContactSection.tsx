@@ -68,6 +68,7 @@ export default function ContactSection() {
   const [submissionNotice, setSubmissionNotice] = useState<string | null>(null);
   const [submissionState, setSubmissionState] = useState<"success" | "error" | null>(null);
   const [videoError, setVideoError] = useState(false);
+  const [isMediaNear, setIsMediaNear] = useState(false);
   const [isReducedMotion, setIsReducedMotion] = useState(() =>
     typeof window !== "undefined"
       ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
@@ -93,9 +94,38 @@ export default function ContactSection() {
 
   useEffect(() => {
     const section = sectionRef.current;
+    if (!section || isMediaNear) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        setIsMediaNear(true);
+        observer.disconnect();
+      },
+      {
+        rootMargin: "700px 0px",
+        threshold: 0,
+      }
+    );
+
+    observer.observe(section);
+
+    return () => observer.disconnect();
+  }, [isMediaNear]);
+
+  useEffect(() => {
+    const section = sectionRef.current;
     const video = videoRef.current;
 
-    if (!section || !video || isReducedMotion || videoError) return;
+    if (
+      !section ||
+      !video ||
+      !isMediaNear ||
+      isReducedMotion ||
+      videoError
+    ) {
+      return;
+    }
 
     const pauseVideo = () => {
       if (!video.paused) {
@@ -152,7 +182,7 @@ export default function ContactSection() {
       );
       pauseVideo();
     };
-  }, [isReducedMotion, videoError]);
+  }, [isMediaNear, isReducedMotion, videoError]);
 
   useGSAP(
     () => {
@@ -377,7 +407,7 @@ export default function ContactSection() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0 overflow-hidden"
       >
-        {!isReducedMotion && !videoError ? (
+        {isMediaNear && !isReducedMotion && !videoError ? (
           <video
             ref={videoRef}
             muted

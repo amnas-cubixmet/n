@@ -100,10 +100,14 @@ export default function OurUSPs() {
       secondCard.style.top = `${secondTop}px`;
 
       const thirdTop = Math.round(
-        secondTop + secondCard.offsetHeight * 0.75
+        secondTop + secondCard.offsetHeight * 0.85
       );
 
-      thirdCard.style.left = "50%";
+      const thirdLeft = Math.round(
+        firstCard.offsetLeft + firstCard.offsetWidth * 0.5
+      );
+
+      thirdCard.style.left = `${thirdLeft}px`;
       thirdCard.style.right = "auto";
       thirdCard.style.top = `${thirdTop}px`;
     };

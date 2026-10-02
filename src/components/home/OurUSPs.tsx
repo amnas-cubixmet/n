@@ -126,16 +126,16 @@ export default function OurUSPs() {
 
         const shapeTween = gsap.fromTo(
           shape,
-          { yPercent: -1.5 },
+          { yPercent: -0.45 },
           {
-            yPercent: 2.5,
+            yPercent: 0.75,
             ease: "none",
             force3D: true,
             scrollTrigger: {
               trigger: section,
               start: "top bottom",
               end: "bottom top",
-              scrub: 2.6,
+              scrub: 3.2,
               invalidateOnRefresh: true,
             },
           }
@@ -143,16 +143,16 @@ export default function OurUSPs() {
 
         const contentTween = gsap.fromTo(
           content,
-          { yPercent: 0.1 },
+          { yPercent: 0.35 },
           {
-            yPercent: -0.25,
+            yPercent: -1.15,
             ease: "none",
             force3D: true,
             scrollTrigger: {
               trigger: section,
               start: "top bottom",
               end: "bottom top",
-              scrub: 2.2,
+              scrub: 1.7,
               invalidateOnRefresh: true,
             },
           }
@@ -182,7 +182,7 @@ export default function OurUSPs() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 z-0 block opacity-80 lg:opacity-100 lg:will-change-transform"
       >
-        <div className="absolute left-1/2 top-1/2 aspect-[341/220] w-[178%] -translate-x-1/2 -translate-y-1/2 sm:w-[148%] lg:w-[104%] xl:w-[96%]">
+        <div className="absolute left-1/2 top-1/2 aspect-[341/220] w-[145%] -translate-x-1/2 -translate-y-1/2 sm:w-[120%] lg:w-[80%] xl:w-[74%]">
           <div
             className="absolute inset-0 bg-[#171717]"
             style={{
@@ -202,7 +202,7 @@ export default function OurUSPs() {
 
       <div
         ref={contentRef}
-        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-8 px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 pr-[max(1.1rem,env(safe-area-inset-right))] sm:gap-10 sm:px-8 sm:pb-24 lg:block lg:min-h-[clamp(2500px,190vw,2920px)] lg:px-12 lg:pb-32 xl:px-16"
+        className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-8 px-[max(1.1rem,env(safe-area-inset-left))] pb-[max(5rem,env(safe-area-inset-bottom))] pt-0 pr-[max(1.1rem,env(safe-area-inset-right))] sm:gap-10 sm:px-8 sm:pb-24 lg:block lg:min-h-[clamp(2920px,218vw,3300px)] lg:px-12 lg:pb-32 xl:px-16"
       >
         <header className="usp-reveal relative z-20 w-full p-0 lg:absolute lg:inset-x-0 lg:top-4">
           <div className="mx-auto w-full max-w-[1300px]">
@@ -215,11 +215,11 @@ export default function OurUSPs() {
         <div className="mt-8 flex w-full flex-col gap-10 sm:mt-10 sm:gap-12 lg:mt-0 lg:block">
           {usps.map((item, index) => {
             const desktopPositions = [
-              "lg:absolute lg:right-[12%] lg:top-[clamp(110px,9vw,150px)]",
-              "lg:absolute lg:left-[8%] lg:top-[clamp(560px,44vw,700px)]",
-              "lg:absolute lg:right-[11%] lg:top-[clamp(980px,78vw,1210px)]",
-              "lg:absolute lg:left-[18%] lg:top-[clamp(1420px,112vw,1740px)]",
-              "lg:absolute lg:right-[13%] lg:top-[clamp(1870px,147vw,2260px)]",
+              "lg:absolute lg:left-[2%] lg:top-[clamp(140px,10vw,180px)]",
+              "lg:absolute lg:right-[5%] lg:top-[clamp(650px,49vw,800px)]",
+              "lg:absolute lg:left-1/2 lg:-translate-x-1/2 lg:top-[clamp(1160px,88vw,1420px)]",
+              "lg:absolute lg:left-[8%] lg:top-[clamp(1680px,126vw,2050px)]",
+              "lg:absolute lg:right-[7%] lg:top-[clamp(2190px,164vw,2670px)]",
             ];
 
             const desktopWidths = [
@@ -244,7 +244,7 @@ export default function OurUSPs() {
             return (
               <article
                 key={item.id}
-                className={`usp-reveal relative flex min-h-[350px] w-[88%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 text-white shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:min-h-[380px] sm:w-[82%] sm:max-w-[430px] sm:p-8 lg:min-h-[420px] lg:p-9 xl:min-h-[440px] xl:p-10 ${mobileAlignment} ${desktopPositions[index]} ${desktopWidths[index]}`}
+                className={`usp-reveal relative flex min-h-[380px] w-[88%] max-w-[400px] flex-col justify-between bg-[#111111] p-6 text-white shadow-[0_22px_60px_rgba(0,0,0,0.16)] sm:min-h-[410px] sm:w-[82%] sm:max-w-[430px] sm:p-8 lg:min-h-[500px] lg:p-9 xl:min-h-[530px] xl:p-10 ${mobileAlignment} ${desktopPositions[index]} ${desktopWidths[index]}`}
                 style={{
                   clipPath:
                     index % 2 === 0

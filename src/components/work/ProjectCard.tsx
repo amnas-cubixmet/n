@@ -25,13 +25,17 @@ export function ProjectCard({
 }: ProjectCardProps) {
   const cardRef = useRef<HTMLElement>(null);
   const imageRef = useRef<HTMLImageElement>(null);
+  const imageRevealRef = useRef<HTMLDivElement>(null);
+  const metaRef = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       if (
         typeof window === "undefined" ||
         !cardRef.current ||
-        !imageRef.current
+        !imageRef.current ||
+        !imageRevealRef.current ||
+        !metaRef.current
       ) {
         return;
       }
@@ -40,6 +44,75 @@ export function ProjectCard({
       if (motionQuery.matches) return;
 
       const mm = gsap.matchMedia();
+
+      const buildReveal = (mobile: boolean) => {
+        const card = cardRef.current;
+        const imageReveal = imageRevealRef.current;
+        const meta = metaRef.current;
+        const image = imageRef.current;
+        if (!card || !imageReveal || !meta || !image) return;
+
+        const metaItems = Array.from(meta.children) as HTMLElement[];
+
+        gsap.set(imageReveal, {
+          clipPath: "inset(0% 0% 100% 0%)",
+        });
+        gsap.set(image, {
+          scale: mobile ? 1.07 : 1.09,
+        });
+        gsap.set(metaItems, {
+          y: mobile ? 12 : 18,
+          clipPath: "inset(0% 0% 100% 0%)",
+        });
+
+        const timeline = gsap.timeline({
+          paused: true,
+          scrollTrigger: {
+            trigger: card,
+            start: mobile ? "top 93%" : "top 87%",
+            once: true,
+            invalidateOnRefresh: true,
+            onEnter: () => timeline.play(),
+          },
+        });
+
+        timeline
+          .to(imageReveal, {
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: mobile ? 0.58 : 0.78,
+            ease: "expo.out",
+          })
+          .to(
+            image,
+            {
+              scale: 1.035,
+              duration: mobile ? 0.7 : 0.92,
+              ease: "power3.out",
+              force3D: true,
+            },
+            0
+          )
+          .to(
+            metaItems,
+            {
+              y: 0,
+              clipPath: "inset(0% 0% 0% 0%)",
+              duration: mobile ? 0.42 : 0.58,
+              stagger: 0.08,
+              ease: "expo.out",
+              force3D: true,
+            },
+            mobile ? 0.22 : 0.3
+          );
+
+        return () => {
+          timeline.scrollTrigger?.kill();
+          timeline.kill();
+        };
+      };
+
+      mm.add("(max-width: 768px)", () => buildReveal(true));
+      mm.add("(min-width: 769px)", () => buildReveal(false));
 
       // Internal scrub parallax is intentionally desktop-only. Touch scrolling
       // keeps the same visual crop without paying for a per-frame ScrollTrigger.
@@ -80,13 +153,14 @@ export function ProjectCard({
       >
         <div className="relative flex w-full flex-col items-start text-left cursor-pointer">
           {/* CONTROLLED 29/34 PORTRAIT ASPECT RATIO WITH DIAGONAL TOP-LEFT CLIP */}
-          <div
-            data-cursor-theme="image"
-            className="project-image relative w-full aspect-[29/34] overflow-hidden"
-            style={{
-              clipPath: "polygon(12% 0, 100% 0, 100% 100%, 0 100%, 0 12%)",
-            }}
-          >
+          <div ref={imageRevealRef} className="w-full overflow-hidden">
+            <div
+              data-cursor-theme="image"
+              className="project-image relative w-full aspect-[29/34] overflow-hidden"
+              style={{
+                clipPath: "polygon(12% 0, 100% 0, 100% 100%, 0 100%, 0 12%)",
+              }}
+            >
             <Image
               ref={imageRef}
               fill
@@ -98,7 +172,7 @@ export function ProjectCard({
           </div>
 
           {/* PROJECT METADATA DIRECTLY ATTACHED BELOW IMAGE */}
-          <div className="mt-2 flex flex-col items-start gap-[4px]">
+          <div ref={metaRef} className="mt-2 flex flex-col items-start gap-[4px]">
             <h3 className="text-[clamp(18px,1.5vw,22px)] font-normal leading-none tracking-[-0.02em] text-black">
               {project.title}
             </h3>

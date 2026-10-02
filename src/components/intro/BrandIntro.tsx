@@ -1,7 +1,6 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
-import Image from "next/image";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
@@ -57,6 +56,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     restoreScroll();
     setIsVisible(false);
     onComplete?.();
+    window.dispatchEvent(new Event("northframe:motion-refresh"));
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => ScrollTrigger.refresh());
@@ -103,6 +103,15 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     const mobileLike = window.matchMedia(
       "(max-width: 768px), (pointer: coarse)"
     ).matches;
+
+    if (mobileLike && !reducedMotion) {
+      const mobileTimer = window.setTimeout(finishIntro, 1500);
+
+      return () => {
+        window.clearTimeout(mobileTimer);
+        restoreScroll();
+      };
+    }
 
     const viewportWidth = window.visualViewport?.width || window.innerWidth;
     const viewportHeight = window.visualViewport?.height || window.innerHeight;
@@ -223,21 +232,21 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     <div
       ref={containerRef}
       aria-hidden="true"
-      className="fixed inset-0 z-[200] flex h-[100dvh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#070B14] select-none touch-none"
+      className="brand-intro-root fixed inset-0 z-[200] flex h-[100dvh] min-h-[100svh] w-full items-center justify-center overflow-hidden bg-[#070B14] select-none touch-none"
     >
-      <div ref={markRef} className="relative z-10 h-[72px] w-[72px] opacity-0 will-change-transform sm:h-[92px] sm:w-[92px]">
-        <Image
+      <div ref={markRef} className="brand-intro-mark relative z-10 h-[68px] w-[68px] opacity-0 will-change-transform sm:h-[92px] sm:w-[92px]">
+        <img
           ref={imageRef}
           src="/images/brand/northframe-icon.webp"
           alt=""
-          width={1254}
-          height={1254}
-          priority
-          sizes="(max-width: 640px) 72px, 92px"
+          width="1254"
+          height="1254"
+          decoding="async"
+          fetchPriority="high"
           className="block h-full w-full object-contain"
         />
       </div>
-      <div ref={coverRef} aria-hidden="true" className="pointer-events-none absolute inset-0 z-20 bg-[#1677FF] opacity-0 will-change-[opacity]" />
+      <div ref={coverRef} aria-hidden="true" className="brand-intro-cover pointer-events-none absolute inset-0 z-20 bg-[#1677FF] opacity-0 will-change-[opacity]" />
     </div>
   );
 }

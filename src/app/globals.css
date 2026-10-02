@@ -620,3 +620,71 @@ video {
     -webkit-font-smoothing: antialiased;
   }
 }
+
+
+/* MOBILE BRAND INTRO — CSS-native fallback for Safari/Android/in-app browsers.
+   This starts on first paint before GSAP hydration, so the loading motion is
+   always visible on touch devices. Desktop continues using the GSAP timeline. */
+@keyframes nf-brand-intro-mark-mobile {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 0, 0) scale(0.74);
+  }
+  28% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  48% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  86%,
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(24);
+  }
+}
+
+@keyframes nf-brand-intro-cover-mobile {
+  0%,
+  68% {
+    opacity: 0;
+  }
+  82%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes nf-brand-intro-root-mobile {
+  0%,
+  86% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@media (max-width: 768px), (pointer: coarse) {
+  .brand-intro-root {
+    animation: nf-brand-intro-root-mobile 1.45s linear both;
+  }
+
+  .brand-intro-mark {
+    animation: nf-brand-intro-mark-mobile 1.28s cubic-bezier(0.65, 0, 0.35, 1) both;
+    transform-origin: 50% 50%;
+  }
+
+  .brand-intro-cover {
+    animation: nf-brand-intro-cover-mobile 1.28s linear both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-intro-root,
+  .brand-intro-mark,
+  .brand-intro-cover {
+    animation: none !important;
+  }
+}

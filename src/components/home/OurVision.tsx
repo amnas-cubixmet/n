@@ -28,40 +28,48 @@ export default function OurVision() {
       const mm = gsap.matchMedia();
 
       const buildReveal = (mobile: boolean) => {
+        gsap.set(label, {
+          scaleX: 0,
+          transformOrigin: "left center",
+        });
+
+        gsap.set(copy, {
+          y: mobile ? 22 : 38,
+          clipPath: "inset(0% 0% 100% 0%)",
+          force3D: true,
+        });
+
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: containerRef.current,
-            start: mobile ? "top 92%" : "top 82%",
+            start: mobile ? "top 92%" : "top 84%",
             once: true,
             invalidateOnRefresh: true,
           },
         });
 
-        if (label) {
-          timeline.from(
-            label,
-            {
-              opacity: 0,
-              y: mobile ? 6 : 10,
-              duration: mobile ? 0.35 : 0.5,
-              ease: "power3.out",
-            },
-            "0"
-          );
-        }
-
-        if (copy) {
-          timeline.from(
+        timeline
+          .to(label, {
+            scaleX: 1,
+            duration: mobile ? 0.36 : 0.52,
+            ease: "power4.out",
+          })
+          .to(
             copy,
             {
-              opacity: 0,
-              y: mobile ? 12 : 24,
-              duration: mobile ? 0.52 : 0.8,
-              ease: "power3.out",
+              y: 0,
+              clipPath: "inset(0% 0% 0% 0%)",
+              duration: mobile ? 0.62 : 0.86,
+              ease: "expo.out",
+              force3D: true,
             },
-            "-=0.22"
+            mobile ? 0.08 : 0.12
           );
-        }
+
+        return () => {
+          timeline.scrollTrigger?.kill();
+          timeline.kill();
+        };
       };
 
       mm.add("(max-width: 768px)", () => buildReveal(true));

@@ -86,7 +86,7 @@ export default function WatWeDoen() {
     );
 
     const introHold = 0.62;
-    const revealSpan = 0.72;
+    const revealSpan = 0.86;
     const totalSegments = introHold + Math.max(1, services.length - 1);
     let scrollDistance = 0;
 
@@ -215,7 +215,7 @@ export default function WatWeDoen() {
         applyTextReveal(panel, reveal);
 
         if (image) {
-          const scale = 1 + 0.022 * reveal;
+          const scale = 1 + 0.095 * reveal;
           image.style.transform = `scale(${scale}) translateZ(0)`;
         }
       });
@@ -656,7 +656,7 @@ export default function WatWeDoen() {
                 >
                   <TransitionLink
                     href={`/services/${service.slug}`}
-                    className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(36px,9.5vw,48px)] font-bold uppercase leading-[0.91] tracking-normal text-white sm:text-[clamp(40px,9vw,52px)] md:text-[clamp(46px,6.6vw,62px)] lg:text-[106px] lg:leading-[0.94]"
+                    className="flex flex-col items-start gap-[2px] font-pixel text-[clamp(46px,12vw,62px)] font-bold uppercase leading-[0.91] tracking-normal text-white sm:text-[clamp(52px,10.5vw,70px)] md:text-[clamp(58px,7.5vw,78px)] lg:text-[106px] lg:leading-[0.94]"
                   >
                     {service.displayLines.map((line) => (
                       <span

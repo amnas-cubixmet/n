@@ -152,10 +152,10 @@ export default function StatementSection() {
               trigger: section,
               // Start once a meaningful part of the WOW overlay is already
               // covering Deliverables. The section itself keeps moving upward.
-              start: phone ? "top 60%" : tablet ? "top 58%" : "top 55%",
-              // Finish before the blue section has completely left the viewport.
-              end: phone ? "bottom 16%" : tablet ? "bottom 18%" : "bottom 20%",
-              scrub: phone ? 0.12 : tablet ? 0.16 : 0.22,
+              start: "top 55%",
+              // Use the same desktop scroll range on mobile for identical pacing.
+              end: "bottom 20%",
+              scrub: 0.22,
               invalidateOnRefresh: true,
               fastScrollEnd: false,
             },
@@ -166,7 +166,7 @@ export default function StatementSection() {
           blackFillRefs.current.forEach((fill) => {
             timeline.to(fill, {
               clipPath: "inset(0 0% 0 0)",
-              duration: phone ? 0.34 : tablet ? 0.38 : 0.42,
+              duration: 0.42,
               ease: "none",
             });
           });
@@ -178,7 +178,7 @@ export default function StatementSection() {
               {
                 width: letterWidths[index],
                 autoAlpha: 1,
-                duration: phone ? 0.1 : tablet ? 0.12 : 0.14,
+                duration: 0.14,
                 ease: "none",
               }
             );
@@ -189,9 +189,9 @@ export default function StatementSection() {
           const topEdgeTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: topStep,
-              start: phone ? "top 100%" : tablet ? "top 100%" : "top 100%",
-              end: phone ? "bottom 48%" : tablet ? "bottom 46%" : "bottom 42%",
-              scrub: phone ? 0.1 : tablet ? 0.14 : 0.18,
+              start: "top 100%",
+              end: "bottom 42%",
+              scrub: 0.18,
               invalidateOnRefresh: true,
             },
           });
@@ -209,9 +209,9 @@ export default function StatementSection() {
           const bottomEdgeTimeline = gsap.timeline({
             scrollTrigger: {
               trigger: bottomStep,
-              start: phone ? "top 98%" : tablet ? "top 98%" : "top 96%",
-              end: phone ? "top 58%" : tablet ? "top 56%" : "top 52%",
-              scrub: phone ? 0.1 : tablet ? 0.14 : 0.18,
+              start: "top 96%",
+              end: "top 52%",
+              scrub: 0.18,
               invalidateOnRefresh: true,
             },
           });
@@ -289,8 +289,8 @@ export default function StatementSection() {
         ref={index === 4 ? wowRef : undefined}
         className={`${index === 4 ? "relative left-1/2 block w-max -translate-x-1/2" : "relative inline-block"} whitespace-nowrap px-[0.06em] ${
           index === 4
-            ? "text-[clamp(42px,min(11vw,15svh),84px)] md:text-[clamp(68px,min(16vw,20svh),220px)]"
-            : "text-[clamp(34px,min(9vw,13svh),68px)] md:text-[clamp(60px,min(14vw,18svh),205px)]"
+            ? "text-[clamp(54px,min(15vw,17svh),96px)] md:text-[clamp(68px,min(16vw,20svh),220px)]"
+            : "text-[clamp(46px,min(13vw,15svh),82px)] md:text-[clamp(60px,min(14vw,18svh),205px)]"
         } motion-reduce:!text-[clamp(36px,8vw,90px)] text-black`}
       >
         <span>{index === 4 ? renderWowLetters(false) : word}</span>

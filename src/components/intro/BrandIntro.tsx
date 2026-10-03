@@ -105,7 +105,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     ).matches;
 
     if (mobileLike && !reducedMotion) {
-      const mobileTimer = window.setTimeout(finishIntro, 1500);
+      const mobileTimer = window.setTimeout(finishIntro, 2450);
 
       return () => {
         window.clearTimeout(mobileTimer);

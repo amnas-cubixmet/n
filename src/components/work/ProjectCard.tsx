@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 import { useGSAP } from "@gsap/react";
@@ -27,6 +27,107 @@ export function ProjectCard({
   const imageRef = useRef<HTMLImageElement>(null);
   const imageRevealRef = useRef<HTMLDivElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    const imageReveal = imageRevealRef.current;
+    const image = imageRef.current;
+    const meta = metaRef.current;
+
+    if (!card || !imageReveal || !image || !meta) return;
+    if (!window.matchMedia("(max-width: 768px)").matches) return;
+
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    const metaItems = Array.from(meta.children) as HTMLElement[];
+
+    if (reduced) {
+      imageReveal.style.clipPath = "inset(0)";
+      imageReveal.style.setProperty("-webkit-clip-path", "inset(0)");
+      image.style.transform = "scale(1.035)";
+      metaItems.forEach((item) => {
+        item.style.transform = "translate3d(0,0,0)";
+        item.style.clipPath = "inset(0)";
+        item.style.setProperty("-webkit-clip-path", "inset(0)");
+        item.style.opacity = "1";
+      });
+      return;
+    }
+
+    let frame = 0;
+
+    const clamp01 = (value: number) =>
+      Math.min(1, Math.max(0, value));
+
+    const update = () => {
+      frame = 0;
+
+      const rect = card.getBoundingClientRect();
+      const viewport = Math.max(1, window.innerHeight);
+
+      // Starts near the bottom of the viewport and finishes around the
+      // middle, so the reveal visibly follows the user's scroll gesture.
+      const start = viewport * 0.94;
+      const end = viewport * 0.52;
+      const progress = clamp01((start - rect.top) / (start - end));
+
+      const imageProgress = clamp01(progress / 0.72);
+      const hidden = (1 - imageProgress) * 100;
+      const scale = 1.085 - 0.05 * imageProgress;
+
+      imageReveal.style.clipPath = `inset(0% 0% ${hidden}% 0%)`;
+      imageReveal.style.setProperty(
+        "-webkit-clip-path",
+        `inset(0% 0% ${hidden}% 0%)`
+      );
+
+      image.style.transform = `translate3d(0,0,0) scale(${scale})`;
+
+      metaItems.forEach((item, index) => {
+        const local = clamp01(
+          (progress - (0.46 + index * 0.1)) / 0.3
+        );
+        const y = (1 - local) * 16;
+        const metaHidden = (1 - local) * 100;
+
+        item.style.opacity = String(local);
+        item.style.transform = `translate3d(0,${y}px,0)`;
+        item.style.clipPath = `inset(0% 0% ${metaHidden}% 0%)`;
+        item.style.setProperty(
+          "-webkit-clip-path",
+          `inset(0% 0% ${metaHidden}% 0%)`
+        );
+      });
+    };
+
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+    window.addEventListener("orientationchange", requestUpdate);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("orientationchange", requestUpdate);
+
+      imageReveal.style.removeProperty("clip-path");
+      imageReveal.style.removeProperty("-webkit-clip-path");
+      image.style.removeProperty("transform");
+
+      metaItems.forEach((item) => {
+        item.style.removeProperty("opacity");
+        item.style.removeProperty("transform");
+        item.style.removeProperty("clip-path");
+        item.style.removeProperty("-webkit-clip-path");
+      });
+    };
+  }, []);
 
   useGSAP(
     () => {
@@ -135,7 +236,6 @@ export function ProjectCard({
         };
       };
 
-      mm.add("(max-width: 768px)", () => buildReveal(true));
       mm.add("(min-width: 769px)", () => buildReveal(false));
 
       // Internal scrub parallax is intentionally desktop-only. Touch scrolling

@@ -868,3 +868,95 @@ video {
     animation: none !important;
   }
 }
+
+
+/* MOBILE OUR EXPERTISE + SELECTED WORK REVEALS */
+@keyframes nf-expertise-label-mobile {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scaleX(0.15);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleX(1);
+  }
+}
+
+@keyframes nf-expertise-copy-mobile {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0);
+    clip-path: inset(0 0 100% 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes nf-work-heading-line-mobile {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    clip-path: inset(0 0 100% 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (max-width: 768px) {
+  .our-expertise-mobile .our-expertise-mobile-label {
+    opacity: 0;
+    transform-origin: left center;
+  }
+
+  .our-expertise-mobile .our-expertise-mobile-copy {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0);
+    clip-path: inset(0 0 100% 0);
+    -webkit-clip-path: inset(0 0 100% 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .our-expertise-mobile.our-expertise-mobile-revealed
+    .our-expertise-mobile-label {
+    animation: nf-expertise-label-mobile 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .our-expertise-mobile.our-expertise-mobile-revealed
+    .our-expertise-mobile-copy {
+    animation: nf-expertise-copy-mobile 0.82s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+  }
+
+  .work-heading-mobile h2 > span {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0);
+    clip-path: inset(0 0 100% 0);
+    -webkit-clip-path: inset(0 0 100% 0);
+  }
+
+  .work-heading-mobile.work-heading-mobile-revealed h2 > span {
+    animation: nf-work-heading-line-mobile 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .work-heading-mobile.work-heading-mobile-revealed h2 > span:nth-child(2) {
+    animation-delay: 0.08s;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .our-expertise-mobile .our-expertise-mobile-label,
+  .our-expertise-mobile .our-expertise-mobile-copy,
+  .work-heading-mobile h2 > span {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    -webkit-clip-path: none;
+    animation: none !important;
+  }
+}

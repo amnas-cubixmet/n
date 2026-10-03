@@ -80,6 +80,59 @@ export default function Hero({ introCompleted }: HeroProps) {
             reducedMotion: boolean;
           };
 
+          if (mobile && !reducedMotion) {
+            if (bgVisual) {
+              gsap.set(bgVisual, {
+                opacity: 1,
+                clearProps: "transform",
+              });
+            }
+            if (heroVisual) {
+              gsap.set(heroVisual, {
+                opacity: 1,
+                clearProps: "transform",
+              });
+            }
+            if (logoWrapperRef.current) {
+              gsap.set(logoWrapperRef.current, {
+                clearProps: "opacity,transform",
+              });
+            }
+            if (labelRef.current) {
+              gsap.set(labelRef.current, {
+                clearProps: "opacity,transform",
+              });
+            }
+            if (blueLineRef.current) {
+              gsap.set(blueLineRef.current, {
+                clearProps: "transform,opacity",
+              });
+            }
+            if (serviceItems.length) {
+              gsap.set(serviceItems, {
+                clearProps: "opacity,transform",
+              });
+            }
+            if (serviceTextItems.length) {
+              gsap.set(serviceTextItems, {
+                clearProps: "transform",
+              });
+            }
+            if (headerBtn) {
+              gsap.set(headerBtn, {
+                opacity: 1,
+                y: 0,
+                clearProps: "transform",
+              });
+            }
+
+            requestAnimationFrame(() => {
+              window.dispatchEvent(new Event("northframe:motion-refresh"));
+            });
+
+            return;
+          }
+
           if (reducedMotion) {
             if (bgVisual) gsap.set(bgVisual, { opacity: 1 });
             if (heroVisual) gsap.set(heroVisual, { opacity: 1 });
@@ -385,7 +438,7 @@ export default function Hero({ introCompleted }: HeroProps) {
   return (
     <section
       ref={containerRef}
-      className="hero relative w-full h-[100svh] pointer-events-auto flex flex-col justify-between select-none !bg-transparent overflow-hidden"
+      className={`hero relative w-full h-[100svh] pointer-events-auto flex flex-col justify-between select-none !bg-transparent overflow-hidden ${introCompleted ? "hero-mobile-ready" : "hero-mobile-waiting"}`}
     >
       <div
         aria-hidden="true"

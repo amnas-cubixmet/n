@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect, useRef } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -15,6 +15,33 @@ export default function SelectedWork() {
   const shapeRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
+  const headingRef = useRef<HTMLDivElement>(null);
+  const [mobileHeadingRevealed, setMobileHeadingRevealed] = useState(false);
+
+  useEffect(() => {
+    const heading = headingRef.current;
+    if (!heading || !window.matchMedia("(max-width: 768px)").matches) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setMobileHeadingRevealed(true);
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry?.isIntersecting) return;
+        setMobileHeadingRevealed(true);
+        observer.disconnect();
+      },
+      {
+        threshold: 0.01,
+        rootMargin: "0px 0px -12% 0px",
+      }
+    );
+
+    observer.observe(heading);
+    return () => observer.disconnect();
+  }, []);
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
@@ -84,7 +111,7 @@ export default function SelectedWork() {
       if (!sectionRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
       const cards = gsap.utils.toArray<HTMLElement>(
-        sectionRef.current.querySelectorAll(".work-project-item")
+        sectionRef.current.querySelectorAll(".work-project-item:not(.work-heading-mobile)")
       );
 
       const media = gsap.matchMedia();
@@ -211,7 +238,10 @@ export default function SelectedWork() {
         ref={contentRef}
         className="relative z-10 mx-auto flex w-full max-w-[1500px] flex-col items-start gap-12 sm:gap-16 lg:block lg:min-h-[clamp(1280px,104vw,1580px)] lg:translate-x-2 xl:translate-x-3"
       >
-        <div className="work-project-item flex flex-col items-start gap-[2px] lg:absolute lg:left-0 lg:top-[clamp(80px,6.5vw,104px)] lg:-translate-x-[5px] xl:-translate-x-[9px]">
+        <div
+          ref={headingRef}
+          className={`work-project-item work-heading-mobile flex flex-col items-start gap-[2px] lg:absolute lg:left-0 lg:top-[clamp(80px,6.5vw,104px)] lg:-translate-x-[5px] xl:-translate-x-[9px] ${mobileHeadingRevealed ? "work-heading-mobile-revealed" : ""}`}
+        >
           <h2 className="flex flex-col items-start gap-[2px] font-montserrat text-[clamp(14px,1.35vw,19px)] font-semibold uppercase leading-[1] tracking-[0.01em]">
             <span className="bg-black px-[3px] text-white">A SELECTION</span>
             <span className="bg-black px-[3px] text-white">OF OUR WORK</span>

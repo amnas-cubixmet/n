@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import BrandIntro from "@/components/intro/BrandIntro";
 import Header from "@/components/navigation/Header";
@@ -24,6 +24,29 @@ const Shared3DBackground = dynamic(
 
 export default function Home() {
   const [introCompleted, setIntroCompleted] = useState(false);
+  const [desktop3DEnabled, setDesktop3DEnabled] = useState(false);
+
+  useEffect(() => {
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+
+    const syncDesktop3D = () => {
+      setDesktop3DEnabled(desktopQuery.matches);
+    };
+
+    syncDesktop3D();
+
+    if (typeof desktopQuery.addEventListener === "function") {
+      desktopQuery.addEventListener("change", syncDesktop3D);
+      return () => {
+        desktopQuery.removeEventListener("change", syncDesktop3D);
+      };
+    }
+
+    desktopQuery.addListener(syncDesktop3D);
+    return () => {
+      desktopQuery.removeListener(syncDesktop3D);
+    };
+  }, []);
 
   const handleIntroComplete = () => {
     setIntroCompleted(true);
@@ -38,7 +61,9 @@ export default function Home() {
       <FloatingContactActions />
 
       <div className="global-visual-background fixed inset-0 w-full h-[100svh] lg:h-[100dvh] z-0 overflow-hidden pointer-events-none bg-[#05080B]">
-        <Shared3DBackground introCompleted={introCompleted} />
+        {desktop3DEnabled ? (
+          <Shared3DBackground introCompleted={introCompleted} />
+        ) : null}
       </div>
 
       <div className="foreground relative z-10 w-full flex flex-col pointer-events-none">

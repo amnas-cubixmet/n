@@ -144,7 +144,7 @@ export default function WatWeDoen() {
 
         item.style.transform = `translate3d(0, ${y}px, 0)`;
         item.style.clipPath = `inset(0% 0% ${hidden}% 0%)`;
-        item.style.webkitClipPath = `inset(0% 0% ${hidden}% 0%)`;
+        item.style.setProperty("-webkit-clip-path", `inset(0% 0% ${hidden}% 0%)`);
       });
     };
 
@@ -183,14 +183,14 @@ export default function WatWeDoen() {
           textItems.forEach((item) => {
             item.style.transform = "translate3d(0,0,0)";
             item.style.clipPath = "inset(0)";
-            item.style.webkitClipPath = "inset(0)";
+            item.style.setProperty("-webkit-clip-path", "inset(0)");
           });
           return;
         }
 
         if (index === 0) {
           panel.style.clipPath = "inset(0)";
-          panel.style.webkitClipPath = "inset(0)";
+          panel.style.setProperty("-webkit-clip-path", "inset(0)");
 
           const firstTextProgress = clamp01(position / introHold);
           applyTextReveal(panel, firstTextProgress);
@@ -209,7 +209,7 @@ export default function WatWeDoen() {
         const clip = stepClip(reveal);
 
         panel.style.clipPath = clip;
-        panel.style.webkitClipPath = clip;
+        panel.style.setProperty("-webkit-clip-path", clip);
         applyTextReveal(panel, reveal);
 
         if (image) {

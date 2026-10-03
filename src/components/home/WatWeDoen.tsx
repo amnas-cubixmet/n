@@ -172,8 +172,10 @@ export default function WatWeDoen() {
           );
           panel.style.clipPath =
             index === activeIndex ? "inset(0)" : CLOSED_STEPS;
-          panel.style.webkitClipPath =
-            index === activeIndex ? "inset(0)" : CLOSED_STEPS;
+          panel.style.setProperty(
+            "-webkit-clip-path",
+            index === activeIndex ? "inset(0)" : CLOSED_STEPS
+          );
           panel.style.visibility =
             index === activeIndex ? "visible" : "hidden";
 

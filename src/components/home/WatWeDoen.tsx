@@ -62,9 +62,215 @@ export default function WatWeDoen() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!motionReady || window.innerWidth >= 1024) return;
+
+    const wrapper = wrapperRef.current;
+    const sticky = stickyRef.current;
+    if (!wrapper || !sticky) return;
+
+    const panels = panelsRef.current.filter(
+      (panel): panel is HTMLElement => Boolean(panel)
+    );
+    if (panels.length !== services.length) return;
+
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    let frame = 0;
+    let orientationTimer = 0;
+    let viewportHeight = Math.max(
+      320,
+      sticky.clientHeight || window.innerHeight
+    );
+
+    const introHold = 0.62;
+    const revealSpan = 0.72;
+    const totalSegments = introHold + Math.max(1, services.length - 1);
+    let scrollDistance = 0;
+
+    const clamp01 = (value: number) =>
+      Math.min(1, Math.max(0, value));
+
+    const stepClip = (progress: number) => {
+      const p = clamp01(progress);
+      const y0 = 100 + (0 - 100) * p;
+      const y1 = 100 + (-12 - 100) * p;
+      const y2 = 100 + (-24 - 100) * p;
+      const y3 = 100 + (-36 - 100) * p;
+      const y4 = 100 + (-48 - 100) * p;
+
+      return `polygon(
+        0% 100%,
+        0% ${y0}%,
+        20% ${y0}%,
+        20% ${y1}%,
+        40% ${y1}%,
+        40% ${y2}%,
+        60% ${y2}%,
+        60% ${y3}%,
+        80% ${y3}%,
+        80% ${y4}%,
+        100% ${y4}%,
+        100% 100%
+      )`;
+    };
+
+    const setStageHeight = () => {
+      viewportHeight = Math.max(
+        320,
+        sticky.clientHeight || window.innerHeight
+      );
+      scrollDistance = Math.round(
+        viewportHeight * totalSegments * 0.72
+      );
+      wrapper.style.height = `${viewportHeight + scrollDistance}px`;
+    };
+
+    const applyTextReveal = (
+      panel: HTMLElement,
+      progress: number
+    ) => {
+      const textItems = Array.from(
+        panel.querySelectorAll<HTMLElement>(".service-mobile-text")
+      );
+
+      textItems.forEach((item, textIndex) => {
+        const start = 0.12 + textIndex * 0.055;
+        const local = clamp01((progress - start) / 0.36);
+        const y = (1 - local) * 18;
+        const hidden = (1 - local) * 100;
+
+        item.style.transform = `translate3d(0, ${y}px, 0)`;
+        item.style.clipPath = `inset(0% 0% ${hidden}% 0%)`;
+        item.style.webkitClipPath = `inset(0% 0% ${hidden}% 0%)`;
+      });
+    };
+
+    const update = () => {
+      frame = 0;
+
+      const rect = wrapper.getBoundingClientRect();
+      const rawProgress =
+        scrollDistance > 0 ? -rect.top / scrollDistance : 0;
+      const sectionProgress = clamp01(rawProgress);
+      const position = sectionProgress * totalSegments;
+
+      panels.forEach((panel, index) => {
+        const image = imagesRef.current[index];
+
+        panel.style.zIndex = String(10 + index);
+        panel.style.opacity = "1";
+        panel.style.visibility = "visible";
+        panel.style.transform = "translate3d(0,0,0)";
+
+        if (reduced) {
+          const activeIndex = Math.min(
+            services.length - 1,
+            Math.max(0, Math.round(sectionProgress * (services.length - 1)))
+          );
+          panel.style.clipPath =
+            index === activeIndex ? "inset(0)" : CLOSED_STEPS;
+          panel.style.webkitClipPath =
+            index === activeIndex ? "inset(0)" : CLOSED_STEPS;
+          panel.style.visibility =
+            index === activeIndex ? "visible" : "hidden";
+
+          const textItems = panel.querySelectorAll<HTMLElement>(
+            ".service-mobile-text"
+          );
+          textItems.forEach((item) => {
+            item.style.transform = "translate3d(0,0,0)";
+            item.style.clipPath = "inset(0)";
+            item.style.webkitClipPath = "inset(0)";
+          });
+          return;
+        }
+
+        if (index === 0) {
+          panel.style.clipPath = "inset(0)";
+          panel.style.webkitClipPath = "inset(0)";
+
+          const firstTextProgress = clamp01(position / introHold);
+          applyTextReveal(panel, firstTextProgress);
+
+          if (image) {
+            const scale = 1.035 - 0.035 * firstTextProgress;
+            image.style.transform = `scale(${scale}) translateZ(0)`;
+          }
+          return;
+        }
+
+        const segmentStart = introHold + (index - 1);
+        const reveal = clamp01(
+          (position - segmentStart) / revealSpan
+        );
+        const clip = stepClip(reveal);
+
+        panel.style.clipPath = clip;
+        panel.style.webkitClipPath = clip;
+        applyTextReveal(panel, reveal);
+
+        if (image) {
+          const scale = 1 + 0.022 * reveal;
+          image.style.transform = `scale(${scale}) translateZ(0)`;
+        }
+      });
+    };
+
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(update);
+    };
+
+    setStageHeight();
+    update();
+
+    window.addEventListener("scroll", requestUpdate, { passive: true });
+
+    const handleOrientation = () => {
+      window.clearTimeout(orientationTimer);
+      orientationTimer = window.setTimeout(() => {
+        setStageHeight();
+        update();
+      }, 320);
+    };
+
+    window.addEventListener("orientationchange", handleOrientation);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.clearTimeout(orientationTimer);
+      window.removeEventListener("scroll", requestUpdate);
+      window.removeEventListener("orientationchange", handleOrientation);
+      wrapper.style.height = "";
+
+      panels.forEach((panel, index) => {
+        panel.style.removeProperty("clip-path");
+        panel.style.removeProperty("-webkit-clip-path");
+        panel.style.removeProperty("transform");
+        panel.style.removeProperty("opacity");
+        panel.style.removeProperty("visibility");
+        panel.style.removeProperty("z-index");
+
+        panel
+          .querySelectorAll<HTMLElement>(".service-mobile-text")
+          .forEach((item) => {
+            item.style.removeProperty("transform");
+            item.style.removeProperty("clip-path");
+            item.style.removeProperty("-webkit-clip-path");
+          });
+
+        const image = imagesRef.current[index];
+        image?.style.removeProperty("transform");
+      });
+    };
+  }, [motionReady]);
+
   useGSAP(
     () => {
-      if (!motionReady) return;
+      if (!motionReady || window.innerWidth < 1024) return;
 
       const wrapper = wrapperRef.current;
       const sticky = stickyRef.current;

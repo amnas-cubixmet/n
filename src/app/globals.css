@@ -812,3 +812,59 @@ video {
     transform-origin: center bottom;
   }
 }
+
+
+/* MOBILE INTRODUCTION SCROLL REVEAL
+   Native CSS animation triggered by a lightweight viewport observer. */
+@keyframes nf-intro-heading-mobile {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0);
+    clip-path: inset(0 0 100% 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes nf-intro-paragraph-mobile {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 30px, 0);
+    clip-path: inset(0 0 100% 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@media (max-width: 768px) {
+  .intro-section-mobile .intro-mobile-heading,
+  .intro-section-mobile .intro-mobile-paragraph {
+    opacity: 0;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  .intro-section-mobile.intro-mobile-revealed .intro-mobile-heading {
+    animation: nf-intro-heading-mobile 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .intro-section-mobile.intro-mobile-revealed .intro-mobile-paragraph {
+    animation: nf-intro-paragraph-mobile 0.78s cubic-bezier(0.22, 1, 0.36, 1) 0.12s both;
+  }
+}
+
+@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+  .intro-section-mobile .intro-mobile-heading,
+  .intro-section-mobile .intro-mobile-paragraph {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+    animation: none !important;
+  }
+}

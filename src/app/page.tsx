@@ -38,7 +38,7 @@ export default function Home() {
       <FloatingContactActions />
 
       <div className="global-visual-background fixed inset-0 w-full h-[100svh] lg:h-[100dvh] z-0 overflow-hidden pointer-events-none bg-[#05080B]">
-        <Shared3DBackground />
+        <Shared3DBackground introCompleted={introCompleted} />
       </div>
 
       <div className="foreground relative z-10 w-full flex flex-col pointer-events-none">

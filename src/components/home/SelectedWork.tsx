@@ -111,7 +111,10 @@ export default function SelectedWork() {
       if (!sectionRef.current || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
       const cards = gsap.utils.toArray<HTMLElement>(
-        sectionRef.current.querySelectorAll(".work-project-item:not(.work-heading-mobile)")
+        sectionRef.current.querySelectorAll(".work-project-item")
+      );
+      const mobileCards = cards.filter(
+        (card) => !card.classList.contains("work-heading-mobile")
       );
 
       const media = gsap.matchMedia();
@@ -119,9 +122,10 @@ export default function SelectedWork() {
       const buildCardReveals = (
         y: number,
         duration: number,
-        start: string
+        start: string,
+        items = cards
       ) => {
-        cards.forEach((card) => {
+        items.forEach((card) => {
           gsap.fromTo(
             card,
             {
@@ -146,7 +150,7 @@ export default function SelectedWork() {
       };
 
       media.add("(max-width: 768px)", () =>
-        buildCardReveals(12, 0.44, "top 94%")
+        buildCardReveals(12, 0.44, "top 94%", mobileCards)
       );
       media.add("(min-width: 769px) and (max-width: 1023px)", () =>
         buildCardReveals(16, 0.5, "top 92%")

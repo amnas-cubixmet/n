@@ -80,11 +80,7 @@ export default function StatementSection() {
             reduced: boolean;
           };
 
-          const phone = Boolean(conditions.phone);
-          const tablet = Boolean(conditions.tablet);
-          const desktop = Boolean(conditions.desktop);
           const reduced = Boolean(conditions.reduced);
-          const compact = phone || tablet;
 
           if (reduced) {
             gsap.set(heading, { autoAlpha: 1 });

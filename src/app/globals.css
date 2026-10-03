@@ -704,3 +704,111 @@ video {
     min-height: var(--nf-mobile-vh, 100svh);
   }
 }
+
+
+/* MOBILE HERO ENTRANCE
+   Runs after the brand intro handoff without depending on GSAP timing. */
+@keyframes nf-hero-logo-mobile {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes nf-hero-service-mobile {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes nf-hero-service-text-mobile {
+  0% {
+    transform: translate3d(0, 115%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes nf-hero-scroll-label-mobile {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes nf-hero-scroll-line-mobile {
+  0% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-mobile-waiting .hero-logo-wrapper,
+  .hero-mobile-waiting .service-item,
+  .hero-mobile-waiting .scroll-indicator-wrapper {
+    opacity: 0;
+  }
+
+  .hero-mobile-ready .hero-logo-wrapper {
+    animation: nf-hero-logo-mobile 0.82s cubic-bezier(0.22, 1, 0.36, 1) 0.08s both;
+  }
+
+  .hero-mobile-ready .service-item {
+    animation: nf-hero-service-mobile 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .hero-mobile-ready .service-item-text {
+    animation: nf-hero-service-text-mobile 0.56s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .hero-mobile-ready .service-list li:nth-child(1) .service-item,
+  .hero-mobile-ready .service-list li:nth-child(1) .service-item-text {
+    animation-delay: 0.24s;
+  }
+
+  .hero-mobile-ready .service-list li:nth-child(2) .service-item,
+  .hero-mobile-ready .service-list li:nth-child(2) .service-item-text {
+    animation-delay: 0.30s;
+  }
+
+  .hero-mobile-ready .service-list li:nth-child(3) .service-item,
+  .hero-mobile-ready .service-list li:nth-child(3) .service-item-text {
+    animation-delay: 0.36s;
+  }
+
+  .hero-mobile-ready .service-list li:nth-child(4) .service-item,
+  .hero-mobile-ready .service-list li:nth-child(4) .service-item-text {
+    animation-delay: 0.42s;
+  }
+
+  .hero-mobile-ready .service-list li:nth-child(5) .service-item,
+  .hero-mobile-ready .service-list li:nth-child(5) .service-item-text {
+    animation-delay: 0.48s;
+  }
+
+  .hero-mobile-ready .scroll-indicator-wrapper {
+    animation: nf-hero-scroll-label-mobile 0.52s cubic-bezier(0.22, 1, 0.36, 1) 0.54s both;
+  }
+
+  .hero-mobile-ready .scroll-indicator-line {
+    animation: nf-hero-scroll-line-mobile 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.58s both;
+    transform-origin: center bottom;
+  }
+}

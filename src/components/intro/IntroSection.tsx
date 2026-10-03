@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -17,6 +17,67 @@ export default function IntroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const paragraphRef = useRef<HTMLParagraphElement>(null);
+  const [mobileRevealed, setMobileRevealed] = useState(false);
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const mobile = window.matchMedia("(max-width: 768px)").matches;
+    if (!mobile) return;
+
+    const reduced = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (reduced) {
+      setMobileRevealed(true);
+      return;
+    }
+
+    let frame = 0;
+    let observer: IntersectionObserver | null = null;
+
+    const revealIfReady = () => {
+      frame = 0;
+      const rect = container.getBoundingClientRect();
+      const triggerLine = window.innerHeight * 0.82;
+
+      if (rect.top <= triggerLine && rect.bottom > window.innerHeight * 0.12) {
+        setMobileRevealed(true);
+        observer?.disconnect();
+        window.removeEventListener("scroll", requestCheck);
+      }
+    };
+
+    const requestCheck = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(revealIfReady);
+    };
+
+    if ("IntersectionObserver" in window) {
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry?.isIntersecting) return;
+          requestCheck();
+        },
+        {
+          threshold: 0.01,
+          rootMargin: "0px 0px -18% 0px",
+        }
+      );
+      observer.observe(container);
+    }
+
+    window.addEventListener("scroll", requestCheck, { passive: true });
+    requestCheck();
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      observer?.disconnect();
+      window.removeEventListener("scroll", requestCheck);
+    };
+  }, []);
 
   useGSAP(
     () => {
@@ -39,95 +100,21 @@ export default function IntroSection() {
         return;
       }
 
-      gsap.set(heading, {
-        autoAlpha: 0,
-        y: 12,
-        force3D: true,
-      });
-
-      gsap.set(paragraph, {
-        autoAlpha: 0,
-        y: 24,
-        force3D: true,
-      });
-
       const mm = gsap.matchMedia();
 
-      mm.add("(max-width: 768px)", () => {
-        let played = false;
-        let firstFrame = 0;
-        let secondFrame = 0;
-        let timeline: gsap.core.Timeline | null = null;
-
-        const play = () => {
-          if (played) return;
-          played = true;
-
-          timeline = gsap.timeline({
-            defaults: {
-              ease: "power3.out",
-              overwrite: "auto",
-            },
-          });
-
-          timeline
-            .to(heading, {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.38,
-              force3D: true,
-            })
-            .to(
-              paragraph,
-              {
-                autoAlpha: 1,
-                y: 0,
-                duration: 0.64,
-                force3D: true,
-              },
-              "-=0.16"
-            );
-        };
-
-        const observer = new IntersectionObserver(
-          ([entry]) => {
-            if (!entry?.isIntersecting) return;
-            observer.disconnect();
-            play();
-          },
-          {
-            threshold: 0.01,
-            rootMargin: "0px 0px 0px 0px",
-          }
-        );
-
-        // Safari can report the viewport before its browser chrome settles.
-        // Observe after two painted frames so the trigger is based on the
-        // actual mobile viewport, not the transitional toolbar height.
-        firstFrame = window.requestAnimationFrame(() => {
-          secondFrame = window.requestAnimationFrame(() => {
-            observer.observe(container);
-
-            const rect = container.getBoundingClientRect();
-            if (
-              rect.top < window.innerHeight * 0.98 &&
-              rect.bottom > window.innerHeight * 0.02
-            ) {
-              observer.disconnect();
-              play();
-            }
-          });
+      mm.add("(min-width: 769px)", () => {
+        gsap.set(heading, {
+          autoAlpha: 0,
+          y: 12,
+          force3D: true,
         });
 
-        return () => {
-          observer.disconnect();
-          window.cancelAnimationFrame(firstFrame);
-          window.cancelAnimationFrame(secondFrame);
-          timeline?.kill();
-        };
-      });
+        gsap.set(paragraph, {
+          autoAlpha: 0,
+          y: 24,
+          force3D: true,
+        });
 
-      mm.add("(min-width: 769px)", () => {
         const timeline = gsap.timeline({
           defaults: {
             ease: "power3.out",
@@ -172,14 +159,14 @@ export default function IntroSection() {
   return (
     <div
       ref={containerRef}
-      className="relative z-10 box-border flex min-h-[50svh] w-full flex-col items-start justify-start bg-transparent m-0 px-[max(20px,env(safe-area-inset-left))] pt-[clamp(3rem,8svh,7rem)] pb-[clamp(4rem,11svh,9rem)] text-left text-white pointer-events-auto sm:px-[clamp(32px,5vw,96px)]"
+      className={`intro-section-mobile relative z-10 box-border flex min-h-[50svh] w-full flex-col items-start justify-start bg-transparent m-0 px-[max(20px,env(safe-area-inset-left))] pt-[clamp(3rem,8svh,7rem)] pb-[clamp(4rem,11svh,9rem)] text-left text-white pointer-events-auto sm:px-[clamp(32px,5vw,96px)] ${mobileRevealed ? "intro-mobile-revealed" : ""}`}
     >
       <div className="w-full">
         <div className="max-w-[1000px]">
           <div className="flex items-center overflow-hidden py-1">
             <h2
               ref={headingRef}
-              className="w-fit font-montserrat text-[11px] font-medium tracking-[0.04em] text-white uppercase leading-none opacity-0 sm:text-[13px]"
+              className="intro-mobile-heading w-fit font-montserrat text-[11px] font-medium tracking-[0.04em] text-white uppercase leading-none opacity-0 sm:text-[13px]"
             >
               {headingText}
             </h2>
@@ -188,7 +175,7 @@ export default function IntroSection() {
           <div className="mt-5 sm:mt-7">
             <p
               ref={paragraphRef}
-              className="m-0 max-w-[950px] text-left font-poppins text-white text-[clamp(18px,4.7vw,23px)] sm:text-[clamp(23px,2.1vw,30px)] leading-[1.34] font-normal tracking-[-0.025em] opacity-0 will-change-transform"
+              className="intro-mobile-paragraph m-0 max-w-[950px] text-left font-poppins text-white text-[clamp(18px,4.7vw,23px)] sm:text-[clamp(23px,2.1vw,30px)] leading-[1.34] font-normal tracking-[-0.025em] opacity-0 will-change-transform"
             >
               {paragraphText}
             </p>

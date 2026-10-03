@@ -21,8 +21,10 @@ if (typeof window !== "undefined") {
 
 function MobileFrameScheduler({
   active,
+  targetFps = 30,
 }: {
   active: boolean;
+  targetFps?: number;
 }) {
   const invalidate = useThree((state) => state.invalidate);
 
@@ -31,7 +33,7 @@ function MobileFrameScheduler({
 
     let frame = 0;
     let lastPaint = 0;
-    const frameInterval = 1000 / 30;
+    const frameInterval = 1000 / targetFps;
 
     const tick = (time: number) => {
       if (time - lastPaint >= frameInterval) {
@@ -45,7 +47,7 @@ function MobileFrameScheduler({
     frame = window.requestAnimationFrame(tick);
 
     return () => window.cancelAnimationFrame(frame);
-  }, [active, invalidate]);
+  }, [active, invalidate, targetFps]);
 
   return null;
 }
@@ -353,7 +355,13 @@ function FloorBackdrop({ isMobile }: { isMobile: boolean }) {
   );
 }
 
-export default function Shared3DBackground() {
+interface Shared3DBackgroundProps {
+  introCompleted: boolean;
+}
+
+export default function Shared3DBackground({
+  introCompleted,
+}: Shared3DBackgroundProps) {
   const [isMobile, setIsMobile] = useState(() => {
     if (typeof window === "undefined") return false;
     const width = window.innerWidth;
@@ -381,6 +389,53 @@ export default function Shared3DBackground() {
       ? window.matchMedia("(prefers-reduced-motion: reduce)").matches
       : false
   );
+  const [isLowEndMobile, setIsLowEndMobile] = useState(false);
+  const [canRenderCanvas, setCanRenderCanvas] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth > 768 : false
+  );
+
+  useEffect(() => {
+    const width = window.innerWidth;
+    const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
+    const mobileLike = width <= 768 || (coarsePointer && width <= 1024);
+
+    const navigatorWithMemory = navigator as Navigator & {
+      deviceMemory?: number;
+      connection?: { saveData?: boolean };
+    };
+
+    const cores = navigator.hardwareConcurrency || 4;
+    const memory = navigatorWithMemory.deviceMemory;
+    const saveData = Boolean(navigatorWithMemory.connection?.saveData);
+
+    const lowEnd =
+      mobileLike &&
+      (cores <= 4 || (typeof memory === "number" && memory <= 4) || saveData);
+
+    setIsLowEndMobile(lowEnd);
+
+    if (!mobileLike) {
+      setCanRenderCanvas(true);
+      return;
+    }
+
+    if (!introCompleted) {
+      setCanRenderCanvas(false);
+      return;
+    }
+
+    // Let the CSS-native hero entrance paint first. On lower-end phones,
+    // keep WebGL off the main thread a little longer so logo/text animation
+    // cannot lose frames during the intro -> hero handoff.
+    const delay = lowEnd ? 950 : 220;
+    const timer = window.setTimeout(() => {
+      requestAnimationFrame(() => {
+        setCanRenderCanvas(true);
+      });
+    }, delay);
+
+    return () => window.clearTimeout(timer);
+  }, [introCompleted]);
 
   useEffect(() => {
     const hoverQuery = window.matchMedia("(hover: hover) and (pointer: fine)");
@@ -487,7 +542,11 @@ export default function Shared3DBackground() {
 
       <div className="hero-a-float h-full w-full">
         <div className="hero-a-interaction h-full w-full">
-          <div className="hero-a-object h-full w-full">
+          <div
+            className="hero-a-object h-full w-full transition-opacity duration-700 ease-out"
+            style={{ opacity: canRenderCanvas ? 1 : 0 }}
+          >
+            {canRenderCanvas && (
             <Canvas
               dpr={isMobile ? 1 : [1, 1.5]}
               frameloop={isHidden ? "never" : isMobile ? "demand" : "always"}
@@ -509,7 +568,10 @@ export default function Shared3DBackground() {
               }}
               className="relative z-10 h-full w-full pointer-events-none"
             >
-              <MobileFrameScheduler active={isMobile && !isHidden} />
+              <MobileFrameScheduler
+                active={isMobile && !isHidden}
+                targetFps={isLowEndMobile ? 20 : 30}
+              />
 
               <fog attach="fog" args={["#05080B", 4.5, 14]} />
 
@@ -530,6 +592,7 @@ export default function Shared3DBackground() {
                 reducedMotion={reducedMotion}
               />
             </Canvas>
+            )}
           </div>
         </div>
       </div>

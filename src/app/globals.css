@@ -631,15 +631,15 @@ video {
     opacity: 0;
     transform: translate3d(0, 0, 0) scale(0.74);
   }
-  28% {
+  22% {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
   }
-  48% {
+  60% {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(1);
   }
-  86%,
+  88%,
   100% {
     opacity: 1;
     transform: translate3d(0, 0, 0) scale(24);
@@ -648,10 +648,10 @@ video {
 
 @keyframes nf-brand-intro-cover-mobile {
   0%,
-  68% {
+  76% {
     opacity: 0;
   }
-  82%,
+  88%,
   100% {
     opacity: 1;
   }
@@ -659,7 +659,7 @@ video {
 
 @keyframes nf-brand-intro-root-mobile {
   0%,
-  86% {
+  91% {
     opacity: 1;
   }
   100% {
@@ -669,16 +669,16 @@ video {
 
 @media (max-width: 768px), (pointer: coarse) {
   .brand-intro-root {
-    animation: nf-brand-intro-root-mobile 1.45s linear both;
+    animation: nf-brand-intro-root-mobile 2.4s linear both;
   }
 
   .brand-intro-mark {
-    animation: nf-brand-intro-mark-mobile 1.28s cubic-bezier(0.65, 0, 0.35, 1) both;
+    animation: nf-brand-intro-mark-mobile 2.15s cubic-bezier(0.65, 0, 0.35, 1) both;
     transform-origin: 50% 50%;
   }
 
   .brand-intro-cover {
-    animation: nf-brand-intro-cover-mobile 1.28s linear both;
+    animation: nf-brand-intro-cover-mobile 2.15s linear both;
   }
 }
 

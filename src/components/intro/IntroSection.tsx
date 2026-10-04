@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { useGSAP } from "@gsap/react";
@@ -17,67 +17,6 @@ export default function IntroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
   const paragraphRef = useRef<HTMLParagraphElement>(null);
-  const [mobileRevealed, setMobileRevealed] = useState(false);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const mobile = window.matchMedia("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)").matches;
-    if (!mobile) return;
-
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    if (reduced) {
-      setMobileRevealed(true);
-      return;
-    }
-
-    let frame = 0;
-    let observer: IntersectionObserver | null = null;
-
-    const revealIfReady = () => {
-      frame = 0;
-      const rect = container.getBoundingClientRect();
-      const triggerLine = window.innerHeight * 0.82;
-
-      if (rect.top <= triggerLine && rect.bottom > window.innerHeight * 0.12) {
-        setMobileRevealed(true);
-        observer?.disconnect();
-        window.removeEventListener("scroll", requestCheck);
-      }
-    };
-
-    const requestCheck = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(revealIfReady);
-    };
-
-    if ("IntersectionObserver" in window) {
-      observer = new IntersectionObserver(
-        ([entry]) => {
-          if (!entry?.isIntersecting) return;
-          requestCheck();
-        },
-        {
-          threshold: 0.01,
-          rootMargin: "0px 0px -18% 0px",
-        }
-      );
-      observer.observe(container);
-    }
-
-    window.addEventListener("scroll", requestCheck, { passive: true });
-    requestCheck();
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      observer?.disconnect();
-      window.removeEventListener("scroll", requestCheck);
-    };
-  }, []);
 
   useGSAP(
     () => {
@@ -100,66 +39,62 @@ export default function IntroSection() {
         return;
       }
 
-      const mm = gsap.matchMedia();
-
-      mm.add("(min-width: 1024px), (min-width: 769px) and (hover: hover) and (pointer: fine)", () => {
-        gsap.set(heading, {
-          autoAlpha: 0,
-          y: 12,
-          force3D: true,
-        });
-
-        gsap.set(paragraph, {
-          autoAlpha: 0,
-          y: 24,
-          force3D: true,
-        });
-
-        const timeline = gsap.timeline({
-          defaults: {
-            ease: "power3.out",
-            overwrite: "auto",
-          },
-          scrollTrigger: {
-            trigger: container,
-            start: "top 80%",
-            once: true,
-            invalidateOnRefresh: true,
-          },
-        });
-
-        timeline
-          .to(heading, {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.5,
-            force3D: true,
-          })
-          .to(
-            paragraph,
-            {
-              autoAlpha: 1,
-              y: 0,
-              duration: 0.72,
-              force3D: true,
-            },
-            "-=0.22"
-          );
-
-        return () => timeline.kill();
+      gsap.set(heading, {
+        autoAlpha: 0,
+        y: 12,
+        force3D: true,
       });
 
-      return () => mm.revert();
+      gsap.set(paragraph, {
+        autoAlpha: 0,
+        y: 24,
+        force3D: true,
+      });
+
+      // This is the original desktop reveal. It now runs unchanged on mobile.
+      const timeline = gsap.timeline({
+        defaults: {
+          ease: "power3.out",
+          overwrite: "auto",
+        },
+        scrollTrigger: {
+          trigger: container,
+          start: "top 80%",
+          once: true,
+          invalidateOnRefresh: true,
+        },
+      });
+
+      timeline
+        .to(heading, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.5,
+          force3D: true,
+        })
+        .to(
+          paragraph,
+          {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.72,
+            force3D: true,
+          },
+          "-=0.22"
+        );
+
+      return () => {
+        timeline.scrollTrigger?.kill();
+        timeline.kill();
+      };
     },
-    {
-      scope: containerRef,
-    }
+    { scope: containerRef }
   );
 
   return (
     <div
       ref={containerRef}
-      className={`intro-section-mobile relative z-10 box-border flex min-h-[50svh] w-full flex-col items-start justify-start bg-transparent m-0 px-[max(20px,env(safe-area-inset-left))] pt-[clamp(3rem,8svh,7rem)] pb-[clamp(4rem,11svh,9rem)] text-left text-white pointer-events-auto sm:px-[clamp(32px,5vw,96px)] ${mobileRevealed ? "intro-mobile-revealed" : ""}`}
+      className="intro-section-mobile relative z-10 box-border flex min-h-[50svh] w-full flex-col items-start justify-start bg-transparent m-0 px-[max(20px,env(safe-area-inset-left))] pt-[clamp(3rem,8svh,7rem)] pb-[clamp(4rem,11svh,9rem)] text-left text-white pointer-events-auto sm:px-[clamp(32px,5vw,96px)]"
     >
       <div className="w-full">
         <div className="max-w-[1000px]">

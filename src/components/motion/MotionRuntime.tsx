@@ -126,7 +126,7 @@ export default function MotionRuntime() {
     // keeps all ScrollTrigger start/end measurements aligned without reacting
     // continuously to toolbar height changes.
     const mobileLike = window.matchMedia(
-      "(max-width: 768px), (pointer: coarse)"
+      "(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)"
     ).matches;
 
     if (mobileLike) {

@@ -80,59 +80,6 @@ export default function Hero({ introCompleted }: HeroProps) {
             reducedMotion: boolean;
           };
 
-          if (mobile && !reducedMotion) {
-            if (bgVisual) {
-              gsap.set(bgVisual, {
-                opacity: 1,
-                clearProps: "transform",
-              });
-            }
-            if (heroVisual) {
-              gsap.set(heroVisual, {
-                opacity: 1,
-                clearProps: "transform",
-              });
-            }
-            if (logoWrapperRef.current) {
-              gsap.set(logoWrapperRef.current, {
-                clearProps: "opacity,transform",
-              });
-            }
-            if (labelRef.current) {
-              gsap.set(labelRef.current, {
-                clearProps: "opacity,transform",
-              });
-            }
-            if (blueLineRef.current) {
-              gsap.set(blueLineRef.current, {
-                clearProps: "transform,opacity",
-              });
-            }
-            if (serviceItems.length) {
-              gsap.set(serviceItems, {
-                clearProps: "opacity,transform",
-              });
-            }
-            if (serviceTextItems.length) {
-              gsap.set(serviceTextItems, {
-                clearProps: "transform",
-              });
-            }
-            if (headerBtn) {
-              gsap.set(headerBtn, {
-                opacity: 1,
-                y: 0,
-                clearProps: "transform",
-              });
-            }
-
-            requestAnimationFrame(() => {
-              window.dispatchEvent(new Event("northframe:motion-refresh"));
-            });
-
-            return;
-          }
-
           if (reducedMotion) {
             if (bgVisual) gsap.set(bgVisual, { opacity: 1 });
             if (heroVisual) gsap.set(heroVisual, { opacity: 1 });
@@ -157,10 +104,12 @@ export default function Hero({ introCompleted }: HeroProps) {
             return;
           }
 
-          const duration = mobile ? 0.78 : 0.86;
-          const logoY = mobile ? 18 : 16;
-          const labelY = mobile ? 9 : 9;
-          const serviceY = mobile ? 10 : 8;
+          // Keep desktop timing and movement unchanged, and reuse those exact
+          // values on touch devices so the hero entrance is visually identical.
+          const duration = 0.86;
+          const logoY = 16;
+          const labelY = 9;
+          const serviceY = 8;
 
           if (bgVisual) gsap.set(bgVisual, { opacity: 0 });
           if (heroVisual) gsap.set(heroVisual, { opacity: 0 });
@@ -200,14 +149,14 @@ export default function Hero({ introCompleted }: HeroProps) {
           if (headerBtn) {
             gsap.set(headerBtn, {
               opacity: 0,
-              y: mobile ? -4 : -6,
+              y: -6,
               force3D: true,
             });
           }
 
           const tl = gsap.timeline({
             paused: mobile,
-            delay: mobile ? 0.08 : 0.16,
+            delay: 0.16,
             defaults: { overwrite: "auto" },
           });
 
@@ -277,8 +226,8 @@ export default function Hero({ introCompleted }: HeroProps) {
               {
                 opacity: 1,
                 y: 0,
-                duration: mobile ? 0.34 : 0.34,
-                stagger: mobile ? 0.055 : 0.06,
+                duration: 0.34,
+                stagger: 0.06,
                 ease: "power2.out",
                 force3D: true,
               },
@@ -291,8 +240,8 @@ export default function Hero({ introCompleted }: HeroProps) {
               serviceTextItems,
               {
                 yPercent: 0,
-                duration: mobile ? 0.46 : 0.5,
-                stagger: mobile ? 0.055 : 0.06,
+                duration: 0.5,
+                stagger: 0.06,
                 ease: "power3.out",
                 force3D: true,
               },

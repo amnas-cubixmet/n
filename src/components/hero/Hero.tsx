@@ -69,8 +69,8 @@ export default function Hero({ introCompleted }: HeroProps) {
 
       mm.add(
         {
-          mobile: "(max-width: 768px)",
-          desktop: "(min-width: 769px)",
+          mobile: "(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)",
+          desktop: "(min-width: 1024px), (min-width: 769px) and (hover: hover) and (pointer: fine)",
           reducedMotion: "(prefers-reduced-motion: reduce)",
         },
         (context) => {
@@ -423,8 +423,8 @@ export default function Hero({ introCompleted }: HeroProps) {
         };
       };
 
-      mm.add("(max-width: 768px)", () => buildHandoff(true));
-      mm.add("(min-width: 769px)", () => buildHandoff(false));
+      mm.add("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)", () => buildHandoff(true));
+      mm.add("(min-width: 1024px), (min-width: 769px) and (hover: hover) and (pointer: fine)", () => buildHandoff(false));
 
       return () => mm.revert();
     },

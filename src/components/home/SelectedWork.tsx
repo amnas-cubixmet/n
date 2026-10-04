@@ -113,10 +113,6 @@ export default function SelectedWork() {
       const cards = gsap.utils.toArray<HTMLElement>(
         sectionRef.current.querySelectorAll(".work-project-item")
       );
-      const mobileCards = cards.filter(
-        (card) => !card.classList.contains("work-heading-mobile")
-      );
-
       const media = gsap.matchMedia();
 
       const buildCardReveals = (

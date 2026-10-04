@@ -267,8 +267,8 @@ export function ProjectCard({
   return (
     <article
       ref={cardRef}
-      className={`work-project-item col-span-full w-[88%] sm:w-[92%] ${
-        isEvenMobile ? "ml-auto lg:ml-0" : "mr-auto lg:mr-0"
+      className={`work-project-item col-span-full w-full ${
+        isEvenMobile ? "mx-0 lg:ml-0" : "mx-0 lg:mr-0"
       } ${gridClass}`}
     >
       <TransitionLink

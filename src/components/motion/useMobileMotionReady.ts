@@ -22,64 +22,30 @@ export function useMobileMotionReady() {
     }
 
     let cancelled = false;
-    let finished = false;
     let firstFrame = 0;
     let secondFrame = 0;
-    let fallbackTimer = 0;
     let orientationTimer = 0;
-    let loadHandler: (() => void) | null = null;
 
     const syncStableViewport = () => {
-      const height = window.innerHeight;
+      const height = window.visualViewport?.height || window.innerHeight;
       document.documentElement.style.setProperty(
         "--nf-mobile-vh",
-        `${Math.max(320, height)}px`
+        `${Math.max(320, Math.round(height))}px`
       );
     };
 
-    const finish = () => {
-      if (cancelled || finished) return;
-      finished = true;
-
-      syncStableViewport();
-      window.clearTimeout(fallbackTimer);
-      cancelAnimationFrame(firstFrame);
-      cancelAnimationFrame(secondFrame);
-
-      firstFrame = requestAnimationFrame(() => {
-        secondFrame = requestAnimationFrame(() => {
-          if (cancelled) return;
-          setReady(true);
-          window.dispatchEvent(new Event("northframe:motion-refresh"));
-        });
-      });
-    };
-
-    const waitForLayout = async () => {
-      try {
-        if (document.readyState !== "complete") {
-          await new Promise<void>((resolve) => {
-            loadHandler = () => {
-              loadHandler = null;
-              resolve();
-            };
-            window.addEventListener("load", loadHandler, { once: true });
-          });
-        }
-
-        if (document.fonts?.ready) {
-          await document.fonts.ready;
-        }
-      } finally {
-        finish();
-      }
-    };
-
+    // Initialize mobile GSAP at the same lifecycle point as desktop instead of
+    // waiting for window.load/fonts. MotionRuntime performs safe refresh passes
+    // again as fonts/assets settle.
     syncStableViewport();
-    void waitForLayout();
 
-    // Slow in-app browsers must never leave mobile motion waiting forever.
-    fallbackTimer = window.setTimeout(finish, 1800);
+    firstFrame = requestAnimationFrame(() => {
+      secondFrame = requestAnimationFrame(() => {
+        if (cancelled) return;
+        setReady(true);
+        window.dispatchEvent(new Event("northframe:motion-refresh"));
+      });
+    });
 
     const handleOrientationChange = () => {
       window.clearTimeout(orientationTimer);
@@ -96,13 +62,7 @@ export function useMobileMotionReady() {
       cancelled = true;
       cancelAnimationFrame(firstFrame);
       cancelAnimationFrame(secondFrame);
-      window.clearTimeout(fallbackTimer);
       window.clearTimeout(orientationTimer);
-
-      if (loadHandler) {
-        window.removeEventListener("load", loadHandler);
-      }
-
       window.removeEventListener("orientationchange", handleOrientationChange);
     };
   }, []);

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -13,67 +13,6 @@ export default function OurExpertise() {
   const containerRef = useRef<HTMLElement>(null);
   const labelRef = useRef<HTMLDivElement>(null);
   const copyRef = useRef<HTMLParagraphElement>(null);
-  const [mobileRevealed, setMobileRevealed] = useState(false);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const mobile = window.matchMedia("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)").matches;
-    if (!mobile) return;
-
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    if (reduced) {
-      setMobileRevealed(true);
-      return;
-    }
-
-    let frame = 0;
-    let observer: IntersectionObserver | null = null;
-
-    const revealIfReady = () => {
-      frame = 0;
-      const rect = container.getBoundingClientRect();
-      const triggerLine = window.innerHeight * 0.82;
-
-      if (rect.top <= triggerLine && rect.bottom > window.innerHeight * 0.12) {
-        setMobileRevealed(true);
-        observer?.disconnect();
-        window.removeEventListener("scroll", requestCheck);
-      }
-    };
-
-    const requestCheck = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(revealIfReady);
-    };
-
-    if ("IntersectionObserver" in window) {
-      observer = new IntersectionObserver(
-        ([entry]) => {
-          if (!entry?.isIntersecting) return;
-          requestCheck();
-        },
-        {
-          threshold: 0.01,
-          rootMargin: "0px 0px -18% 0px",
-        }
-      );
-      observer.observe(container);
-    }
-
-    window.addEventListener("scroll", requestCheck, { passive: true });
-    requestCheck();
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      observer?.disconnect();
-      window.removeEventListener("scroll", requestCheck);
-    };
-  }, []);
 
   useGSAP(
     () => {
@@ -96,61 +35,53 @@ export default function OurExpertise() {
         return;
       }
 
-      const mm = gsap.matchMedia();
+      gsap.set(label, {
+        scaleX: 0,
+        transformOrigin: "left center",
+        force3D: true,
+      });
 
-      const buildReveal = () => {
-        gsap.set(label, {
-          scaleX: 0,
-          transformOrigin: "left center",
-          force3D: true,
-        });
+      gsap.set(copy, {
+        y: 30,
+        clipPath: "inset(0% 0% 100% 0%)",
+        force3D: true,
+      });
 
-        gsap.set(copy, {
-          y: 30,
-          clipPath: "inset(0% 0% 100% 0%)",
-          force3D: true,
-        });
+      // Preserve the desktop animation exactly and use the same trigger on touch.
+      const timeline = gsap.timeline({
+        defaults: {
+          ease: "power3.out",
+          overwrite: "auto",
+        },
+        scrollTrigger: {
+          trigger: container,
+          start: "top 82%",
+          once: true,
+          invalidateOnRefresh: true,
+        },
+      });
 
-        const timeline = gsap.timeline({
-          paused: false,
-          defaults: {
-            ease: "power3.out",
-            overwrite: "auto",
+      timeline
+        .to(label, {
+          scaleX: 1,
+          duration: 0.48,
+          ease: "power4.out",
+        })
+        .to(
+          copy,
+          {
+            y: 0,
+            clipPath: "inset(0% 0% 0% 0%)",
+            duration: 0.74,
+            ease: "expo.out",
           },
-          scrollTrigger: {
-            trigger: container,
-            start: "top 82%",
-            once: true,
-            invalidateOnRefresh: true,
-          },
-        });
+          "-=0.18"
+        );
 
-        timeline
-          .to(label, {
-            scaleX: 1,
-            duration: 0.48,
-            ease: "power4.out",
-          })
-          .to(
-            copy,
-            {
-              y: 0,
-              clipPath: "inset(0% 0% 0% 0%)",
-              duration: 0.74,
-              ease: "expo.out",
-            },
-            "-=0.18"
-          );
-
-        return () => {
-          timeline.scrollTrigger?.kill();
-          timeline.kill();
-        };
+      return () => {
+        timeline.scrollTrigger?.kill();
+        timeline.kill();
       };
-
-      mm.add("(min-width: 1024px), (min-width: 769px) and (hover: hover) and (pointer: fine)", () => buildReveal());
-
-      return () => mm.revert();
     },
     { scope: containerRef }
   );
@@ -159,7 +90,7 @@ export default function OurExpertise() {
     <section
       id="our-expertise"
       ref={containerRef}
-      className={`our-expertise-mobile relative z-20 w-full bg-white text-black pointer-events-auto overflow-hidden ${mobileRevealed ? "our-expertise-mobile-revealed" : ""}`}
+      className="our-expertise-mobile relative z-20 w-full bg-white text-black pointer-events-auto overflow-hidden"
     >
       <div className="mx-auto flex min-h-[62svh] w-full max-w-[1600px] flex-col justify-start px-[max(1.1rem,env(safe-area-inset-left))] pb-[clamp(2rem,5vh,4rem)] pt-[clamp(5rem,12vh,10rem)] pr-[max(1.1rem,env(safe-area-inset-right))] sm:min-h-[68svh] sm:px-8 lg:min-h-0 lg:pb-8 lg:px-12 xl:px-16">
         <div className="w-full max-w-[1050px]">

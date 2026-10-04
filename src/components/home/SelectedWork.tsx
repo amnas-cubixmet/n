@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useLayoutEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -16,33 +16,6 @@ export default function SelectedWork() {
   const contentRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
   const headingRef = useRef<HTMLDivElement>(null);
-  const [mobileHeadingRevealed, setMobileHeadingRevealed] = useState(false);
-
-  useEffect(() => {
-    const heading = headingRef.current;
-    if (!heading || !window.matchMedia("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)").matches) return;
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setMobileHeadingRevealed(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry?.isIntersecting) return;
-        setMobileHeadingRevealed(true);
-        observer.disconnect();
-      },
-      {
-        threshold: 0.01,
-        rootMargin: "0px 0px -12% 0px",
-      }
-    );
-
-    observer.observe(heading);
-    return () => observer.disconnect();
-  }, []);
-
   useLayoutEffect(() => {
     const section = sectionRef.current;
     const content = contentRef.current;
@@ -145,6 +118,10 @@ export default function SelectedWork() {
         });
       };
 
+      media.add(
+        "(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)",
+        () => buildCardReveals(28, 0.62, "top 88%")
+      );
       media.add("(min-width: 769px) and (max-width: 1023px) and (hover: hover) and (pointer: fine)", () =>
         buildCardReveals(16, 0.5, "top 92%")
       );
@@ -237,7 +214,7 @@ export default function SelectedWork() {
       >
         <div
           ref={headingRef}
-          className={`work-project-item work-heading-mobile flex flex-col items-start gap-[2px] lg:absolute lg:left-0 lg:top-[clamp(80px,6.5vw,104px)] lg:-translate-x-[5px] xl:-translate-x-[9px] ${mobileHeadingRevealed ? "work-heading-mobile-revealed" : ""}`}
+          className="work-project-item work-heading-mobile flex flex-col items-start gap-[2px] lg:absolute lg:left-0 lg:top-[clamp(80px,6.5vw,104px)] lg:-translate-x-[5px] xl:-translate-x-[9px]"
         >
           <h2 className="flex flex-col items-start gap-[2px] font-montserrat text-[clamp(14px,1.35vw,19px)] font-semibold uppercase leading-[1] tracking-[0.01em]">
             <span className="bg-black px-[3px] text-white">A SELECTION</span>

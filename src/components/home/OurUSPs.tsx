@@ -406,7 +406,7 @@ export default function OurUSPs() {
         };
       };
 
-      mm.add("(max-width: 768px)", () => {
+      mm.add("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)", () => {
         const cleanups = [
           buildStandaloneReveal(labelRef.current, "top 94%", 12, 0.46, 0, true),
           buildStandaloneReveal(ctaRef.current, "top 94%", 14, 0.5, 0.08, true),
@@ -414,7 +414,7 @@ export default function OurUSPs() {
         return () => cleanups.forEach((cleanup) => cleanup());
       });
 
-      mm.add("(min-width: 769px)", () => {
+      mm.add("(min-width: 1024px), (min-width: 769px) and (hover: hover) and (pointer: fine)", () => {
         const cleanups = [
           buildStandaloneReveal(labelRef.current, "top 88%", 18, 0.58),
           buildStandaloneReveal(ctaRef.current, "top 88%", 22, 0.64, 0.1),
@@ -422,11 +422,11 @@ export default function OurUSPs() {
         return () => cleanups.forEach((cleanup) => cleanup());
       });
 
-      mm.add("(max-width: 768px)", () =>
+      mm.add("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)", () =>
         buildCardTextReveals(14, 0.48, 0.42, "top 92%", true)
       );
 
-      mm.add("(min-width: 769px) and (max-width: 1023px)", () =>
+      mm.add("(min-width: 769px) and (max-width: 1023px) and (hover: hover) and (pointer: fine)", () =>
         buildCardTextReveals(20, 0.58, 0.5, "top 90%")
       );
 
@@ -434,7 +434,7 @@ export default function OurUSPs() {
         buildCardTextReveals(30, 0.72, 0.62, "top 86%")
       );
 
-      mm.add("(max-width: 768px)", () =>
+      mm.add("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)", () =>
         buildSectionAnimation({
           start: "top 94%",
           end: "top 58%",
@@ -445,7 +445,7 @@ export default function OurUSPs() {
         })
       );
 
-      mm.add("(min-width: 769px) and (max-width: 1023px)", () =>
+      mm.add("(min-width: 769px) and (max-width: 1023px) and (hover: hover) and (pointer: fine)", () =>
         buildSectionAnimation({
           start: "top 92%",
           end: "top 54%",

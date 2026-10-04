@@ -37,8 +37,8 @@ export default function FoundedOnAVision() {
 
       mm.add(
         {
-          mobile: "(max-width: 768px)",
-          desktop: "(min-width: 769px)",
+          mobile: "(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)",
+          desktop: "(min-width: 1024px), (min-width: 769px) and (hover: hover) and (pointer: fine)",
           reduced: "(prefers-reduced-motion: reduce)",
         },
         (context) => {

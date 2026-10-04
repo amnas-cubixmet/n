@@ -667,7 +667,7 @@ video {
   }
 }
 
-@media (max-width: 768px), (pointer: coarse) {
+@media (max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse) {
   .brand-intro-root {
     animation: nf-brand-intro-root-mobile 2.4s linear both;
   }
@@ -759,7 +759,7 @@ video {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse) {
   .hero-mobile-waiting .hero-logo-wrapper,
   .hero-mobile-waiting .service-item,
   .hero-mobile-waiting .scroll-indicator-wrapper {
@@ -842,7 +842,7 @@ video {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse) {
   .intro-section-mobile .intro-mobile-heading,
   .intro-section-mobile .intro-mobile-paragraph {
     opacity: 0;
@@ -859,7 +859,7 @@ video {
   }
 }
 
-@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+@media (max-width: 768px) and (prefers-reduced-motion: reduce), (max-width: 1023px) and (hover: none) and (pointer: coarse) and (prefers-reduced-motion: reduce) {
   .intro-section-mobile .intro-mobile-heading,
   .intro-section-mobile .intro-mobile-paragraph {
     opacity: 1;
@@ -908,7 +908,7 @@ video {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse) {
   .our-expertise-mobile .our-expertise-mobile-label {
     opacity: 0;
     transform-origin: left center;
@@ -949,7 +949,7 @@ video {
   }
 }
 
-@media (max-width: 768px) and (prefers-reduced-motion: reduce) {
+@media (max-width: 768px) and (prefers-reduced-motion: reduce), (max-width: 1023px) and (hover: none) and (pointer: coarse) and (prefers-reduced-motion: reduce) {
   .our-expertise-mobile .our-expertise-mobile-label,
   .our-expertise-mobile .our-expertise-mobile-copy,
   .work-heading-mobile h2 > span {

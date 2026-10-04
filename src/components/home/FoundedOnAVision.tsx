@@ -48,7 +48,9 @@ export default function FoundedOnAVision() {
             reduced: boolean;
           };
 
-          const mobile = Boolean(conditions.mobile);
+          // Keep the original desktop values and ScrollTrigger behavior on
+          // touch devices as well. The desktop branch itself is unchanged.
+          const mobile = false;
           const reduced = Boolean(conditions.reduced);
 
           if (reduced) {

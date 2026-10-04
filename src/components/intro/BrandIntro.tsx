@@ -100,10 +100,6 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
     const reducedMotion = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
-    const mobileLike = window.matchMedia(
-      "(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)"
-    ).matches;
-
     const viewportWidth = window.visualViewport?.width || window.innerWidth;
     const viewportHeight = window.visualViewport?.height || window.innerHeight;
     const markSize = mark.getBoundingClientRect().width || 92;

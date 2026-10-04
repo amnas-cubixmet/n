@@ -20,7 +20,7 @@ export default function SelectedWork() {
 
   useEffect(() => {
     const heading = headingRef.current;
-    if (!heading || !window.matchMedia("(max-width: 768px)").matches) return;
+    if (!heading || !window.matchMedia("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)").matches) return;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       setMobileHeadingRevealed(true);
@@ -149,10 +149,7 @@ export default function SelectedWork() {
         });
       };
 
-      media.add("(max-width: 768px)", () =>
-        buildCardReveals(12, 0.44, "top 94%", mobileCards)
-      );
-      media.add("(min-width: 769px) and (max-width: 1023px)", () =>
+      media.add("(min-width: 769px) and (max-width: 1023px) and (hover: hover) and (pointer: fine)", () =>
         buildCardReveals(16, 0.5, "top 92%")
       );
       media.add("(min-width: 1024px)", () =>

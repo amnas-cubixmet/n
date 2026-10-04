@@ -408,8 +408,8 @@ export default function OurUSPs() {
 
       mm.add("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)", () => {
         const cleanups = [
-          buildStandaloneReveal(labelRef.current, "top 94%", 12, 0.46, 0, true),
-          buildStandaloneReveal(ctaRef.current, "top 94%", 14, 0.5, 0.08, true),
+          buildStandaloneReveal(labelRef.current, "top 88%", 18, 0.58),
+          buildStandaloneReveal(ctaRef.current, "top 88%", 22, 0.64, 0.1),
         ];
         return () => cleanups.forEach((cleanup) => cleanup());
       });
@@ -423,7 +423,7 @@ export default function OurUSPs() {
       });
 
       mm.add("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)", () =>
-        buildCardTextReveals(14, 0.48, 0.42, "top 92%", true)
+        buildCardTextReveals(30, 0.72, 0.62, "top 86%")
       );
 
       mm.add("(min-width: 769px) and (max-width: 1023px) and (hover: hover) and (pointer: fine)", () =>
@@ -436,12 +436,12 @@ export default function OurUSPs() {
 
       mm.add("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)", () =>
         buildSectionAnimation({
-          start: "top 94%",
-          end: "top 58%",
-          y: 22,
-          scrub: 0.16,
-          shapeFrom: 0.12,
-          shapeTo: -0.12,
+          start: "top 88%",
+          end: "top 46%",
+          y: 42,
+          scrub: 0.32,
+          shapeFrom: 0.2,
+          shapeTo: -0.2,
         })
       );
 

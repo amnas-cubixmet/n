@@ -35,7 +35,7 @@ export function ProjectCard({
     const meta = metaRef.current;
 
     if (!card || !imageReveal || !image || !meta) return;
-    if (!window.matchMedia("(max-width: 768px)").matches) return;
+    if (!window.matchMedia("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)").matches) return;
 
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)"
@@ -236,7 +236,7 @@ export function ProjectCard({
         };
       };
 
-      mm.add("(min-width: 769px)", () => buildReveal(false));
+      mm.add("(min-width: 1024px), (min-width: 769px) and (hover: hover) and (pointer: fine)", () => buildReveal(false));
 
       // Internal scrub parallax is intentionally desktop-only. Touch scrolling
       // keeps the same visual crop without paying for a per-frame ScrollTrigger.

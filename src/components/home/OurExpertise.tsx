@@ -19,7 +19,7 @@ export default function OurExpertise() {
     const container = containerRef.current;
     if (!container) return;
 
-    const mobile = window.matchMedia("(max-width: 768px)").matches;
+    const mobile = window.matchMedia("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)").matches;
     if (!mobile) return;
 
     const reduced = window.matchMedia(
@@ -148,7 +148,7 @@ export default function OurExpertise() {
         };
       };
 
-      mm.add("(min-width: 769px)", () => buildReveal());
+      mm.add("(min-width: 1024px), (min-width: 769px) and (hover: hover) and (pointer: fine)", () => buildReveal());
 
       return () => mm.revert();
     },

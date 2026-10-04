@@ -104,22 +104,13 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
       "(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)"
     ).matches;
 
-    if (mobileLike && !reducedMotion) {
-      const mobileTimer = window.setTimeout(finishIntro, 2450);
-
-      return () => {
-        window.clearTimeout(mobileTimer);
-        restoreScroll();
-      };
-    }
-
     const viewportWidth = window.visualViewport?.width || window.innerWidth;
     const viewportHeight = window.visualViewport?.height || window.innerHeight;
-    const markSize = mark.getBoundingClientRect().width || (mobileLike ? 72 : 92);
+    const markSize = mark.getBoundingClientRect().width || 92;
     const screenDiagonal = Math.hypot(viewportWidth, viewportHeight);
     const coverScale = Math.max(
-      mobileLike ? 18 : 16,
-      (screenDiagonal / markSize) * (mobileLike ? 2.65 : 2.5)
+      16,
+      (screenDiagonal / markSize) * 2.5
     );
 
     gsap.set(container, { autoAlpha: 1 });
@@ -150,14 +141,14 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
         timeline.to(mark, {
           autoAlpha: 1,
           scale: 1,
-          duration: mobileLike ? 0.46 : 0.55,
+          duration: 0.55,
           ease: "power3.out",
           force3D: true,
         });
-        timeline.to({}, { duration: mobileLike ? 0.2 : 0.3 });
+        timeline.to({}, { duration: 0.3 });
         timeline.to(mark, {
           scale: coverScale,
-          duration: mobileLike ? 0.62 : 0.68,
+          duration: 0.68,
           ease: "power3.in",
           force3D: true,
         });
@@ -165,16 +156,16 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
           cover,
           {
             autoAlpha: 1,
-            duration: mobileLike ? 0.1 : 0.12,
+            duration: 0.12,
             ease: "none",
           },
-          mobileLike ? "-=0.2" : "-=0.17"
+          "-=0.17"
         );
       }
 
       timeline.to(container, {
         autoAlpha: 0,
-        duration: reducedMotion ? 0.12 : mobileLike ? 0.22 : 0.3,
+        duration: reducedMotion ? 0.12 : 0.3,
         ease: "power2.out",
       });
     };

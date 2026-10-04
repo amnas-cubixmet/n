@@ -2,12 +2,12 @@
 
 import { useEffect, useState } from "react";
 
+const MOBILE_TOUCH_QUERY =
+  "(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)";
+
 function isMobileLike() {
   if (typeof window === "undefined") return false;
-
-  return window.matchMedia(
-    "(max-width: 1023px), (hover: none) and (pointer: coarse)"
-  ).matches;
+  return window.matchMedia(MOBILE_TOUCH_QUERY).matches;
 }
 
 export function useMobileMotionReady() {
@@ -22,9 +22,12 @@ export function useMobileMotionReady() {
     }
 
     let cancelled = false;
+    let finished = false;
     let firstFrame = 0;
     let secondFrame = 0;
     let fallbackTimer = 0;
+    let orientationTimer = 0;
+    let loadHandler: (() => void) | null = null;
 
     const syncStableViewport = () => {
       const height = window.innerHeight;
@@ -35,10 +38,11 @@ export function useMobileMotionReady() {
     };
 
     const finish = () => {
-      if (cancelled) return;
+      if (cancelled || finished) return;
+      finished = true;
 
       syncStableViewport();
-
+      window.clearTimeout(fallbackTimer);
       cancelAnimationFrame(firstFrame);
       cancelAnimationFrame(secondFrame);
 
@@ -55,7 +59,11 @@ export function useMobileMotionReady() {
       try {
         if (document.readyState !== "complete") {
           await new Promise<void>((resolve) => {
-            window.addEventListener("load", () => resolve(), { once: true });
+            loadHandler = () => {
+              loadHandler = null;
+              resolve();
+            };
+            window.addEventListener("load", loadHandler, { once: true });
           });
         }
 
@@ -70,11 +78,13 @@ export function useMobileMotionReady() {
     syncStableViewport();
     void waitForLayout();
 
-    // Slow in-app browsers should never leave animations waiting forever.
+    // Slow in-app browsers must never leave mobile motion waiting forever.
     fallbackTimer = window.setTimeout(finish, 1800);
 
     const handleOrientationChange = () => {
-      window.setTimeout(() => {
+      window.clearTimeout(orientationTimer);
+      orientationTimer = window.setTimeout(() => {
+        if (cancelled) return;
         syncStableViewport();
         window.dispatchEvent(new Event("northframe:motion-refresh"));
       }, 320);
@@ -87,6 +97,12 @@ export function useMobileMotionReady() {
       cancelAnimationFrame(firstFrame);
       cancelAnimationFrame(secondFrame);
       window.clearTimeout(fallbackTimer);
+      window.clearTimeout(orientationTimer);
+
+      if (loadHandler) {
+        window.removeEventListener("load", loadHandler);
+      }
+
       window.removeEventListener("orientationchange", handleOrientationChange);
     };
   }, []);

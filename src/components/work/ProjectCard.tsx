@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 import { useGSAP } from "@gsap/react";
@@ -28,107 +28,6 @@ export function ProjectCard({
   const imageRevealRef = useRef<HTMLDivElement>(null);
   const metaRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const card = cardRef.current;
-    const imageReveal = imageRevealRef.current;
-    const image = imageRef.current;
-    const meta = metaRef.current;
-
-    if (!card || !imageReveal || !image || !meta) return;
-    if (!window.matchMedia("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)").matches) return;
-
-    const reduced = window.matchMedia(
-      "(prefers-reduced-motion: reduce)"
-    ).matches;
-
-    const metaItems = Array.from(meta.children) as HTMLElement[];
-
-    if (reduced) {
-      imageReveal.style.clipPath = "inset(0)";
-      imageReveal.style.setProperty("-webkit-clip-path", "inset(0)");
-      image.style.transform = "scale(1.035)";
-      metaItems.forEach((item) => {
-        item.style.transform = "translate3d(0,0,0)";
-        item.style.clipPath = "inset(0)";
-        item.style.setProperty("-webkit-clip-path", "inset(0)");
-        item.style.opacity = "1";
-      });
-      return;
-    }
-
-    let frame = 0;
-
-    const clamp01 = (value: number) =>
-      Math.min(1, Math.max(0, value));
-
-    const update = () => {
-      frame = 0;
-
-      const rect = card.getBoundingClientRect();
-      const viewport = Math.max(1, window.innerHeight);
-
-      // Starts near the bottom of the viewport and finishes around the
-      // middle, so the reveal visibly follows the user's scroll gesture.
-      const start = viewport * 0.94;
-      const end = viewport * 0.52;
-      const progress = clamp01((start - rect.top) / (start - end));
-
-      const imageProgress = clamp01(progress / 0.72);
-      const hidden = (1 - imageProgress) * 100;
-      const scale = 1.085 - 0.05 * imageProgress;
-
-      imageReveal.style.clipPath = `inset(0% 0% ${hidden}% 0%)`;
-      imageReveal.style.setProperty(
-        "-webkit-clip-path",
-        `inset(0% 0% ${hidden}% 0%)`
-      );
-
-      image.style.transform = `translate3d(0,0,0) scale(${scale})`;
-
-      metaItems.forEach((item, index) => {
-        const local = clamp01(
-          (progress - (0.46 + index * 0.1)) / 0.3
-        );
-        const y = (1 - local) * 16;
-        const metaHidden = (1 - local) * 100;
-
-        item.style.opacity = String(local);
-        item.style.transform = `translate3d(0,${y}px,0)`;
-        item.style.clipPath = `inset(0% 0% ${metaHidden}% 0%)`;
-        item.style.setProperty(
-          "-webkit-clip-path",
-          `inset(0% 0% ${metaHidden}% 0%)`
-        );
-      });
-    };
-
-    const requestUpdate = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(update);
-    };
-
-    update();
-    window.addEventListener("scroll", requestUpdate, { passive: true });
-    window.addEventListener("orientationchange", requestUpdate);
-
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("scroll", requestUpdate);
-      window.removeEventListener("orientationchange", requestUpdate);
-
-      imageReveal.style.removeProperty("clip-path");
-      imageReveal.style.removeProperty("-webkit-clip-path");
-      image.style.removeProperty("transform");
-
-      metaItems.forEach((item) => {
-        item.style.removeProperty("opacity");
-        item.style.removeProperty("transform");
-        item.style.removeProperty("clip-path");
-        item.style.removeProperty("-webkit-clip-path");
-      });
-    };
-  }, []);
-
   useGSAP(
     () => {
       if (
@@ -146,7 +45,7 @@ export function ProjectCard({
 
       const mm = gsap.matchMedia();
 
-      const buildReveal = (mobile: boolean) => {
+      const buildReveal = () => {
         const card = cardRef.current;
         const imageReveal = imageRevealRef.current;
         const meta = metaRef.current;
@@ -159,10 +58,10 @@ export function ProjectCard({
           clipPath: "inset(0% 0% 100% 0%)",
         });
         gsap.set(image, {
-          scale: mobile ? 1.07 : 1.09,
+          scale: 1.09,
         });
         gsap.set(metaItems, {
-          y: mobile ? 12 : 18,
+          y: 18,
           clipPath: "inset(0% 0% 100% 0%)",
         });
 
@@ -171,14 +70,14 @@ export function ProjectCard({
         timeline
           .to(imageReveal, {
             clipPath: "inset(0% 0% 0% 0%)",
-            duration: mobile ? 0.58 : 0.78,
+            duration: 0.78,
             ease: "expo.out",
           })
           .to(
             image,
             {
               scale: 1.035,
-              duration: mobile ? 0.7 : 0.92,
+              duration: 0.92,
               ease: "power3.out",
               force3D: true,
             },
@@ -189,38 +88,13 @@ export function ProjectCard({
             {
               y: 0,
               clipPath: "inset(0% 0% 0% 0%)",
-              duration: mobile ? 0.42 : 0.58,
+              duration: 0.58,
               stagger: 0.08,
               ease: "expo.out",
               force3D: true,
             },
-            mobile ? 0.22 : 0.3
+            0.3
           );
-
-        if (mobile) {
-          const observer =
-            "IntersectionObserver" in window
-              ? new IntersectionObserver(
-                  ([entry]) => {
-                    if (!entry?.isIntersecting) return;
-                    timeline.play(0);
-                    observer?.disconnect();
-                  },
-                  {
-                    threshold: 0.01,
-                    rootMargin: "0px 0px -5% 0px",
-                  }
-                )
-              : null;
-
-          if (observer) observer.observe(card);
-          else timeline.play(0);
-
-          return () => {
-            observer?.disconnect();
-            timeline.kill();
-          };
-        }
 
         const trigger = ScrollTrigger.create({
           trigger: card,
@@ -236,11 +110,10 @@ export function ProjectCard({
         };
       };
 
-      mm.add("(min-width: 1024px), (min-width: 769px) and (hover: hover) and (pointer: fine)", () => buildReveal(false));
+      mm.add("(min-width: 0px)", () => buildReveal());
 
-      // Internal scrub parallax is intentionally desktop-only. Touch scrolling
-      // keeps the same visual crop without paying for a per-frame ScrollTrigger.
-      mm.add("(min-width: 1024px) and (hover: hover) and (pointer: fine)", () => {
+      // Reuse the desktop image parallax on touch so the card motion matches.
+      mm.add("(min-width: 0px)", () => {
         gsap.fromTo(
           imageRef.current,
           { yPercent: -1.5 },

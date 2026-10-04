@@ -101,7 +101,7 @@ export default function BrandIntro({ onComplete }: BrandIntroProps) {
       "(prefers-reduced-motion: reduce)"
     ).matches;
     const mobileLike = window.matchMedia(
-      "(max-width: 768px), (pointer: coarse)"
+      "(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)"
     ).matches;
 
     if (mobileLike && !reducedMotion) {

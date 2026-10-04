@@ -96,14 +96,14 @@ export default function WatWeDoen() {
           const mobile = phone || tablet;
           const reduced = Boolean(conditions.reduced);
           const panelCount = services.length;
-          const revealDuration = phone ? 0.68 : tablet ? 0.74 : 0.86;
-          const introSegment = reduced ? 0.2 : phone ? 0.48 : tablet ? 0.55 : 1.2;
+          const revealDuration = 0.86;
+          const introSegment = reduced ? 0.2 : 1.2;
 
           const getScrollDistance = () =>
             Math.round(
               sticky.clientHeight *
                 (panelCount + introSegment - 1) *
-                (reduced ? 0.72 : phone ? 0.58 : tablet ? 0.68 : 1.22)
+                (reduced ? 0.72 : 1.22)
             );
 
           const syncMobileStageHeight = () => {
@@ -153,21 +153,7 @@ export default function WatWeDoen() {
               });
             }
 
-            const mobileText = panel.querySelectorAll<HTMLElement>(
-              ".service-mobile-text"
-            );
-
-            if (mobile && !reduced) {
-              gsap.set(mobileText, {
-                y: phone ? 18 : 22,
-                clipPath: "inset(0% 0% 100% 0%)",
-                WebkitClipPath: "inset(0% 0% 100% 0%)",
-                force3D: true,
-                willChange: "transform,clip-path",
-              });
-            }
-
-            if (index === 0 && !mobile) {
+            if (index === 0) {
               const introText = panel.querySelectorAll(".first-service-intro");
               gsap.set(introText, {
                 y: reduced ? 0 : 22,
@@ -187,7 +173,7 @@ export default function WatWeDoen() {
               end: () => `+=${getScrollDistance()}`,
               pin: mobile ? false : sticky,
               pinSpacing: mobile ? false : true,
-              scrub: reduced ? true : phone ? true : tablet ? 0.08 : 0.5,
+              scrub: reduced ? true : 0.5,
               anticipatePin: mobile ? 0 : 1,
               invalidateOnRefresh: true,
               fastScrollEnd: false,
@@ -203,10 +189,6 @@ export default function WatWeDoen() {
 
             if (index === 0) {
               const introText = panel.querySelectorAll(".first-service-intro");
-              const mobileText = panel.querySelectorAll<HTMLElement>(
-                ".service-mobile-text"
-              );
-
               if (!reduced) {
                 if (image) {
                   timeline.to(
@@ -221,33 +203,17 @@ export default function WatWeDoen() {
                   );
                 }
 
-                if (mobile) {
-                  timeline.to(
-                    mobileText,
-                    {
-                      y: 0,
-                      clipPath: "inset(0% 0% 0% 0%)",
-                      WebkitClipPath: "inset(0% 0% 0% 0%)",
-                      duration: phone ? 0.42 : 0.5,
-                      stagger: phone ? 0.045 : 0.055,
-                      ease: "power3.out",
-                      force3D: true,
-                    },
-                    0.06
-                  );
-                } else {
-                  timeline.to(
-                    introText,
-                    {
-                      y: 0,
-                      autoAlpha: 1,
-                      duration: 0.48,
-                      ease: "power3.out",
-                      force3D: true,
-                    },
-                    0.08
-                  );
-                }
+                timeline.to(
+                  introText,
+                  {
+                    y: 0,
+                    autoAlpha: 1,
+                    duration: 0.48,
+                    ease: "power3.out",
+                    force3D: true,
+                  },
+                  0.08
+                );
               }
 
               // Reserve the first scroll movement for the BRAND IDENTITY intro.
@@ -284,31 +250,11 @@ export default function WatWeDoen() {
               );
             }
 
-            if (!reduced && mobile) {
-              const mobileText = panel.querySelectorAll<HTMLElement>(
-                ".service-mobile-text"
-              );
-
-              timeline.to(
-                mobileText,
-                {
-                  y: 0,
-                  clipPath: "inset(0% 0% 0% 0%)",
-                  WebkitClipPath: "inset(0% 0% 0% 0%)",
-                  duration: phone ? 0.4 : 0.48,
-                  stagger: phone ? 0.04 : 0.05,
-                  ease: "power3.out",
-                  force3D: true,
-                },
-                segmentStart + revealDuration * 0.26
-              );
-            }
-
             if (!reduced && image) {
               timeline.to(
                 image,
                 {
-                  scale: phone ? 1.022 : tablet ? 1.032 : 1.095,
+                  scale: 1.095,
                   duration: 1,
                   ease: "none",
                   force3D: true,

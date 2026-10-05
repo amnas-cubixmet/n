@@ -86,6 +86,9 @@ export default function SelectedWork() {
       const cards = gsap.utils.toArray<HTMLElement>(
         sectionRef.current.querySelectorAll(".work-project-item")
       );
+      const mobileOuterItems = cards.filter(
+        (card) => !card.matches("article.work-project-item")
+      );
       const media = gsap.matchMedia();
 
       const buildCardReveals = (
@@ -120,7 +123,7 @@ export default function SelectedWork() {
 
       media.add(
         "(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)",
-        () => buildCardReveals(28, 0.62, "top 88%")
+        () => buildCardReveals(28, 0.62, "top 88%", mobileOuterItems)
       );
       media.add("(min-width: 769px) and (max-width: 1023px) and (hover: hover) and (pointer: fine)", () =>
         buildCardReveals(16, 0.5, "top 92%")

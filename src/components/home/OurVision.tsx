@@ -103,7 +103,7 @@ export default function OurVision() {
         };
       };
 
-      mm.add("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)", () => buildReveal(false));
+      mm.add("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)", () => buildReveal(true));
       mm.add("(min-width: 1024px), (min-width: 769px) and (hover: hover) and (pointer: fine)", () => buildReveal(false));
 
       return () => mm.revert();
@@ -116,7 +116,7 @@ export default function OurVision() {
       <section
         id="our-vision"
         ref={containerRef}
-        className="relative z-10 w-full overflow-hidden bg-[#000000] px-6 py-20 text-white pointer-events-auto m-0 select-none sm:px-10 md:px-16 md:py-28 lg:px-20 lg:py-36"
+        className="relative z-10 w-full overflow-hidden bg-[#000000] px-6 pb-20 pt-[calc(28svh+3.5rem)] text-white pointer-events-auto m-0 select-none sm:px-10 md:px-16 md:pb-28 md:pt-[calc(30dvh+4rem)] lg:px-20 lg:py-36"
       >
         <div className="relative w-full max-w-[1300px] mx-auto flex flex-col items-start text-left">
         {/* SMALL EDITORIAL LABEL IN UPPER-LEFT: WHITE BG, BLACK TEXT */}

@@ -47,18 +47,26 @@ export default function OurExpertise() {
         force3D: true,
       });
 
-      // Preserve the desktop animation exactly and use the same trigger on touch.
+      const mobileLike = window.matchMedia(
+        "(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)"
+      ).matches;
+
       const timeline = gsap.timeline({
+        paused: mobileLike,
         defaults: {
           ease: "power3.out",
           overwrite: "auto",
         },
-        scrollTrigger: {
-          trigger: container,
-          start: "top 82%",
-          once: true,
-          invalidateOnRefresh: true,
-        },
+        ...(mobileLike
+          ? {}
+          : {
+              scrollTrigger: {
+                trigger: container,
+                start: "top 82%",
+                once: true,
+                invalidateOnRefresh: true,
+              },
+            }),
       });
 
       timeline
@@ -78,7 +86,29 @@ export default function OurExpertise() {
           "-=0.18"
         );
 
+      let observer: IntersectionObserver | null = null;
+
+      if (mobileLike) {
+        if ("IntersectionObserver" in window) {
+          observer = new IntersectionObserver(
+            ([entry]) => {
+              if (!entry?.isIntersecting) return;
+              timeline.play(0);
+              observer?.disconnect();
+            },
+            {
+              threshold: 0.01,
+              rootMargin: "0px 0px -12% 0px",
+            }
+          );
+          observer.observe(container);
+        } else {
+          timeline.play(0);
+        }
+      }
+
       return () => {
+        observer?.disconnect();
         timeline.scrollTrigger?.kill();
         timeline.kill();
       };

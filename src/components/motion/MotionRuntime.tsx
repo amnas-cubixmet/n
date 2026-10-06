@@ -27,6 +27,22 @@ export default function MotionRuntime() {
     let active = true;
     let lastWidth = window.innerWidth;
 
+    const syncStableViewport = () => {
+      const root = document.documentElement;
+      if (window.innerWidth >= 1024) {
+        root.style.removeProperty("--nf-mobile-vh");
+        return;
+      }
+
+      // Match the CSS breakpoint, including tablets with a mouse. Keep this
+      // value stable during toolbar-only resizes, but remeasure on rotation
+      // and width changes before refreshing any sticky story's distance.
+      const height = window.visualViewport?.height || window.innerHeight;
+      root.style.setProperty("--nf-mobile-vh", `${Math.round(height)}px`);
+    };
+
+    syncStableViewport();
+
     const refresh = () => {
       cancelAnimationFrame(refreshFrame);
       refreshFrame = requestAnimationFrame(() => {
@@ -47,14 +63,16 @@ export default function MotionRuntime() {
       window.clearTimeout(orientationTimer);
       orientationTimer = window.setTimeout(() => {
         lastWidth = window.innerWidth;
+        syncStableViewport();
         refreshAfterPaint();
-      }, 280);
+      }, 320);
     };
 
     const handleViewportResize = () => {
       const nextWidth = window.innerWidth;
       if (Math.abs(nextWidth - lastWidth) < 2) return;
       lastWidth = nextWidth;
+      syncStableViewport();
       refreshAfterPaint();
     };
 

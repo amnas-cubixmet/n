@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import Image from "next/image";
 import { TransitionLink } from "@/components/navigation/PageTransitionProvider";
 import { useGSAP } from "@gsap/react";
@@ -24,43 +24,7 @@ export default function WatWeDoen() {
   const stickyRef = useRef<HTMLDivElement>(null);
   const panelsRef = useRef<(HTMLElement | null)[]>([]);
   const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
-  const viewportWidthRef = useRef(0);
   const motionReady = useMobileMotionReady();
-
-  useEffect(() => {
-    viewportWidthRef.current = window.innerWidth;
-    let resizeFrame = 0;
-    let orientationTimer = 0;
-
-    const refreshForWidthChange = () => {
-      const nextWidth = window.innerWidth;
-      if (Math.abs(nextWidth - viewportWidthRef.current) < 2) return;
-
-      viewportWidthRef.current = nextWidth;
-      cancelAnimationFrame(resizeFrame);
-      resizeFrame = requestAnimationFrame(() => {
-        ScrollTrigger.refresh();
-      });
-    };
-
-    const refreshForOrientation = () => {
-      window.clearTimeout(orientationTimer);
-      orientationTimer = window.setTimeout(() => {
-        viewportWidthRef.current = window.innerWidth;
-        ScrollTrigger.refresh();
-      }, 280);
-    };
-
-    window.addEventListener("resize", refreshForWidthChange, { passive: true });
-    window.addEventListener("orientationchange", refreshForOrientation);
-
-    return () => {
-      cancelAnimationFrame(resizeFrame);
-      window.clearTimeout(orientationTimer);
-      window.removeEventListener("resize", refreshForWidthChange);
-      window.removeEventListener("orientationchange", refreshForOrientation);
-    };
-  }, []);
 
   // Mobile and desktop share one GSAP timeline below. This avoids a second
   // manual scroll renderer on touch devices and keeps animation behavior

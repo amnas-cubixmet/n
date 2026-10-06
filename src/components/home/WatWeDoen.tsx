@@ -16,6 +16,9 @@ if (typeof window !== "undefined") {
 const CLOSED_STEPS =
   "polygon(0% 100%, 0% 100%, 20% 100%, 20% 100%, 40% 100%, 40% 100%, 60% 100%, 60% 100%, 80% 100%, 80% 100%, 100% 100%, 100% 100%)";
 
+const MOBILE_CLOSED = "inset(100% 0% 0% 0%)";
+const MOBILE_OPEN = "inset(0% 0% 0% 0%)";
+
 const OPEN_STEPS =
   "polygon(0% 100%, 0% 0%, 20% 0%, 20% -12%, 40% -12%, 40% -24%, 60% -24%, 60% -36%, 80% -36%, 80% -48%, 100% -48%, 100% 100%)";
 
@@ -103,7 +106,7 @@ export default function WatWeDoen() {
             Math.round(
               sticky.clientHeight *
                 (panelCount + introSegment - 1) *
-                (reduced ? 0.72 : 1.22)
+                (reduced ? 0.72 : mobile ? 0.96 : 1.22)
             );
 
           const syncMobileStageHeight = () => {
@@ -133,8 +136,18 @@ export default function WatWeDoen() {
             } else {
               gsap.set(panel, {
                 inset: 0,
-                clipPath: index === 0 ? "inset(0)" : CLOSED_STEPS,
-                WebkitClipPath: index === 0 ? "inset(0)" : CLOSED_STEPS,
+                clipPath:
+                  index === 0
+                    ? "inset(0)"
+                    : mobile
+                      ? MOBILE_CLOSED
+                      : CLOSED_STEPS,
+                WebkitClipPath:
+                  index === 0
+                    ? "inset(0)"
+                    : mobile
+                      ? MOBILE_CLOSED
+                      : CLOSED_STEPS,
                 yPercent: 0,
                 autoAlpha: 1,
                 zIndex: 10 + index,
@@ -173,7 +186,7 @@ export default function WatWeDoen() {
               end: () => `+=${getScrollDistance()}`,
               pin: mobile ? false : sticky,
               pinSpacing: mobile ? false : true,
-              scrub: reduced ? true : 0.5,
+              scrub: reduced ? true : mobile ? 0.28 : 0.5,
               anticipatePin: mobile ? 0 : 1,
               invalidateOnRefresh: true,
               fastScrollEnd: false,
@@ -240,8 +253,8 @@ export default function WatWeDoen() {
               timeline.to(
                 panel,
                 {
-                  clipPath: OPEN_STEPS,
-                  WebkitClipPath: OPEN_STEPS,
+                  clipPath: mobile ? MOBILE_OPEN : OPEN_STEPS,
+                  WebkitClipPath: mobile ? MOBILE_OPEN : OPEN_STEPS,
                   duration: revealDuration,
                   ease: "none",
                   force3D: true,

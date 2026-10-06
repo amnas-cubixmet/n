@@ -70,7 +70,7 @@ export default function MotionRuntime() {
 
     const handleViewportResize = () => {
       const nextWidth = window.innerWidth;
-      if (Math.abs(nextWidth - lastWidth) < 2) return;
+      if (nextWidth === lastWidth) return;
       lastWidth = nextWidth;
       syncStableViewport();
       refreshAfterPaint();

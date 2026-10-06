@@ -175,7 +175,7 @@ export default function ContactSection() {
         };
       };
 
-      mm.add("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)", () => buildReveal(false));
+      mm.add("(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)", () => buildReveal(true));
       mm.add("(min-width: 1024px), (min-width: 769px) and (hover: hover) and (pointer: fine)", () => buildReveal(false));
 
       mm.add(

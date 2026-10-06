@@ -96,24 +96,52 @@ export function ProjectCard({
             0.3
           );
 
-        const trigger = ScrollTrigger.create({
-          trigger: card,
-          start: "top 87%",
-          once: true,
-          invalidateOnRefresh: true,
-          onEnter: () => timeline.play(0),
-        });
+        const mobileLike = window.matchMedia(
+          "(max-width: 768px), (max-width: 1023px) and (hover: none) and (pointer: coarse)"
+        ).matches;
+
+        let observer: IntersectionObserver | null = null;
+        let trigger: ScrollTrigger | null = null;
+
+        if (mobileLike) {
+          if ("IntersectionObserver" in window) {
+            observer = new IntersectionObserver(
+              ([entry]) => {
+                if (!entry?.isIntersecting) return;
+                timeline.play(0);
+                observer?.disconnect();
+              },
+              {
+                threshold: 0.01,
+                rootMargin: "0px 0px -8% 0px",
+              }
+            );
+            observer.observe(card);
+          } else {
+            timeline.play(0);
+          }
+        } else {
+          trigger = ScrollTrigger.create({
+            trigger: card,
+            start: "top 87%",
+            once: true,
+            invalidateOnRefresh: true,
+            onEnter: () => timeline.play(0),
+          });
+        }
 
         return () => {
-          trigger.kill();
+          observer?.disconnect();
+          trigger?.kill();
           timeline.kill();
         };
       };
 
       mm.add("(min-width: 0px)", () => buildReveal());
 
-      // Reuse the desktop image parallax on touch so the card motion matches.
-      mm.add("(min-width: 0px)", () => {
+      // Keep per-frame parallax on desktop only. Mobile keeps the same reveal
+      // without a continuous scrub transform fighting touch scrolling.
+      mm.add("(min-width: 1024px) and (hover: hover) and (pointer: fine)", () => {
         gsap.fromTo(
           imageRef.current,
           { yPercent: -1.5 },
@@ -164,7 +192,7 @@ export function ProjectCard({
               src={project.image}
               alt={project.title}
               sizes="(max-width: 767px) 88vw, (max-width: 1023px) 92vw, 30vw"
-              className="object-cover scale-[1.035] transition-transform duration-700 ease-out lg:group-hover:scale-[1.055]"
+              className="object-cover scale-[1.035] lg:transition-transform lg:duration-700 lg:ease-out lg:group-hover:scale-[1.055]"
             />
             </div>
           </div>

@@ -48,9 +48,9 @@ export default function FoundedOnAVision() {
             reduced: boolean;
           };
 
-          // Keep the original desktop values and ScrollTrigger behavior on
-          // touch devices as well. The desktop branch itself is unchanged.
-          const mobile = false;
+          // Use the lightweight observer-driven reveal on touch devices so
+          // mobile Safari/Chrome do not depend on desktop ScrollTrigger timing.
+          const mobile = Boolean(conditions.mobile);
           const reduced = Boolean(conditions.reduced);
 
           if (reduced) {
